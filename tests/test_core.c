@@ -175,7 +175,7 @@ static void test_mining(void)
 {
     const Item drops[TILE_COUNT]={ITEM_NONE,ITEM_DIRT,ITEM_DIRT,ITEM_NONE,
         ITEM_PLANKS,ITEM_LOG,ITEM_NONE,ITEM_NONE,ITEM_NONE,ITEM_LOG,ITEM_WORKBENCH};
-    for(int tile=TILE_GRASS;tile<TILE_COUNT;++tile) {
+    for(int tile=TILE_GRASS;tile<TILE_FURNACE;++tile) {
         arena(&a);int x,y;game_target(&a,&x,&y);a.tiles[y][x]=(uint8_t)tile;
         unsigned duration=game_mining_ticks((Tile)tile);
         unsigned before=drops[tile]?game_item_total(&a,drops[tile]):0;
@@ -193,6 +193,7 @@ static void test_mining(void)
     game_step(&a,(GameInput){0});assert(!a.mining.active);
     game_step(&a,(GameInput){.mine=true});assert(a.mining.elapsed==1);
     game_step(&a,(GameInput){.mine=true,.aim_x=-1});assert(!a.mining.active);
+    a.aim_x=1;game_target(&a,&x,&y);a.tiles[y][x]=TILE_DIRT;
     game_step(&a,(GameInput){.mine=true,.aim_x=1});assert(a.mining.elapsed==1);
     a.tiles[y][x]=TILE_STONE;
     game_step(&a,(GameInput){.mine=true});assert(a.mining.elapsed==1 && a.mining.required==60);
@@ -234,7 +235,7 @@ static void test_long_run(void)
         r=r*1664525u+1013904223u;
         game_step(&a,(GameInput){.move=(int)((r>>12)%3)-1,.jump=r%19==0,
             .toggle_sneak=r%101==0,.aim_x=(int)((r>>8)%3)-1,
-            .aim_y=(int)((r>>10)%3)-1,.mine=r%3==0,.place=r%5==0});
+            .aim_y=(int)((r>>10)%3)-1,.mine=r%3==0,.use_held=r%5==0});
         clear_body(&a);
         assert(a.camera_x>=0 && a.camera_x<=WORLD_W*16-SCREEN_W);
         assert(a.camera_y>=0 && a.camera_y<=WORLD_H*16-VIEW_H);
@@ -243,7 +244,7 @@ static void test_long_run(void)
     static int32_t route[540][8];
     extern void reference_route(uint8_t [WORLD_H][WORLD_W],int32_t [540][8]);
     reference_route(b.tiles,route);
-    game_init(&a,WORLD_SEED);assert(!memcmp(a.tiles,b.tiles,sizeof(a.tiles)));
+    game_init_benchmark(&a,WORLD_SEED);assert(!memcmp(a.tiles,b.tiles,sizeof(a.tiles)));
     game_init(&b,WORLD_SEED);unsigned index=0;
     for(unsigned phase=0;phase<3;++phase) for(unsigned f=0;f<180;++f) {
         game_benchmark_step(&a,phase,f);game_benchmark_step(&b,phase,f);
@@ -304,7 +305,7 @@ static void test_rendering(void)
     for(int y=0;y<=16;++y) for(int x=0;x<=16;++x) {
         a.camera_x=96+x;a.camera_y=240+y;compare_world(info);
     }
-    game_init(&a,WORLD_SEED);info=(RenderInfo){0};compare_world(info);
+    game_init_benchmark(&a,WORLD_SEED);info=(RenderInfo){0};compare_world(info);
     render_invalidate();render_game(&a,&info);
     assert(host_nonzero_pixels()==SCREEN_W*SCREEN_H);
     render_help();render_game(&a,&info); /* Must restore both cached strips. */
@@ -330,6 +331,23 @@ static void test_rendering(void)
     game_init(&a,WORLD_SEED);
     a.mining=(Mining){.active=true,.required=60,.elapsed=30,.x=-1,.y=-1};
     render_game(&a,&info);game_toggle_sneak(&a);render_game(&a,&info);
+    /* New graphics and health bars clip to the original world viewport. */
+    for(unsigned kind=0;kind<MOB_COUNT;++kind) for(int edge=0;edge<4;++edge) {
+        memset(a.mobs,0,sizeof(a.mobs));
+        a.mobs[0]=(Mob){.active=true,.kind=(MobKind)kind,.health=100,
+            .body={.facing=-1,
+                .x=(a.camera_x+(edge==0?-5:edge==1?SCREEN_W-3:50))*FIXED_ONE,
+                .y=(a.camera_y+(edge==2?-5:edge==3?VIEW_H-3:50))*FIXED_ONE}};
+        dclear(0);render_world(&a,&info);host_check_guards();
+        for(int i=0;i<VIEW_TOP*SCREEN_W;++i) assert(gint_vram[i]==0);
+        for(int i=(VIEW_TOP+VIEW_H)*SCREEN_W;i<SCREEN_H*SCREEN_W;++i) assert(gint_vram[i]==0);
+    }
+    memset(a.mobs,0,sizeof(a.mobs));
+    for(unsigned item=1;item<ITEM_COUNT;++item) {
+        a.slots[0]=(ItemStack){.item=(Item)item,.count=1,.durability=(uint16_t)game_tool_durability((Item)item)};
+        render_inventory(&a,&ui);render_game(&a,&info);host_check_guards();
+    }
+    b=a;render_game(&a,&info);assert(!memcmp(&a,&b,sizeof(a)));
     PerfSummary results[BENCH_PHASES]={{0}};render_results(results);render_error("Test");
     host_check_guards();
     puts("PASS: pixel-identical old world rendering, masks, clipping, HUD invalidation and all pages");

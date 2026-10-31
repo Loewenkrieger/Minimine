@@ -110,13 +110,21 @@ void game_follow_camera(Game *game)
     game->camera_y = clamp(y, 0, WORLD_H * TILE_SIZE - VIEW_H);
 }
 
-void game_init(Game *game, uint32_t seed)
+static void init(Game *game, uint32_t seed, bool survival)
 {
     memset(game, 0, sizeof(*game));
     game->seed = seed;
+    game->survival=survival;game->health=HEALTH_MAX;game->hunger=HUNGER_MAX;
+    game->rng=seed^UINT32_C(0x951e248a);
+    if(!game->rng) game->rng=1;
+    game->spawn_ticks=300;
     generate_world(game);
+    if(survival) for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
+        if(game->tiles[y][x]==TILE_STONE && hash(seed^UINT32_C(0x17816)^(uint32_t)(x+y*WORLD_W))%19==0)
+            game->tiles[y][x]=TILE_COAL;
     game->player.x = (12 * TILE_SIZE + 3) * FIXED_ONE;
     game->player.y = (30 * TILE_SIZE - PLAYER_H) * FIXED_ONE;
+    game->spawn_x=game->player.x;game->spawn_y=game->player.y;
     game->player.facing = 1;
     game->player.grounded = true;
     game->aim_x = 1;
@@ -125,375 +133,100 @@ void game_init(Game *game, uint32_t seed)
     game_follow_camera(game);
 }
 
-static bool box_clear(const Game *game, int32_t x, int32_t y, int height)
+void game_init(Game *game,uint32_t seed) {init(game,seed,true);}
+void game_init_benchmark(Game *game,uint32_t seed) {init(game,seed,false);}
+
+bool game_rect_clear(const Game *game,int32_t x,int32_t y,int width,int height)
 {
-    int left = floor_div(x, TILE_SIZE * FIXED_ONE);
-    int right = floor_div(x + PLAYER_W * FIXED_ONE - 1, TILE_SIZE * FIXED_ONE);
-    int top = floor_div(y, TILE_SIZE * FIXED_ONE);
-    int bottom = floor_div(y + height * FIXED_ONE - 1, TILE_SIZE * FIXED_ONE);
-    for(int ty = top; ty <= bottom; ++ty)
-        for(int tx = left; tx <= right; ++tx)
-            if(game_tile_solid(game_tile(game, tx, ty))) return false;
+    int left=floor_div(x,TILE_SIZE*FIXED_ONE);
+    int right=floor_div(x+width*FIXED_ONE-1,TILE_SIZE*FIXED_ONE);
+    int top=floor_div(y,TILE_SIZE*FIXED_ONE);
+    int bottom=floor_div(y+height*FIXED_ONE-1,TILE_SIZE*FIXED_ONE);
+    for(int ty=top;ty<=bottom;++ty) for(int tx=left;tx<=right;++tx)
+        if(game_tile_solid(game_tile(game,tx,ty))) return false;
     return true;
 }
-
 bool game_toggle_sneak(Game *game)
 {
-    Player *p = &game->player;
-    int difference = (PLAYER_H - PLAYER_CROUCH_H) * FIXED_ONE;
+    Player *p=&game->player;
+    int difference=(PLAYER_H-PLAYER_CROUCH_H)*FIXED_ONE;
     if(p->sneaking) {
-        if(!box_clear(game, p->x, p->y - difference, PLAYER_H)) {
-            game->notice = NOTICE_NO_SPACE;
-            game->notice_ticks = SIM_HZ;
-            return false;
+        if(!game_rect_clear(game,p->x,p->y-difference,PLAYER_W,PLAYER_H)) {
+            game->notice=NOTICE_NO_SPACE;game->notice_ticks=SIM_HZ;return false;
         }
-        p->y -= difference;
-    } else p->y += difference;
-    p->sneaking = !p->sneaking;
-    game_follow_camera(game);
-    return true;
+        p->y-=difference;
+    } else p->y+=difference;
+    p->sneaking=!p->sneaking;++game->revision;game_follow_camera(game);return true;
 }
-
-static bool supported_at(const Game *game, int32_t x)
+static bool supported_at(const Game *game,const Player *p,int32_t x,int width,int height)
 {
-    const Player *p = &game->player;
-    int row = floor_div(p->y + game_player_height(p) * FIXED_ONE,
-        TILE_SIZE * FIXED_ONE);
-    int left = floor_div(x, TILE_SIZE * FIXED_ONE);
-    int right = floor_div(x + PLAYER_W * FIXED_ONE - 1, TILE_SIZE * FIXED_ONE);
-    for(int tx = left; tx <= right; ++tx)
-        if(game_tile_solid(game_tile(game, tx, row))) return true;
+    int row=floor_div(p->y+height*FIXED_ONE,TILE_SIZE*FIXED_ONE);
+    int left=floor_div(x,TILE_SIZE*FIXED_ONE);
+    int right=floor_div(x+width*FIXED_ONE-1,TILE_SIZE*FIXED_ONE);
+    for(int tx=left;tx<=right;++tx) if(game_tile_solid(game_tile(game,tx,row))) return true;
     return false;
 }
-
-static void move_horizontal(Game *game)
+void game_move_actor(const Game *game,Player *p,int width,int height)
 {
-    Player *p = &game->player;
-    int32_t old = p->x, next = old + p->vx;
-    int top = floor_div(p->y, TILE_SIZE * FIXED_ONE);
-    int bottom = floor_div(p->y + game_player_height(p) * FIXED_ONE - 1,
-        TILE_SIZE * FIXED_ONE);
-    int edge = floor_div(next + (p->vx > 0 ? PLAYER_W * FIXED_ONE - 1 : 0),
-        TILE_SIZE * FIXED_ONE);
-    if(p->vx) {
-        for(int y = top; y <= bottom; ++y) {
-            if(!game_tile_solid(game_tile(game, edge, y))) continue;
-            next = (p->vx > 0 ? edge * TILE_SIZE - PLAYER_W :
-                (edge + 1) * TILE_SIZE) * FIXED_ONE;
-            p->vx = 0;
-            break;
+    int32_t old=p->x,next=old+p->vx;
+    int top=floor_div(p->y,TILE_SIZE*FIXED_ONE);
+    int bottom=floor_div(p->y+height*FIXED_ONE-1,TILE_SIZE*FIXED_ONE);
+    int edge=floor_div(next+(p->vx>0?width*FIXED_ONE-1:0),TILE_SIZE*FIXED_ONE);
+    if(p->vx) for(int y=top;y<=bottom;++y) {
+        if(!game_tile_solid(game_tile(game,edge,y))) continue;
+        next=(p->vx>0?edge*TILE_SIZE-width:(edge+1)*TILE_SIZE)*FIXED_ONE;p->vx=0;break;
+    }
+    if(p->sneaking && p->grounded && supported_at(game,p,old,width,height) &&
+       !supported_at(game,p,next,width,height)) {
+        int sign=next>old?1:-1,low=0,high=next>old?next-old:old-next;
+        while(low<high) {
+            int mid=low+(high-low+1)/2;
+            if(supported_at(game,p,old+sign*mid,width,height)) low=mid;else high=mid-1;
         }
+        next=old+sign*low;p->vx=0;
     }
-    if(p->sneaking && p->grounded && supported_at(game, old) &&
-       !supported_at(game, next)) {
-        int sign = next > old ? 1 : -1;
-        int low = 0, high = next > old ? next - old : old - next;
-        while(low < high) {
-            int mid = low + (high - low + 1) / 2;
-            if(supported_at(game, old + sign * mid)) low = mid;
-            else high = mid - 1;
-        }
-        next = old + sign * low;
-        p->vx = 0;
+    p->x=next;next=p->y+p->vy;
+    int left=floor_div(p->x,TILE_SIZE*FIXED_ONE);
+    int right=floor_div(p->x+width*FIXED_ONE-1,TILE_SIZE*FIXED_ONE);
+    edge=floor_div(next+(p->vy>0?height*FIXED_ONE-1:0),TILE_SIZE*FIXED_ONE);
+    p->grounded=false;
+    if(p->vy) for(int x=left;x<=right;++x) {
+        if(!game_tile_solid(game_tile(game,x,edge))) continue;
+        p->grounded=p->vy>0;
+        p->y=(p->vy>0?edge*TILE_SIZE-height:(edge+1)*TILE_SIZE)*FIXED_ONE;
+        p->vy=0;return;
     }
-    p->x = next;
+    p->y=next;
+}
+void game_target(const Game *g,int *x,int *y)
+{
+    const Player *p=&g->player;
+    int size=TILE_SIZE*FIXED_ONE,h=game_player_height(p);
+    if(g->aim_x>0) *x=floor_div(p->x+PLAYER_W*FIXED_ONE-1,size)+1;
+    else if(g->aim_x<0) *x=floor_div(p->x,size)-1;
+    else *x=floor_div(p->x+PLAYER_W*FIXED_ONE/2,size);
+    if(g->aim_y<0) *y=floor_div(p->y,size)-1;
+    else if(g->aim_y>0) *y=g->aim_x?
+        floor_div(p->y+h*FIXED_ONE-1,size):floor_div(p->y+h*FIXED_ONE,size);
+    else *y=floor_div(p->y+(g->aim_manual?(p->sneaking?3:5):h/2)*FIXED_ONE,size);
 }
 
-static void move_vertical(Game *game)
-{
-    Player *p = &game->player;
-    int height = game_player_height(p);
-    int32_t next = p->y + p->vy;
-    int left = floor_div(p->x, TILE_SIZE * FIXED_ONE);
-    int right = floor_div(p->x + PLAYER_W * FIXED_ONE - 1,
-        TILE_SIZE * FIXED_ONE);
-    int edge = floor_div(next + (p->vy > 0 ? height * FIXED_ONE - 1 : 0),
-        TILE_SIZE * FIXED_ONE);
-    p->grounded = false;
-    if(p->vy) {
-        for(int x = left; x <= right; ++x) {
-            if(!game_tile_solid(game_tile(game, x, edge))) continue;
-            p->grounded = p->vy > 0;
-            p->y = (p->vy > 0 ? edge * TILE_SIZE - height :
-                (edge + 1) * TILE_SIZE) * FIXED_ONE;
-            p->vy = 0;
-            return;
-        }
-    }
-    p->y = next;
-}
-
-void game_target(const Game *game, int *x, int *y)
-{
-    int px = game->player.x / FIXED_ONE + PLAYER_W / 2;
-    int py = game->player.y / FIXED_ONE + game_player_height(&game->player) / 2;
-    *x = floor_div(px + game->aim_x * 24, TILE_SIZE);
-    *y = floor_div(py + game->aim_y * 24, TILE_SIZE);
-}
-
-const char *game_item_name(Item item)
-{
-    static const char *const names[] = {
-        "Leer", "Erde", "Stein", "Holzbretter", "Baumstamm",
-        "Stock", "Werkbank", "Holzspitzhacke", "Steinspitzhacke"
-    };
-    return (unsigned)item < ITEM_COUNT ? names[item] : "Leer";
-}
-
-Tile game_item_tile(Item item)
-{
-    static const Tile tiles[] = {
-        TILE_AIR, TILE_DIRT, TILE_STONE, TILE_WOOD, TILE_LOG,
-        TILE_AIR, TILE_WORKBENCH, TILE_AIR, TILE_AIR
-    };
-    return (unsigned)item < ITEM_COUNT ? tiles[item] : TILE_AIR;
-}
-
-unsigned game_tool_durability(Item item)
-{
-    return item == ITEM_WOOD_PICKAXE ? 64 : item == ITEM_STONE_PICKAXE ? 128 : 0;
-}
-
-unsigned game_stack_limit(Item item)
-{
-    if(item <= ITEM_NONE || item >= ITEM_COUNT) return 0;
-    return game_tool_durability(item) ? 1 : INVENTORY_LIMIT;
-}
-
-static bool stack_valid(const ItemStack *stack)
-{
-    unsigned limit = game_stack_limit(stack->item);
-    unsigned durability = game_tool_durability(stack->item);
-    return stack->count && stack->count <= limit &&
-        (durability ? stack->durability && stack->durability <= durability :
-            stack->durability == 0);
-}
-
-const ItemStack *game_stack_at(const Game *game, unsigned slot)
-{
-    if(slot < TOTAL_SLOTS) return &game->slots[slot];
-    if(slot < CRAFT_RESULT) return &game->crafting[slot - CRAFT_FIRST];
-    return NULL;
-}
-
-static ItemStack *mutable_stack(Game *game, unsigned slot)
-{
-    if(slot < TOTAL_SLOTS) return &game->slots[slot];
-    if(slot < CRAFT_RESULT) return &game->crafting[slot - CRAFT_FIRST];
-    return NULL;
-}
-
-static void consume_one(ItemStack *stack)
-{
-    if(!--stack->count) *stack = (ItemStack){0};
-}
-
-/* Atomic insertion: establish capacity first, then fill matching hotbar/bag,
-   empty bag, and finally empty hotbar. Tools always occupy their own slot. */
-static bool insert_stack(ItemStack slots[TOTAL_SLOTS], ItemStack incoming)
-{
-    if(!stack_valid(&incoming)) return false;
-    unsigned limit = game_stack_limit(incoming.item), capacity = 0;
-    bool tool = game_tool_durability(incoming.item) != 0;
-    for(unsigned i = 0; i < TOTAL_SLOTS; ++i) {
-        if(!slots[i].count) capacity += limit;
-        else if(!tool && slots[i].item == incoming.item && slots[i].count < limit)
-            capacity += limit - slots[i].count;
-    }
-    if(capacity < incoming.count) return false;
-    unsigned remaining = incoming.count;
-    if(!tool) for(unsigned i = 0; i < TOTAL_SLOTS && remaining; ++i) {
-        if(slots[i].item != incoming.item || slots[i].count >= limit) continue;
-        unsigned room = limit - slots[i].count;
-        unsigned amount = remaining < room ? remaining : room;
-        slots[i].count = (uint16_t)(slots[i].count + amount);
-        remaining -= amount;
-    }
-    for(unsigned pass = 0; pass < 2 && remaining; ++pass) {
-        unsigned begin = pass == 0 ? HOTBAR_SLOTS : 0;
-        unsigned end = pass == 0 ? TOTAL_SLOTS : HOTBAR_SLOTS;
-        for(unsigned i = begin; i < end && remaining; ++i) {
-            if(slots[i].count) continue;
-            unsigned amount = remaining < limit ? remaining : limit;
-            slots[i] = incoming;
-            slots[i].count = (uint16_t)amount;
-            remaining -= amount;
-        }
-    }
-    return true;
-}
-
-void game_select_hotbar(Game *game, unsigned slot)
-{
-    if(slot < HOTBAR_SLOTS && slot != game->selected) {
-        game_cancel_mining(game);
-        game->selected = slot;
-    }
-}
-
-unsigned game_item_total(const Game *game, Item item)
-{
-    unsigned total = 0;
-    for(unsigned i = 0; i < CRAFT_RESULT; ++i) {
-        const ItemStack *stack = game_stack_at(game, i);
-        if(stack->item == item) total += stack->count;
-    }
-    return total;
-}
-
-bool game_add_item(Game *game, Item item)
-{
-    return insert_stack(game->slots, (ItemStack){ .item = item, .count = 1,
-        .durability = (uint16_t)game_tool_durability(item) });
-}
-
-bool game_inventory_transfer(Game *game, unsigned from, unsigned to)
-{
-    ItemStack *source = mutable_stack(game, from), *target = mutable_stack(game, to);
-    if(!source || !target || source == target || !stack_valid(source)) return false;
-    if(target->count && source->item == target->item &&
-       !game_tool_durability(source->item)) {
-        unsigned limit = game_stack_limit(target->item);
-        if(target->count >= limit) return false;
-        unsigned room = limit - target->count;
-        unsigned amount = source->count < room ? source->count : room;
-        target->count = (uint16_t)(target->count + amount);
-        source->count = (uint16_t)(source->count - amount);
-        if(!source->count) *source = (ItemStack){0};
-        return true;
-    }
-    ItemStack swap = target->count ? *target : (ItemStack){0};
-    *target = *source;
-    *source = swap;
-    return true;
-}
-
-bool game_inventory_transfer_one(Game *game, unsigned from, unsigned to)
-{
-    ItemStack *source = mutable_stack(game, from), *target = mutable_stack(game, to);
-    if(!source || !target || source == target || !stack_valid(source)) return false;
-    if(target->count) {
-        if(target->item != source->item || game_tool_durability(source->item) ||
-           target->count >= game_stack_limit(target->item)) return false;
-        ++target->count;
-    } else {
-        *target = *source;
-        target->count = 1;
-    }
-    consume_one(source);
-    return true;
-}
-
-static ItemStack craft_result(Item item, unsigned count)
-{
-    return (ItemStack){ .item = item, .count = (uint16_t)count,
-        .durability = (uint16_t)game_tool_durability(item) };
-}
-
-ItemStack game_craft_preview(const Game *game, unsigned width)
-{
-    ItemStack none = {0};
-    if(width != 2 && width != 3) return none;
-    int left = (int)width, top = (int)width, right = -1, bottom = -1;
-    unsigned occupied = 0;
-    for(unsigned i = 0; i < CRAFT_SLOTS; ++i) {
-        const ItemStack *stack = &game->crafting[i];
-        if(!stack->count) continue;
-        if(i >= width * width || !stack_valid(stack)) return none;
-        int x = (int)(i % width), y = (int)(i / width);
-        if(x < left) left = x;
-        if(x > right) right = x;
-        if(y < top) top = y;
-        if(y > bottom) bottom = y;
-        ++occupied;
-    }
-    if(!occupied) return none;
-    unsigned first = (unsigned)top * width + (unsigned)left;
-    int w = right - left + 1, h = bottom - top + 1;
-    if(occupied == 1 && game->crafting[first].item == ITEM_LOG)
-        return craft_result(ITEM_PLANKS, 4);
-    if(w == 1 && h == 2 && occupied == 2 &&
-       game->crafting[first].item == ITEM_PLANKS &&
-       game->crafting[first + width].item == ITEM_PLANKS)
-        return craft_result(ITEM_STICK, 4);
-    if(w == 2 && h == 2 && occupied == 4 &&
-       game->crafting[first].item == ITEM_PLANKS &&
-       game->crafting[first + 1].item == ITEM_PLANKS &&
-       game->crafting[first + width].item == ITEM_PLANKS &&
-       game->crafting[first + width + 1].item == ITEM_PLANKS)
-        return craft_result(ITEM_WORKBENCH, 1);
-    if(width == 3 && w == 3 && h == 3 && occupied == 5) {
-        Item material = game->crafting[0].item;
-        if((material == ITEM_PLANKS || material == ITEM_STONE) &&
-           game->crafting[1].item == material && game->crafting[2].item == material &&
-           game->crafting[4].item == ITEM_STICK && game->crafting[7].item == ITEM_STICK)
-            return craft_result(material == ITEM_PLANKS ?
-                ITEM_WOOD_PICKAXE : ITEM_STONE_PICKAXE, 1);
-    }
-    return none;
-}
-
-static bool inventory_full(Game *game)
-{
-    game->notice = NOTICE_FULL;
-    game->notice_ticks = SIM_HZ;
-    return false;
-}
-
-bool game_craft(Game *game, unsigned width)
-{
-    ItemStack result = game_craft_preview(game, width);
-    if(!result.count) return false;
-    ItemStack produced[TOTAL_SLOTS], returned[TOTAL_SLOTS];
-    memcpy(produced, game->slots, sizeof(produced));
-    if(!insert_stack(produced, result)) return inventory_full(game);
-    /* Reserve room for every remaining ingredient too, so a successful craft
-       can never trap the player in an inventory that cannot be closed. */
-    memcpy(returned, produced, sizeof(returned));
-    for(unsigned i = 0; i < width * width; ++i) {
-        ItemStack remainder = game->crafting[i];
-        if(remainder.count > 1) {
-            --remainder.count;
-            if(!insert_stack(returned, remainder)) return inventory_full(game);
-        }
-    }
-    memcpy(game->slots, produced, sizeof(produced));
-    for(unsigned i = 0; i < width * width; ++i)
-        if(game->crafting[i].count) consume_one(&game->crafting[i]);
-    game->notice = NOTICE_NONE;
-    game->notice_ticks = 0;
-    return true;
-}
-
-bool game_close_crafting(Game *game)
-{
-    /* Commit all returns together. A full bag leaves the menu and grid intact. */
-    ItemStack returned[TOTAL_SLOTS];
-    memcpy(returned, game->slots, sizeof(returned));
-    for(unsigned i = 0; i < CRAFT_SLOTS; ++i)
-        if(game->crafting[i].count && !insert_stack(returned, game->crafting[i]))
-            return inventory_full(game);
-    memcpy(game->slots, returned, sizeof(returned));
-    memset(game->crafting, 0, sizeof(game->crafting));
-    if(game->notice == NOTICE_FULL) {
-        game->notice = NOTICE_NONE;
-        game->notice_ticks = 0;
-    }
-    return true;
-}
 
 static const ItemStack *active_pickaxe(const Game *game)
 {
     if(game->selected >= HOTBAR_SLOTS) return NULL;
     const ItemStack *stack = &game->slots[game->selected];
-    return game_tool_durability(stack->item) && stack_valid(stack) ? stack : NULL;
+    return game_item_kind(stack->item)==KIND_PICKAXE && game_stack_valid(stack) ? stack : NULL;
 }
 
-static Item dropped_item(Tile tile, bool pickaxe)
+static Item dropped_item(Tile tile, Item pickaxe)
 {
     switch(tile) {
     case TILE_GRASS: case TILE_DIRT: return ITEM_DIRT;
-    case TILE_STONE: case TILE_ORE: return pickaxe ? ITEM_STONE : ITEM_NONE;
+    case TILE_STONE: return pickaxe?ITEM_STONE:ITEM_NONE;
+    case TILE_COAL: return pickaxe?ITEM_COAL:ITEM_NONE;
+    case TILE_ORE: return pickaxe==ITEM_STONE_PICKAXE?ITEM_RAW_IRON:ITEM_NONE;
+    case TILE_FURNACE: return ITEM_FURNACE;
     case TILE_WOOD: return ITEM_PLANKS;
     case TILE_TRUNK: case TILE_LOG: return ITEM_LOG;
     case TILE_WORKBENCH: return ITEM_WORKBENCH;
@@ -506,7 +239,8 @@ unsigned game_mining_ticks(Tile tile)
     switch(tile) {
     case TILE_GRASS: case TILE_DIRT: return 21;
     case TILE_WOOD: case TILE_TRUNK: case TILE_LOG: case TILE_WORKBENCH: return 36;
-    case TILE_STONE: case TILE_ORE: return 60;
+    case TILE_STONE: case TILE_COAL: case TILE_FURNACE: return 60;
+    case TILE_ORE: return 120;
     case TILE_LEAVES: return 9;
     default: return 0;
     }
@@ -525,16 +259,24 @@ static void mining_step(Game *game)
     const ItemStack *pickaxe = active_pickaxe(game);
     unsigned required = game_mining_ticks(tile);
     if(pickaxe && pickaxe->item == ITEM_STONE_PICKAXE &&
-       (tile == TILE_STONE || tile == TILE_ORE)) required /= 2;
-    Item drop = dropped_item(tile, pickaxe != NULL);
+       (tile==TILE_STONE || tile==TILE_COAL || tile==TILE_ORE || tile==TILE_FURNACE)) required /= 2;
+    Item drop=dropped_item(tile,pickaxe?pickaxe->item:ITEM_NONE);
+    int furnace=tile==TILE_FURNACE?game_furnace_at(game,x,y):-1;
+    if(tile==TILE_FURNACE && (!pickaxe || furnace<0)) {
+        game_cancel_mining(game);game->notice=NOTICE_PICKAXE;game->notice_ticks=SIM_HZ;return;
+    }
     if(!required) { game_cancel_mining(game); return; }
     /* Capacity probe does not change the inventory or charge tool durability. */
     if(drop != ITEM_NONE) {
         ItemStack probe[TOTAL_SLOTS];
         memcpy(probe, game->slots, sizeof(probe));
-        if(!insert_stack(probe, craft_result(drop, 1))) {
+        bool fits=game_insert_stack(probe,(ItemStack){.item=drop,.count=1});
+        if(furnace>=0) for(unsigned i=0;i<3 && fits;++i)
+            if(game->furnaces[furnace].slots[i].count)
+                fits=game_insert_stack(probe,game->furnaces[furnace].slots[i]);
+        if(!fits) {
             game_cancel_mining(game);
-            inventory_full(game);
+            game->notice=NOTICE_FULL;game->notice_ticks=SIM_HZ;
             return;
         }
     }
@@ -549,6 +291,11 @@ static void mining_step(Game *game)
             .active = true };
     if(++mining->elapsed < required) return;
     if(drop == ITEM_NONE || game_add_item(game, drop)) {
+        if(furnace>=0) {
+            Furnace *f=&game->furnaces[furnace];
+            for(unsigned i=0;i<3;++i) if(f->slots[i].count) game_add_stack(game,f->slots[i]);
+            *f=(Furnace){0};
+        }
         game_set_tile(game, x, y, TILE_AIR);
         if(pickaxe) {
             ItemStack *used = &game->slots[game->selected];
@@ -566,7 +313,9 @@ GameInteraction game_interaction(const Game *game)
 {
     int x, y;
     game_target(game, &x, &y);
-    return game_tile(game, x, y) == TILE_WORKBENCH ? INTERACT_WORKBENCH : INTERACT_NONE;
+    Tile t=game_tile(game,x,y);
+    return t==TILE_WORKBENCH?INTERACT_WORKBENCH:
+        t==TILE_FURNACE && game_furnace_at(game,x,y)>=0?INTERACT_FURNACE:INTERACT_NONE;
 }
 
 bool game_place(Game *game)
@@ -574,7 +323,7 @@ bool game_place(Game *game)
     if(game->selected >= HOTBAR_SLOTS) return false;
     ItemStack *stack = &game->slots[game->selected];
     Tile tile = game_item_tile(stack->item);
-    if(!stack_valid(stack) || tile == TILE_AIR) return false;
+    if(!game_stack_valid(stack) || tile == TILE_AIR) return false;
     int x, y;
     game_target(game, &x, &y);
     if(game_tile(game, x, y) != TILE_AIR) return false;
@@ -584,8 +333,20 @@ bool game_place(Game *game)
     if(p->x < bx + TILE_SIZE * FIXED_ONE && p->x + PLAYER_W * FIXED_ONE > bx &&
        p->y < by + TILE_SIZE * FIXED_ONE &&
        p->y + game_player_height(p) * FIXED_ONE > by) return false;
-    if(!game_set_tile(game, x, y, tile)) return false;
-    consume_one(stack);
+    for(unsigned i=0;i<MOB_LIMIT;++i) if(game->mobs[i].active) {
+        const Mob *m=&game->mobs[i];
+        if(m->body.x<bx+TILE_SIZE*FIXED_ONE && m->body.x+(int)game_mob_width(m->kind)*FIXED_ONE>bx &&
+           m->body.y<by+TILE_SIZE*FIXED_ONE && m->body.y+(int)game_mob_height(m->kind)*FIXED_ONE>by) return false;
+    }
+    int furnace=-1;
+    if(tile==TILE_FURNACE) {
+        for(int i=0;i<FURNACE_LIMIT;++i) if(!game->furnaces[i].active) {furnace=i;break;}
+        if(furnace<0) {game->notice=NOTICE_FURNACE_LIMIT;game->notice_ticks=SIM_HZ;return false;}
+    }
+    if(!game_set_tile(game,x,y,tile)) return false;
+    if(furnace>=0) game->furnaces[furnace]=(Furnace){.active=true,.x=x,.y=y};
+    ++game->revision;
+    if(!--stack->count) *stack=(ItemStack){0};
     return true;
 }
 
@@ -595,6 +356,10 @@ GameInteraction game_step(Game *game, GameInput input)
     Player *p = &game->player;
     GameInteraction interaction = INTERACT_NONE;
     if(game->notice_ticks && !--game->notice_ticks) game->notice = NOTICE_NONE;
+    if(game->action_ticks) --game->action_ticks;
+    if(game->hurt_ticks) --game->hurt_ticks;
+    if(game->swing_ticks) --game->swing_ticks;
+    unsigned respawns=game->respawns;
     if(input.toggle_sneak) game_toggle_sneak(game);
     int limit = p->sneaking ? 240 : 480;
     int acceleration = p->sneaking ? 40 : 80;
@@ -605,35 +370,45 @@ GameInteraction game_step(Game *game, GameInput input)
         p->vx = clamp(p->vx + move * acceleration, -limit, limit);
         p->facing = move;
         game->aim_x = move;
-        game->aim_y = 0;
+        game->aim_y = 0;game->aim_manual=false;
     } else if(p->vx > 0) p->vx = p->vx > friction ? p->vx - friction : 0;
     else if(p->vx < 0) p->vx = p->vx < -friction ? p->vx + friction : 0;
     if(input.aim_x || input.aim_y) {
+        game->aim_manual=true;
         game->aim_x = clamp(input.aim_x, -1, 1);
         game->aim_y = clamp(input.aim_y, -1, 1);
     }
     if(input.jump && p->grounded) {
         p->vy = -1536;
         p->grounded = false;
+        game_exert(game);
     }
     p->vy = clamp(p->vy + 64, -1536, 2048);
-    move_horizontal(game);
-    move_vertical(game);
+    game_move_actor(game,p,PLAYER_W,game_player_height(p));
     if(game->place_cooldown) --game->place_cooldown;
     if(input.mine) mining_step(game);
     else {
         game_cancel_mining(game);
-        if(input.interact) interaction = game_interaction(game);
-        if(interaction == INTERACT_NONE && input.place && !game->place_cooldown && game_place(game))
-            game->place_cooldown = 9;
+        bool use=input.use_pressed || input.use_held;
+        Item active=game->selected<HOTBAR_SLOTS?game->slots[game->selected].item:ITEM_NONE;
+        bool fighter=active==ITEM_NONE || game_item_kind(active)==KIND_SWORD;
+        if(use && game->survival && fighter && game_attack(game,true)) { /* Attack owns this use. */ }
+        else if(input.use_pressed && game_interaction(game)!=INTERACT_NONE)
+            interaction=game_interaction(game);
+        else if(use && game->survival && game_item_kind(active)==KIND_FOOD) game_eat(game);
+        else if(use && !game->place_cooldown && game_place(game)) game->place_cooldown=9;
+        else if(use && game->survival && fighter) game_attack(game,false);
     }
-    ++game->ticks;
+    if(game->survival) {game_furnaces_step(game);game_survival_step(game);}
+    if(respawns!=game->respawns) interaction=INTERACT_NONE;
+    ++game->ticks;++game->revision;
     game_follow_camera(game);
     return interaction;
 }
 
 void game_benchmark_step(Game *game, unsigned phase, unsigned frame)
 {
+    if(phase==0 && frame==0 && game->survival) game_init_benchmark(game,game->seed);
     GameInput input = { .move = 1, .jump = frame % 80 == 0 };
     game_step(game, input);
     int travel = WORLD_W * TILE_SIZE - SCREEN_W;

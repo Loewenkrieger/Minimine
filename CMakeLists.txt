@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(CasioSandbox VERSION 0.3.0 LANGUAGES C)
+project(CasioSandbox VERSION 0.4.0 LANGUAGES C)
 
 if(NOT "${FXSDK_PLATFORM_LONG}" STREQUAL "fxCP")
   message(FATAL_ERROR "Build for ClassPad II with: fxsdk build-cp")
@@ -11,6 +11,12 @@ find_package(Gint 2.11 REQUIRED)
 add_executable(casio_sandbox
   src/main.c
   src/game.c
+  src/items.c
+  src/inventory.c
+  src/inventory_ui.c
+  src/survival.c
+  src/validate.c
+  src/storage.c
   src/perf.c
   src/render.c
 )

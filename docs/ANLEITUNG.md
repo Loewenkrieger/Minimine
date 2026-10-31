@@ -1,141 +1,220 @@
-# Minimine 0.3.0 - Anleitung
+# Minimine 0.4.0 - Anleitung
 
-## Start
+## Start und Spielstaende
 
-Nur [CasioSandbox.hh3](../releases/0.3.0/CasioSandbox.hh3) auf den
-ClassPad II fx-CP400 kopieren und mit Hollyhock 3 starten.
-EXE startet das Spiel. Die Welt wird noch nicht gespeichert.
-Versionen 0.1.0 und 0.2.0 bleiben unter releases erhalten.
+Nur [CasioSandbox.hh3](../releases/0.4.0/CasioSandbox.hh3) auf den ClassPad II
+fx-CP400 kopieren und mit Hollyhock 3 starten. Das Startmenue bietet neues Spiel,
+Laden, Hilfe, Benchmark und Beenden. Aeltere Versionen bleiben unter releases.
 
-## Tasten
+CLEAR pausiert das Spiel. Dort gibt es Fortsetzen, Speichern, Laden, Hilfe und
+Beenden. Speichern und Laden bieten jeweils drei Slots. Vor Ueberschreiben oder
+Verwerfen ungespeicherter Aenderungen erscheint eine Bestaetigung; Nein ist
+vorausgewaehlt. Pfeile waehlen, EXE bestaetigt, CLEAR bricht ab.
+
+**Manuell speichern, bevor das Spiel beendet oder der Rechner ausgeschaltet wird.**
+Beim ersten Speichern entsteht `/Minimine`. Je Slot werden zwei wechselnde
+Dateien angelegt: `slot1a.sav` / `slot1b.sav` bis Slot 3. Beide Dateien eines Slots
+zusammen sichern. Beim Laden wird die neueste gueltige Kopie verwendet; eine
+beschaedigte Kopie kann durch die andere aufgefangen werden. Meldet das Spiel
+einen Fehler, bleibt das laufende Spiel erhalten. Unbekannte Dateiversionen
+werden abgewiesen.
+
+Gespeichert werden Welt, Bewegung, Inventar, Verschleiss, Ruestung, Leben,
+Hunger, Mobs, liegende Beute, Ofeninhalte und -fortschritt sowie Spielzeit und
+Zufallszustand. Abbaufortschritt und Menueauswahl starten nach Laden neu.
+Inventar, Ofenansicht und alle Menues pausieren die gesamte Spielzeit; auch
+waehrend das Spiel ausgeschaltet ist, arbeiten Oefen nicht weiter.
+
+## Steuerung
 
 | Taste | Funktion |
 | --- | --- |
-| Links / rechts | Laufen, Ziel auf die entsprechende Seite setzen |
+| Links / rechts | Laufen; Ziel auf die entsprechende Seite setzen |
 | Hoch / SHIFT | Ein Sprung pro Tastendruck |
-| Runter | Sneak umschalten |
+| Runter | Sneak einmal ein- oder ausschalten |
 | X / Y / Z | Hotbarplatz 1 / 2 / 3 aktivieren |
-| Keyboard | Inventar mit 2x2-Craftingfeld oeffnen |
+| Keyboard | Inventar mit 2x2-Craftingfeld oeffnen / schliessen |
 | DEL halten | Anvisierten Block abbauen |
-| EXE | Block platzieren oder anvisierte Werkbank oeffnen |
-| 1-9 ohne 5 | Acht manuelle Zielrichtungen |
+| EXE druecken / halten | Schlagen, essen oder bauen |
+| EXE neu druecken | Anvisierte Werkbank / Ofen oeffnen |
 | 0 | Benchmark |
-| CLEAR | Hilfe; im Inventar zurueck zum Spiel |
+| CLEAR | Pausenmenue; im Inventar schliessen |
 
-Gehaltene Zahlentasten haben Vorrang vor automatischem Zielen. Nach Loslassen
-zeigt das Ziel beim Laufen nach vorn; im Stand bleibt die letzte Richtung.
+Das Ziel liegt in der unmittelbar an den Koerper angrenzenden Blockspalte.
+Automatisch wird auf Koerpermitte gezielt, auch beim Laufen gegen eine Wand.
+Gehaltene Zahlentasten haben Vorrang. Nach Loslassen zeigt das Ziel beim Laufen
+wieder nach vorn; im Stand bleibt die letzte Richtung erhalten.
 
-In der Hilfe setzt EXE fort; CLEAR kehrt zum Launcher zurueck. Nach einer
-Menuepause gehaltenes EXE und DEL erst loslassen, bevor sie wieder wirken.
-
-## Inventar und Crafting bedienen
-
-Drei Hotbarplaetze und zwoelf Inventarplaetze bleiben erhalten. Die Hotbar zeigt
-Itemnamen und Anzahl. Materialien passen bis 64 in einen Slot, Werkzeuge einzeln.
-Am Anfang gibt es je 32 Erde, Stein und Holzbretter.
-
-- Pfeile bewegen die Auswahl zwischen Inventar, Craftingfeldern und Ergebnis.
-- EXE markiert eine Quelle. EXE auf einem Ziel verschiebt den ganzen Stapel.
-- 5 legt **ein Item** aus der markierten Quelle ins gewaehlte Feld.
-  Die Quelle bleibt markiert, solange darin noch Items liegen.
-- EXE auf dem Quellplatz hebt die Markierung auf.
-- Leere Ziele uebernehmen; gleiche Materialien werden bis 64 zusammengefuehrt,
-  unterschiedliche Stapel getauscht. 5 tauscht keine unterschiedlichen Items.
-- Auf dem Ergebnisplatz stellt EXE das angezeigte Rezept einmal her. Erst dabei
-  wird je ein Item aus den belegten Rezeptfeldern verbraucht.
-- X/Y/Z springen zum jeweiligen Hotbarplatz und aktivieren ihn.
-- Keyboard oder CLEAR schliesst. Uebrige Zutaten kommen ins Inventar zurueck.
-
-Die Vorschau ist kein gespeicherter Gegenstand und kann nichts duplizieren.
-Ergebnisse und uebrige Zutaten brauchen Platz. Fehlt dieser, bleibt alles
-unveraendert und ein Hinweis erscheint. Vor dem Crafting wird auch der Platz
-fuer die spaetere Zutatenrueckgabe geprueft, damit das Menue schliessbar bleibt.
-
-Neue Materialien ergaenzen zuerst passende Hotbarstapel, dann passende
-Inventarstapel; danach leere Inventarplaetze und zuletzt leere Hotbarplaetze.
-Verbrauchte Hotbarstapel werden nicht automatisch nachgefuellt.
-
-## Rezepte
-
-| Ergebnis | Anordnung | Benutzt |
+| Links | Rechts | Hoehe |
 | --- | --- | --- |
-| 4 Holzbretter | 1 Baumstamm in einem beliebigen Feld | Inventar oder Werkbank |
-| 4 Stoecke | 2 Holzbretter uebereinander | Inventar oder Werkbank |
-| 1 Werkbank | 4 Holzbretter als 2x2-Quadrat | Inventar oder Werkbank |
-| 1 Holzspitzhacke | 3 Holzbretter oben, darunter 2 Stoecke mittig | Werkbank |
-| 1 Steinspitzhacke | 3 Steine oben, darunter 2 Stoecke mittig | Werkbank |
+| 1 | 3 | Fuesse |
+| 4 | 6 | Augen |
+| 7 | 9 | Eine Blockreihe ueber dem Kopf |
 
-Die Muster duerfen innerhalb des Feldes verschoben sein, soweit sie hineinpassen.
-Zusaetzliche Zutaten oder gemischte Materialien ergeben kein gueltiges Rezept.
+2 zielt direkt unter die Fuesse, 8 ueber den Kopf. Beim Ducken koennen Augen und
+Fuesse in dieselbe Blockreihe fallen. Nach einer Menuepause EXE und DEL zuerst
+loslassen; erst danach werden diese Aktionen wieder freigegeben.
 
-Beispiel Holzspitzhacke:
+## Inventar, Ruestung und Crafting
 
-```text
-B B B
-. S .
-. S .
-```
+Drei Hotbarplaetze und zwoelf Inventarplaetze stehen zur Verfuegung. Die Hotbar
+zeigt Namen und Anzahl. Start: je 32 Erde, Stein und Holzbretter. Materialien
+passen bis 64 in einen Slot; Spitzhacken, Schwerter und Ruestung einzeln.
 
-B = Holzbretter, S = Stock, Punkt = leer.
-Fuer die Steinspitzhacke Steine statt Brettern verwenden.
+- Pfeile bewegen die Auswahl, ohne die Figur zu bewegen.
+- EXE markiert eine Quelle. EXE am Ziel verschiebt den ganzen Stapel. Derselbe
+  Quellplatz hebt die Markierung auf.
+- 5 verteilt ein Item aus der markierten Quelle; die Quelle bleibt markiert.
+- Leere Ziele uebernehmen, gleiche Materialien werden bis 64 zusammengefuehrt,
+  andere Stapel getauscht. Rest bleibt in der Quelle. 5 tauscht nicht.
+- X/Y/Z holen den ganzen Stapel des jeweiligen Hotbarplatzes **zum Cursor**.
+  Cursor und aktiver Hotbarplatz bleiben unveraendert; die Quellmarkierung wird
+  aufgehoben. Das funktioniert auch fuer passende Crafting-, Ofen- und
+  Ruestungsplaetze. Ergebnisplaetze erlauben keine eingehenden Transfers.
+- SHIFT zeigt Helm, Brustpanzer, Hose und Stiefel; erneut SHIFT kehrt zurueck.
+  Zutaten bleiben liegen, die Quellmarkierung wird aufgehoben.
+- EXE auf dem Craftingergebnis stellt das Rezept einmal her. Vorschau verbraucht
+  nichts. Keyboard/CLEAR schliesst und gibt uebrige Zutaten zurueck.
 
-Die Werkbank ueber die Hotbar auswaehlen, mit EXE platzieren, dann loslassen und
-den Block erneut mit EXE anwaehlen. Das oeffnet das pausierte 3x3-Craftingmenue.
-Mit DEL laesst sie sich wieder abbauen und als Werkbank einsammeln.
+Fehlt Platz fuer Ergebnis oder Zutatenrueckgabe, bleibt alles erhalten. Die
+Rueckgabekapazitaet wird auch bei Transfers in Ruestung oder Ofen geprueft.
+Haltbarkeit bleibt beim Verschieben, Tauschen und Speichern erhalten.
 
-## Werkzeuge und Abbau
+Aufgesammelte Items ergaenzen zuerst passende Hotbarstapel, danach passende
+Inventarstapel, danach leere Inventarplaetze und zuletzt leere Hotbarplaetze.
+Verbrauchte Hotbarplaetze werden nicht automatisch nachgefuellt.
 
-Zum Benutzen eine Spitzhacke in die Hotbar verschieben und mit X/Y/Z auswaehlen.
-Eine Spitzhacke im zusaetzlichen Inventar gilt nicht als ausgeruestet.
+### Rezepte
 
-| Material | Hand / Holzspitzhacke | Steinspitzhacke |
+Muster duerfen innerhalb des Feldes verschoben sein, soweit sie hineinpassen.
+Zusaetzliche Zutaten verhindern das Rezept. Punkt bedeutet leer.
+
+| Ergebnis | Muster / Zutaten | Feld |
+| --- | --- | --- |
+| 4 Bretter | 1 Baumstamm | 2x2 / 3x3 |
+| 4 Stoecke | 2 Bretter uebereinander | 2x2 / 3x3 |
+| Werkbank | 4 Bretter im 2x2-Quadrat | 2x2 / 3x3 |
+| Holz- / Steinspitzhacke | `MMM / .S. / .S.`; M = Bretter / Stein | Werkbank |
+| Holz- / Stein- / Eisenschwert | `M / M / S`; M = Bretter / Stein / Eisenbarren | Werkbank |
+| Ofen | `MMM / M.M / MMM`; M = Stein | Werkbank |
+| Eisenhelm | `III / I.I` | Werkbank |
+| Eisenbrustpanzer | `I.I / III / III` | Werkbank |
+| Eisenhose | `III / I.I / I.I` | Werkbank |
+| Eisenstiefel | `I.I / I.I` | Werkbank |
+
+S = Stock, I = Eisenbarren. Werkbank oder Ofen in der Hotbar auswaehlen,
+platzieren, EXE loslassen und erneut auf den Block druecken.
+
+## Abbau und Oefen
+
+Zum Benutzen eine Spitzhacke in der Hotbar aktivieren. Im Rucksack wirkt sie nicht.
+
+| Block | Hand | Holzspitzhacke | Steinspitzhacke |
+| --- | ---: | ---: | ---: |
+| Erde / Gras | 0,35 s | 0,35 s | 0,35 s |
+| Bretter / Stamm / Werkbank | 0,60 s | 0,60 s | 0,60 s |
+| Stein / Kohle | 1,00 s | 1,00 s | 0,50 s |
+| Eisenerz | 2,00 s | 2,00 s | 1,00 s |
+| Ofen | Spitzhacke erforderlich | 1,00 s | 0,50 s |
+| Blaetter | 0,15 s | 0,15 s | 0,15 s |
+| Grundgestein | unabbaubar | unabbaubar | unabbaubar |
+
+Stein und Kohle liefern erst mit Spitzhacke Items. Eisenerz liefert erst mit
+Steinspitzhacke rohes Eisen. Falsches Werkzeug entfernt Stein/Erz ohne Drop.
+Blaetter liefern nichts. Staemme liefern Baumstaemme, Bretterbloecke Bretter.
+
+Holzspitzhacken halten 64, Steinspitzhacken 128 erfolgreiche Blockabbaue. Der
+letzte Abbau wird noch gutgeschrieben. Abbruch, Grundgestein und fehlender Platz
+kosten keine Nutzung. Loslassen, Ziel-/Werkzeugwechsel oder Menue setzen den
+Fortschritt zurueck. Die kleine Leiste bleibt innerhalb des Spielausschnitts.
+Ein Ofen laesst sich nur mit Platz fuer **Ofen und gesamten Inhalt** abbauen.
+Mehr als 32 platzierte Oefen sind nicht moeglich; das Item bleibt dann erhalten.
+
+Im Ofen gibt es Eingang, Brennstoff und Ausgang. Die zwei Leisten zeigen
+Schmelzfortschritt und Restbrennzeit. Das geoeffnete Menue pausiert; nach dem
+Schliessen arbeitet jeder Ofen an seiner Position weiter.
+
+| Eingang | Ausgang | Dauer |
+| --- | --- | ---: |
+| Rohes Eisen | Eisenbarren | 10 Spielsekunden |
+| Rohes Schweine- / Rind- / Huehnerfleisch | Passende gebratene Sorte | 10 Spielsekunden |
+
+Kohle brennt 80 Sekunden, Baumstamm und Bretter jeweils 15, Stock 5 Sekunden.
+Neuer Brennstoff wird nur bei gueltigem Eingang und freiem Ausgang gezuendet.
+Bereits vorhandene Restbrennzeit laeuft im Spiel weiter. Ein voller Ausgang
+haelt das Schmelzen an; ein anderes Eingangsmaterial setzt den Fortschritt zurueck.
+
+## Kampf und Ueberleben
+
+Mit leerer Hand oder Schwert schlaegt EXE. Halten wiederholt Schlaege. Es trifft
+hoechstens der naechste Mob in Zielrichtung, bis 24 Pixel vor der Koerperkante.
+Feste Bloecke verhindern Treffer hindurch. Ein erreichbarer Mob hat Vorrang vor
+Werkbank und Ofen. Gehaltenes EXE oeffnet nach dem Kampf kein Menue automatisch.
+Mit Nahrung wird gegessen, mit einem Block gebaut.
+
+| Angriff | Schaden | Abstand | Erfolgreiche Treffer bis Bruch |
+| --- | ---: | ---: | ---: |
+| Hand | 1 | 0,5 s | unbegrenzt |
+| Holzschwert | 4 | 0,4 s | 64 |
+| Steinschwert | 5 | 0,4 s | 128 |
+| Eisenschwert | 6 | 0,4 s | 256 |
+
+Schwerter verlieren nur bei Treffern Haltbarkeit; der letzte Treffer wirkt noch voll.
+
+Oberirdisch leben Schweine (6 Leben), Kuehe (10), Huehner (4) und Zombies (12).
+In Hoehlen entstehen Zombies. Tiere fliehen nach Treffern zwei Sekunden lang.
+Zombies verfolgen die Figur und koennen einzelne Blockhindernisse ueberspringen.
+Es gibt maximal acht Tiere und acht Zombies, alle fuenf Spielsekunden hoechstens
+einen Spawn ausserhalb des Bildes. Zwoelf Bloecke um den Startpunkt sind vor
+Zombiespawns geschuetzt. Mobs weiter als 32 Bloecke entfernt verschwinden.
+
+Tiere hinterlassen je ein rohes Fleisch. Bei Annaeherung wird es eingesammelt;
+bei vollem Inventar bleibt es liegen. Nahe gleiche Beute wird zusammengefuehrt.
+Es gibt hoechstens 64 Beutestapel, Verfall nach fuenf Spielminuten. Bei vollem
+Beutepool wird der aelteste ersetzt. Verletzte Mobs zeigen eine Lebensleiste.
+
+Leben und Hunger starten jeweils bei 20 Punkten, als zehn Symbole im Kopfbereich.
+Pro Spielminute sinkt Hunger um eins; je 20 Spruenge oder ausgefuehrte Schlaege
+verbrauchen einen weiteren Punkt. Ab 18 Hunger regeneriert alle vier Sekunden
+ein Lebenspunkt; vier regenerierte Punkte verbrauchen einen Hungerpunkt.
+Bei Hunger null schadet Hunger alle vier Sekunden um einen Lebenspunkt.
+
+Rohes Schwein/Rind fuellt drei, gebratenes acht Hungerpunkte. Huhn fuellt roh
+zwei, gebraten sechs. Bei vollem Hunger wird nichts verbraucht. Essen mit
+gehaltenem EXE erfolgt hoechstens einmal pro Sekunde.
+
+Zombies verursachen zwei Schaden, hoechstens einmal je Sekunde. Nach einem
+Mobtreffer gilt 0,75 Sekunden Schutz vor weiteren Treffern. Beim Tod erscheint
+die Figur beim Startpunkt an einer freien Position, mit vollem Leben/Hunger
+und fuenf Sekunden Schutz. **Inventar und Ausruestung bleiben mitsamt Verschleiss.**
+
+| Eisenruestung | Schutzpunkte | Haltbarkeit in Treffern |
 | --- | ---: | ---: |
-| Erde / Gras | 0,35 s | 0,35 s |
-| Bretter / Baumstamm / Werkbank | 0,60 s | 0,60 s |
-| Stein / Erz | 1,00 s | 0,50 s |
-| Blaetter | 0,15 s | 0,15 s |
-| Grundgestein | unabbaubar | unabbaubar |
+| Helm | 2 | 128 |
+| Brustpanzer | 6 | 256 |
+| Hose | 5 | 192 |
+| Stiefel | 2 | 128 |
 
-Stein und Erz liefern **ohne ausgewaehlte Spitzhacke kein Item**, verschwinden
-nach vollstaendigem Abbau aber trotzdem. Mit Spitzhacke liefern beide Stein.
-Natuerliche Baumstaemme und platzierte Stammblocks liefern Baumstaemme;
-Bretterbloecke liefern Holzbretter. Blaetter liefern nichts.
+Nur im passenden Ruestungsslot wirkt Schutz: vier Prozent weniger Mobschaden je
+Punkt, kompletter Satz 60 Prozent. Jeder erlittene Mobtreffer kostet jedes
+getragene Teil eine Nutzung. Ein zerbrechendes Teil schuetzt bei diesem Treffer
+noch. Ruestung schuetzt nicht gegen Hunger.
 
-Holzspitzhacken halten 64, Steinspitzhacken 128 erfolgreich abgebaute Bloecke.
-Jeder vollstaendige Blockabbau mit dem Werkzeug kostet eine Nutzung. Abbruch,
-Grundgestein und ein wegen vollem Inventar verhinderter Abbau kosten nichts.
-Nach der letzten Nutzung wird der Block noch eingesammelt, dann zerbricht
-die Spitzhacke. Resthaltbarkeit bleibt beim Verschieben und Tauschen erhalten.
-Die Hotbar zeigt eine Haltbarkeitsleiste, das Inventar den genauen Wert.
+## Sneak, Benchmark und Entwicklung
 
-Loslassen, Zielwechsel, Werkzeugwechsel und Menues setzen den Abbaufortschritt
-zurueck. Die Leiste bleibt im Spielausschnitt. Ohne Platz fuer einen vorgesehenen
-Drop bleibt der Block stehen. Im Koerper der Figur kann nichts platziert werden.
+Sneak duckt die Figur von 22 auf 14 Pixel und halbiert ihr Tempo. Fuesse und
+Kamera bleiben beim Umschalten gleich. Am Boden verhindert Sneak das Laufen
+ueber eine Kante. Springen behaelt Kraft und Sneak; in der Luft greift die
+Kantenbremse nicht. Wird der Boden entfernt, wirkt die Schwerkraft.
+Unter niedrigen Decken bleibt Sneak an; spaeter erneut Runter druecken.
 
-## Sneak
+Der Vergleichsbenchmark nutzt eine getrennte urspruengliche Welt ohne Kohle,
+Mobs, Hunger oder Oefen. Drei alte Kamerafahrten, je 30 Aufwaermbilder und
+150 Messbilder bleiben erhalten. Die laufende Spielwelt bleibt unveraendert.
+60 Physikschritte pro Sekunde, maximal acht Nachholschritte pro Bild; ausgelassene
+Schritte erscheinen als Simulationsverlust. Auf dem PC werden keine CP400-FPS gemessen.
 
-Sneak duckt die Figur von 22 auf 14 Pixel und halbiert die Laufgeschwindigkeit.
-Fuesse und Kamera bleiben beim Umschalten gleich. Am Boden verhindert die
-Kantenbremse unbeabsichtigtes Herunterlaufen. Springen behaelt seine Kraft und
-laesst Sneak eingeschaltet; in der Luft greift die Kantenbremse nicht.
-Fehlender Boden laesst die Figur fallen.
-
-Aufrichten braucht Platz. Unter einer niedrigen Decke bleibt Sneak an und
-„Kein Platz“ erscheint. Spaeter erneut Runter druecken.
-Inventar und Werkbank pausieren die Physik; Pfeile bedienen dort nur die Auswahl.
-
-## Benchmark und Entwicklung
-
-Der Benchmark bleibt unveraendert: getrennte Welt, fester Seed, drei Kamerafahrten,
-je 30 Aufwaermbilder plus 150 Messbilder. Sneak ist aus, Inventar geschlossen.
-Im Spiel gelten 60 Physikschritte pro Sekunde und hoechstens acht Nachholschritte
-pro Bild. Verlorene Schritte werden als Simulationsverlust angezeigt.
-
-FPS, Mittel/P95/Max und L/Z/LCD sind echte Laufzeitmesswerte. PC-Vorschauen
-liefern keine CP400-FPS. Geraetewerte stehen in [BENCHMARK.md](BENCHMARK.md).
-
-Bauen mit der eingerichteten Werkzeugkette: `tools/build.ps1`.
-Tests: `tools/test.ps1` beziehungsweise `bash tools/test.sh`.
-Siehe [TOOLCHAIN.md](TOOLCHAIN.md), [VERIFICATION.md](VERIFICATION.md)
-und [DEVICE_TEST.md](DEVICE_TEST.md).
-
+Bauen: `tools/build.ps1`. Tests: `tools/test.ps1` oder `bash tools/test.sh`.
+Einzelne Tests: z.B. `bash tools/test.sh survival storage`.
+Siehe [TOOLCHAIN.md](TOOLCHAIN.md), [VERIFICATION.md](VERIFICATION.md),
+[DEVICE_TEST.md](DEVICE_TEST.md) und [BENCHMARK.md](BENCHMARK.md).

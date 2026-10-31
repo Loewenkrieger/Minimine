@@ -12,6 +12,29 @@ int main(void)
     game_init(&game, WORLD_SEED);
     render_game(&game, &info);
     host_write_ppm("build/native/play.ppm");
+    game.health=1350;game.hunger=11;
+    for(unsigned i=0;i<4;++i) {
+        MobKind k=(MobKind)i;unsigned h=game_mob_height(k);
+        game.mobs[i]=(Mob){.active=true,.kind=k,.health=(uint16_t)(game_mob_health(k)/2),
+            .body={.x=game.player.x+((int)i*40-70)*FIXED_ONE,.y=game.player.y+(PLAYER_H-(int)h)*FIXED_ONE,.facing=1}};
+        game.armor[i]=(ItemStack){.item=(Item)(ITEM_IRON_HELMET+i),.count=1,
+            .durability=(uint16_t)(game_tool_durability((Item)(ITEM_IRON_HELMET+i))/2)};
+    }
+    game.slots[0]=(ItemStack){.item=ITEM_IRON_SWORD,.count=1,.durability=125};
+    render_game(&game,&info);host_write_ppm("build/native/survival.ppm");
+    InventoryUI equipment={.cursor=UI_ARMOR,.source=-1,.armor=true};
+    render_inventory(&game,&equipment);host_write_ppm("build/native/armor.ppm");
+    game.furnaces[0]=(Furnace){.active=true,.burn_ticks=3700,.burn_total=4800,.progress=350,.recipe=ITEM_IRON_INGOT,
+        .slots={{.item=ITEM_RAW_IRON,.count=23},{.item=ITEM_COAL,.count=4},{.item=ITEM_IRON_INGOT,.count=8}}};
+    equipment=(InventoryUI){.cursor=UI_FURNACE,.source=-1,.furnace=1};
+    render_inventory(&game,&equipment);host_write_ppm("build/native/furnace.ppm");
+    render_menu(false,0);host_write_ppm("build/native/start.ppm");
+    render_menu(true,1);host_write_ppm("build/native/pause.ppm");
+    SaveInfo saves[3]={{.status=SAVE_OK,.generation=3,.ticks=10800,.health=1350,.hunger=11},
+        {.status=SAVE_EMPTY},{.status=SAVE_INVALID}};
+    render_slots(true,saves,0);host_write_ppm("build/native/saves.ppm");
+    render_confirm("Aktuelles Spiel verwerfen?",false);host_write_ppm("build/native/confirm.ppm");
+    game_init(&game,WORLD_SEED);
     InventoryUI ui={.cursor=4,.source=0};
     render_inventory(&game,&ui);
     host_write_ppm("build/native/inventory.ppm");
@@ -45,7 +68,7 @@ int main(void)
     game_target(&game,&game.mining.x,&game.mining.y);
     render_game(&game,&info);
     host_write_ppm("build/native/sneak-mining.ppm");
-    game_init(&game,WORLD_SEED);
+    game_init_benchmark(&game,WORLD_SEED);
     render_help();
     host_write_ppm("build/native/help.ppm");
     for(unsigned phase = 0; phase < BENCH_PHASES; ++phase) {

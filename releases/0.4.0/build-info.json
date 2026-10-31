@@ -1,0 +1,76 @@
+{
+  "artifact": "CasioSandbox.hh3",
+  "file_bytes": 151412,
+  "sha256": "d43aad2704aaf15a0ebc5502b97c8837f391f81a0c8cedaacb1afa64a34dfd06",
+  "format": "ELF32 big-endian SuperH EXEC",
+  "entry_point": "0x8c05e77c",
+  "machine_flags": "0x6",
+  "metadata": {
+    "VERSION": "0.4.0",
+    "AUTHOR": "Minimine project",
+    "DESCRIPTION": "2D survival sandbox with crafting and three save slots",
+    "NAME": "Minimine"
+  },
+  "regions": {
+    "ram": {
+      "start": "0x8c052800",
+      "used_bytes": 150656,
+      "capacity_bytes": 337920,
+      "free_bytes": 187264
+    },
+    "eram": {
+      "start": "0x8cff0000",
+      "used_bytes": 0,
+      "capacity_bytes": 61184,
+      "free_bytes": 61184
+    },
+    "vbr": {
+      "start": "0x8cffef00",
+      "used_bytes": 0,
+      "capacity_bytes": 4352,
+      "free_bytes": 4352
+    },
+    "ilram": {
+      "start": "0xe5200000",
+      "used_bytes": 0,
+      "capacity_bytes": 4096,
+      "free_bytes": 4096
+    },
+    "xyram": {
+      "start": "0xe500e000",
+      "used_bytes": 0,
+      "capacity_bytes": 16384,
+      "free_bytes": 16384
+    }
+  },
+  "load_segments": [
+    {
+      "region": "ram",
+      "address": 2349148160,
+      "physical_address": 2349148160,
+      "memory_bytes": 150656,
+      "file_bytes": 150656,
+      "executable": true
+    }
+  ],
+  "toolchain_image": "ghcr.io/therainbowphoenix/gint-docker@sha256:9f358bfc47ee95cfd8ee973aabdd641d995ca4bdd1324c92dc1bd87c78d8661e",
+  "source_sha256": {
+    "src/game.c": "483f855c2b524ffd13713bee7d43d655ebdacc613a04067bbc5293638a19d899",
+    "src/game.h": "9b1ca641411e8a81e12cf86cbfee99d51a2be02d3c3381d3a80da5963dbf65fd",
+    "src/inventory.c": "fe28481d4c295f7ae240b9cbd7558fa24a83972f1e6f568e8946ff247293bcd3",
+    "src/inventory_ui.c": "3e8dc0c2fb13820c5e372d79a5e5e616f1da04cc6a5ab875a6c2b5e5c8aef546",
+    "src/inventory_ui.h": "ada3c2ee940859210236433e8ab968685c0573a65f13b2b933fc781da80b9b2d",
+    "src/items.c": "353b04372f45b13b9b8ad0b15d9381a1cc643e5adee0bbfe07e4cb47caa20505",
+    "src/main.c": "463c9336eddec0968198fbe540d752703477628bff12f95168c7bb8c058d4ce0",
+    "src/perf.c": "a15b33fb5b0b1695fa71884941e67f90cac899608fa6cb2a5cba5bff5c481e76",
+    "src/perf.h": "a13d56511b9f543c95dfe252ea8da992c47f71020d808116c16989480b769c88",
+    "src/render.c": "ea791dbd38124e50a477006ea20e66902ab223ddc02873c1c5d81daeb4b0f9d9",
+    "src/render.h": "4130b357be3e044750ae9e70f9f9e7bf0bf1f819f93f832006afe9b6b986bcf6",
+    "src/storage.c": "455c49fe508270696365c7ba7d3ec1b9c1b22cd3ad6350008c984f53091df303",
+    "src/storage.h": "fecfdf7b28d92b53061c405030599b1a780b1760910e55e4b31ef70b7f852ed5",
+    "src/survival.c": "62ceee63f9da854e81834325a85391b07f1650dbfb7ae6124d90bc0b92fe1a6c",
+    "src/validate.c": "b66e702f292fa240a5ffda931fbb2a595c956556685df81edbb8755b9ad0cebc",
+    "CMakeLists.txt": "d7fdebd4a8859cb559f5b256a8745be5577002c93b345dd2db2fcedbdd34a52f"
+  },
+  "hardware_tested": false
+}

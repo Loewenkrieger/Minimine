@@ -84,7 +84,7 @@ static void test_transfer(void)
 static void test_random_transfers(void)
 {
     empty();
-    for(unsigned i=1;i<ITEM_COUNT;++i) g.slots[i-1]=stack((Item)i,
+    for(unsigned i=1;i<=TOTAL_SLOTS;++i) g.slots[i-1]=stack((Item)i,
         game_tool_durability((Item)i)?1:32);
     g.slots[6].durability=13;g.slots[7].durability=79;
     unsigned counts[ITEM_COUNT]={0},health[ITEM_COUNT]={0};
@@ -261,9 +261,9 @@ static void test_workbench(void)
     int x,y;game_target(&g,&x,&y);
     assert(game_place(&g) && g.slots[0].count==1 && game_tile(&g,x,y)==TILE_WORKBENCH);
     assert(game_interaction(&g)==INTERACT_WORKBENCH);
-    assert(game_step(&g,(GameInput){.place=true,.interact=true})==INTERACT_WORKBENCH);
+    assert(game_step(&g,(GameInput){.use_held=true,.use_pressed=true})==INTERACT_WORKBENCH);
     assert(g.slots[0].count==1);
-    assert(game_step(&g,(GameInput){.place=true})==INTERACT_NONE);
+    assert(game_step(&g,(GameInput){.use_held=true})==INTERACT_NONE);
     mine(TILE_WORKBENCH,36);
     assert(game_item_total(&g,ITEM_WORKBENCH)==2);
     assert(game_interaction(&g)==INTERACT_NONE);

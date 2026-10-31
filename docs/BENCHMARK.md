@@ -50,3 +50,16 @@ Spielsteuerung enthaelt nun Namen und Werkzeuganzeigen; Aufwaerm-/Messbilder
 und die vollstaendige LCD-Uebertragung bleiben unveraendert.
 
 Eine Messung von 0.3.0 auf dem echten CP400 steht aus.
+
+
+## Version 0.4.0
+
+Survival, Mobs, Beute und Oefen sind im Vergleichsbenchmark ausgeschaltet.
+Kohle wird nur in der normalen Spielwelt ergaenzt; die Benchmark-Welt und alle
+540 alten Spieler-/Kameraschritte bleiben mit 0.1.0 identisch. Das wird im
+Regressionstest direkt geprueft. Der Grafikcache einschliesslich Mobs ist auf
+17.056 Byte begrenzt. Die LCD-Uebertragung bleibt vollstaendig.
+
+Neue Systeme werden separat mit anfangs 16 Mobs und 32 aktiven Oefen ueber
+18.000 Spielschritte getestet. Das misst keine Geschwindigkeit des CP400.
+Eine Messung von 0.4.0 auf dem echten Geraet steht weiterhin aus.

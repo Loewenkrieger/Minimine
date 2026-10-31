@@ -92,7 +92,7 @@ def inspect(path):
             cursor = (desc_end + 3) & ~3
     for key in ("NAME", "DESCRIPTION", "AUTHOR", "VERSION"):
         require(metadata.get(key), "Missing Hollyhock metadata: " + key)
-    require(metadata["NAME"] == "Casio Sandbox", "Unexpected application name")
+    require(metadata["NAME"] in ("Minimine", "Casio Sandbox"), "Unexpected application name")
 
     regions = {}
     for name, (start, capacity) in REGIONS.items():

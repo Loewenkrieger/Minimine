@@ -19,22 +19,32 @@ static void outline(int x, int y, int width, int height, int color)
     drect(x + width - 1, y, x + width - 1, y + height - 1, color);
 }
 
-static uint16_t atlas[TILE_COUNT][3][TILE_SIZE*TILE_SIZE];
-static uint16_t masks[TILE_COUNT][3][TILE_SIZE];
+enum { TILE_GRAPHICS=TILE_COUNT+4 };
+static uint16_t atlas[TILE_GRAPHICS][TILE_SIZE*TILE_SIZE];
+static uint16_t masks[TILE_GRAPHICS][TILE_SIZE];
+static uint16_t mob_pixels[MOB_COUNT][2][16*24];
+static uint16_t mob_masks[MOB_COUNT][2][24];
 static int hill_top[SCREEN_W];
-_Static_assert(sizeof(atlas)+sizeof(masks)+sizeof(hill_top) <= 20*1024,
+_Static_assert(sizeof(atlas)+sizeof(masks)+sizeof(hill_top)+sizeof(mob_pixels)+sizeof(mob_masks) <= 20*1024,
     "Graphics cache exceeds 20 KiB");
 static bool atlas_ready, hud_valid;
 static RenderInfo old_info;
 static ItemStack old_hotbar[HOTBAR_SLOTS];
 static unsigned old_selected;
-static bool old_sneak;
+static bool old_sneak,old_survival;
+static unsigned old_health,old_hunger;
+static unsigned graphic(Tile tile,int variant)
+{
+    if(variant && (tile==TILE_GRASS || tile==TILE_DIRT))
+        return (unsigned)TILE_COUNT+(tile==TILE_GRASS?0u:2u)+(unsigned)variant-1;
+    return (unsigned)tile;
+}
 
 static void paint(Tile tile, int variant, int x1, int y1, int x2, int y2, int color)
 {
     for(int y=y1; y<=y2; ++y) for(int x=x1; x<=x2; ++x) {
-        atlas[tile][variant][y*TILE_SIZE+x]=(uint16_t)color;
-        masks[tile][variant][y] |= (uint16_t)(1u<<x);
+        atlas[graphic(tile,variant)][y*TILE_SIZE+x]=(uint16_t)color;
+        masks[graphic(tile,variant)][y] |= (uint16_t)(1u<<x);
     }
 }
 static void make_tile(Tile tile, int variant)
@@ -84,6 +94,18 @@ static void make_tile(Tile tile, int variant)
         paint(tile, variant, 3, 8, 12, 12, C_RGB(23, 15, 7));
         paint(tile, variant, 7, 8, 8, 15, C_RGB(9, 6, 4));
         break;
+    case TILE_COAL:
+        paint(tile,variant,0,0,15,15,C_RGB(12,14,17));
+        paint(tile,variant,3,4,6,6,C_RGB(2,3,4));
+        paint(tile,variant,10,9,13,12,C_RGB(2,3,4));
+        paint(tile,variant,2,1,13,1,C_RGB(17,19,22));
+        break;
+    case TILE_FURNACE:
+        paint(tile,variant,0,0,15,15,C_RGB(10,12,14));
+        paint(tile,variant,1,1,14,2,C_RGB(21,22,23));
+        paint(tile,variant,3,5,12,7,C_RGB(3,4,5));
+        paint(tile,variant,3,10,12,14,C_RGB(2,3,4));
+        break;
     case TILE_TRUNK:
         paint(tile, variant, x + 5, y, x + 10, y + 15, C_RGB(12, 8, 5));
         paint(tile, variant, x + 6, y, x + 7, y + 15, C_RGB(21, 14, 7));
@@ -97,11 +119,13 @@ static void make_tile(Tile tile, int variant)
     }
 }
 
+static void prepare_mobs(void);
 static void prepare_atlas(void)
 {
     if(atlas_ready) return;
-    for(int t=0;t<TILE_COUNT;++t) for(int v=0;v<3;++v) make_tile((Tile)t,v);
-    atlas_ready=true;
+    for(int t=0;t<TILE_COUNT;++t) make_tile((Tile)t,0);
+    for(int v=1;v<3;++v) {make_tile(TILE_DIRT,v);make_tile(TILE_GRASS,v);}
+    prepare_mobs();atlas_ready=true;
 }
 void render_invalidate(void) { hud_valid=false; }
 
@@ -146,11 +170,11 @@ static void world_tile(const Game *game,Tile tile,int x,int y,int variant)
     bool opaque=tile!=TILE_AIR && tile!=TILE_TRUNK && tile!=TILE_LEAVES;
     for(int py=top;py<bottom;++py) {
         uint16_t *dest=gint_vram+py*SCREEN_W+left;
-        const uint16_t *src=atlas[tile][variant]+(py-y)*16;
+        const uint16_t *src=atlas[graphic(tile,variant)]+(py-y)*16;
         if(opaque) memcpy(dest,src+left-x,(size_t)(right-left)*sizeof(*dest));
         else if(tile == TILE_AIR) background_span(game, dest, left, right, py);
         else {
-            uint16_t mask=masks[tile][variant][py-y];
+            uint16_t mask=masks[graphic(tile,variant)][py-y];
             for(int px=left;px<right;++px)
                 *dest++=mask&(1u<<(px-x))?src[px-x]:background_pixel(game,px,py);
         }
@@ -159,24 +183,39 @@ static void world_tile(const Game *game,Tile tile,int x,int y,int variant)
 static void icon(Tile tile,int x,int y)
 {
     for(int py=0;py<16;++py) for(int px=0;px<16;++px)
-        if(masks[tile][0][py]&(1u<<px))
-            dpixel(x+px,y+py,atlas[tile][0][py*16+px]);
+        if(masks[graphic(tile,0)][py]&(1u<<px))
+            dpixel(x+px,y+py,atlas[graphic(tile,0)][py*16+px]);
 }
-static void item_icon(Item item, int x, int y)
+static void item_icon(Item item,int x,int y)
 {
-    Tile tile = game_item_tile(item);
-    if(tile != TILE_AIR) { icon(tile, x, y); return; }
-    if(item != ITEM_STICK && !game_tool_durability(item)) return;
-    for(int i = 0; i < 11; ++i) {
-        dpixel(x + 2 + i, y + 13 - i, C_RGB(22,15,8));
-        dpixel(x + 3 + i, y + 13 - i, C_RGB(12,8,4));
+    Tile tile=game_item_tile(item);
+    if(tile!=TILE_AIR) {icon(tile,x,y);return;}
+    ItemKind kind=game_item_kind(item);
+    if(kind==KIND_FOOD) {
+        int c=item==ITEM_RAW_PORK || item==ITEM_RAW_BEEF || item==ITEM_RAW_CHICKEN?
+            C_RGB(28,12,12):C_RGB(18,9,4);
+        drect(x+3,y+3,x+12,y+11,c);drect(x+1,y+10,x+5,y+13,C_RGB(28,27,21));return;
     }
-    if(game_tool_durability(item)) {
-        int color = item == ITEM_WOOD_PICKAXE ? C_RGB(23,16,8) : C_RGB(21,23,25);
-        drect(x + 3, y + 2, x + 12, y + 4, color);
-        drect(x + 2, y + 3, x + 4, y + 7, color);
-        drect(x + 11, y + 3, x + 13, y + 6, color);
+    if(kind==KIND_ARMOR) {
+        int c=C_RGB(23,25,27);unsigned slot=game_armor_slot(item);
+        if(slot==0) {drect(x+2,y+3,x+13,y+8,c);drect(x+2,y+8,x+4,y+12,c);drect(x+11,y+8,x+13,y+12,c);}
+        else if(slot==1) {drect(x+2,y+2,x+13,y+6,c);drect(x+4,y+6,x+11,y+14,c);}
+        else {drect(x+3,y+3,x+12,y+5,c);drect(x+3,y+5,x+6,y+14,c);drect(x+9,y+5,x+12,y+14,c);}
+        return;
     }
+    if(item==ITEM_COAL) {drect(x+3,y+3,x+12,y+12,INK);drect(x+4,y+4,x+8,y+5,MUTED);return;}
+    if(item==ITEM_RAW_IRON || item==ITEM_IRON_INGOT) {
+        drect(x+2,y+5,x+13,y+11,item==ITEM_RAW_IRON?C_RGB(22,15,10):C_RGB(25,26,27));return;
+    }
+    if(item!=ITEM_STICK && kind!=KIND_PICKAXE && kind!=KIND_SWORD) return;
+    for(int i=0;i<11;++i) {
+        int c=kind==KIND_SWORD?(item==ITEM_WOOD_SWORD?C_RGB(23,16,8):C_RGB(24,25,27)):C_RGB(22,15,8);
+        dpixel(x+2+i,y+13-i,c);dpixel(x+3+i,y+13-i,c);
+    }
+    if(kind==KIND_PICKAXE) {
+        int c=item==ITEM_WOOD_PICKAXE?C_RGB(23,16,8):C_RGB(21,23,25);
+        drect(x+3,y+2,x+12,y+4,c);drect(x+2,y+3,x+4,y+7,c);drect(x+11,y+3,x+13,y+6,c);
+    } else if(kind==KIND_SWORD) drect(x+1,y+9,x+7,y+11,C_RGB(17,12,6));
 }
 static void player_draw(const Game *game)
 {
@@ -205,19 +244,39 @@ static void player_draw(const Game *game)
     drect(x + 1, y + 16, x + 4, y + 21 - stride, C_RGB(5, 9, 17));
     drect(x + 6, y + 16, x + 8, y + 20 + stride, C_RGB(5, 9, 17));
 }
-static void header(const RenderInfo *info)
+static void status_symbol(int x,int y,unsigned amount,bool heart)
 {
-    const PerfSummary *p = &info->perf;
-    drect(0, 0, SCREEN_W - 1, VIEW_TOP - 1, PANEL);
-    dtext(8, 5, ACCENT, info->benchmark ? "CASIO SANDBOX / BENCHMARK" :
-        "CASIO SANDBOX / " SANDBOX_VERSION);
-    dprint(8, 20, C_WHITE, "%u.%u FPS    Bild %u.%u ms",
-        (unsigned)p->fps_x10 / 10, (unsigned)p->fps_x10 % 10,
-        (unsigned)p->mean_us / 1000, (unsigned)p->mean_us / 100 % 10);
-    dprint(8, 36, MUTED, "L %u.%u  Z %u.%u  LCD %u.%u ms",
-        (unsigned)p->logic_us / 1000, (unsigned)p->logic_us / 100 % 10,
-        (unsigned)p->draw_us / 1000, (unsigned)p->draw_us / 100 % 10,
-        (unsigned)p->lcd_us / 1000, (unsigned)p->lcd_us / 100 % 10);
+    static const uint8_t rows[]={54,127,127,62,28,8,0};
+    for(int py=0;py<7;++py) for(int px=0;px<7;++px) {
+        bool shape=heart?(rows[py]&(1u<<px))!=0:
+            (py<5?(px>0 && px<6):(px>=4 && px<=5));
+        if(shape) dpixel(x+px,y+py,(unsigned)(6-py)*200/7<amount?
+            (heart?C_RGB(29,4,6):C_RGB(24,13,5)):C_RGB(8,9,11));
+    }
+}
+static void header(const Game *g,const RenderInfo *info)
+{
+    const PerfSummary *p=&info->perf;
+    drect(0,0,SCREEN_W-1,VIEW_TOP-1,PANEL);
+    if(info->benchmark) {
+        dtext(8,5,ACCENT,"CASIO SANDBOX / BENCHMARK");
+        dprint(8,20,C_WHITE,"%u.%u FPS    Bild %u.%u ms",(unsigned)p->fps_x10/10,
+            (unsigned)p->fps_x10%10,(unsigned)p->mean_us/1000,(unsigned)p->mean_us/100%10);
+    } else {
+        dtext(8,5,ACCENT,"MINIMINE " SANDBOX_VERSION);
+        dprint(204,5,C_WHITE,"%u.%u FPS",(unsigned)p->fps_x10/10,(unsigned)p->fps_x10%10);
+        for(unsigned i=0;i<10;++i) {
+            unsigned health=g->health>i*200?g->health-i*200:0;
+            unsigned hunger=(unsigned)g->hunger*100>i*200?(unsigned)g->hunger*100-i*200:0;
+            status_symbol(8+(int)i*10,39,health,true);
+            status_symbol(196+(int)i*10,39,hunger,false);
+        }
+    }
+    int y=info->benchmark?36:21;
+    dprint(8,y,MUTED,"L %u.%u  Z %u.%u  LCD %u.%u ms",
+        (unsigned)p->logic_us/1000,(unsigned)p->logic_us/100%10,
+        (unsigned)p->draw_us/1000,(unsigned)p->draw_us/100%10,
+        (unsigned)p->lcd_us/1000,(unsigned)p->lcd_us/100%10);
 }
 static void footer(const Game *game, const RenderInfo *info)
 {
@@ -237,10 +296,8 @@ static void footer(const Game *game, const RenderInfo *info)
         const ItemStack *stack=&game->slots[i];
         outline(x,top+3,100,47,game->selected==i?ACCENT:MUTED);
         bool tool=game_tool_durability(stack->item)!=0;
-        const char *name=tool?(stack->item==ITEM_WOOD_PICKAXE?"Holz-":"Stein-"):
-            game_item_name(stack->item);
-        dtext(x+4,top+6,C_WHITE,name);
-        if(tool) dtext(x+4,top+18,C_WHITE,"spitzhacke");
+        dtext(x+4,top+6,C_WHITE,game_item_label(stack->item,0));
+        dtext(x+4,top+18,C_WHITE,game_item_label(stack->item,1));
         item_icon(stack->item,x+4,top+29);
         dprint(x+25,top+32,C_WHITE,"%u",(unsigned)stack->count);
         if(tool) {
@@ -250,8 +307,87 @@ static void footer(const Game *game, const RenderInfo *info)
         }
     }
     dtext(8,top+56,MUTED,game->player.sneaking?
-        "SNEAK  Keyboard: Inventar":"Keyboard: Inventar  CLEAR: Hilfe");
+        "SNEAK  Keyboard: Inventar":"Keyboard: Inventar  CLEAR: Menue");
 }
+
+static void mob_paint(unsigned kind,unsigned frame,int x,int y,int w,int h,int color)
+{
+    for(int py=y;py<y+h;++py) for(int px=x;px<x+w;++px) {
+        mob_pixels[kind][frame][py*16+px]=(uint16_t)color;
+        mob_masks[kind][frame][py]|=(uint16_t)(1u<<px);
+    }
+}
+static void prepare_mobs(void)
+{
+    for(unsigned kind=0;kind<MOB_COUNT;++kind) for(unsigned frame=0;frame<2;++frame) {
+        int stride=(int)frame;
+        if(kind==MOB_ZOMBIE) {
+            mob_paint(kind,frame,1,0,8,7,C_RGB(10,20,8));
+            mob_paint(kind,frame,7,3,1,1,INK);
+            mob_paint(kind,frame,0,8,10,8,C_RGB(6,16,17));
+            mob_paint(kind,frame,1,16,3,6-stride,C_RGB(8,7,15));
+            mob_paint(kind,frame,6,16,3,5+stride,C_RGB(8,7,15));
+        } else if(kind==MOB_COW) {
+            mob_paint(kind,frame,0,2,13,8,C_RGB(17,11,6));
+            mob_paint(kind,frame,10,0,6,8,C_RGB(25,24,20));
+            mob_paint(kind,frame,3,3,4,3,C_RGB(27,27,24));
+            mob_paint(kind,frame,13,2,1,1,INK);
+            mob_paint(kind,frame,2,10,3,4-stride,C_RGB(10,7,5));
+            mob_paint(kind,frame,10,10,3,3+stride,C_RGB(10,7,5));
+        } else if(kind==MOB_PIG) {
+            mob_paint(kind,frame,0,2,11,7,C_RGB(29,17,17));
+            mob_paint(kind,frame,8,0,6,7,C_RGB(31,20,20));
+            mob_paint(kind,frame,11,2,1,1,INK);
+            mob_paint(kind,frame,2,9,3,3-stride,C_RGB(21,11,12));
+            mob_paint(kind,frame,9,9,3,2+stride,C_RGB(21,11,12));
+        } else {
+            mob_paint(kind,frame,1,3,7,5,C_RGB(29,29,27));
+            mob_paint(kind,frame,6,0,4,5,C_RGB(31,31,29));
+            mob_paint(kind,frame,8,1,1,1,INK);
+            mob_paint(kind,frame,9,3,1,2,C_RGB(29,19,3));
+            mob_paint(kind,frame,2,8,1,2-stride,C_RGB(25,16,2));
+            mob_paint(kind,frame,6,8,1,1+stride,C_RGB(25,16,2));
+        }
+    }
+}
+static void draw_mob(const Game *g,const Mob *m)
+{
+    int w=(int)game_mob_width(m->kind),h=(int)game_mob_height(m->kind);
+    int x=m->body.x/FIXED_ONE-g->camera_x,y=m->body.y/FIXED_ONE-g->camera_y+VIEW_TOP;
+    if(x+w<=0 || x>=SCREEN_W || y+h<=VIEW_TOP || y>=VIEW_TOP+VIEW_H) return;
+    unsigned frame=m->body.vx?(g->ticks/8)%2:0;
+    for(int py=0;py<h;++py) for(int px=0;px<w;++px) {
+        int source=m->body.facing>0?px:w-1-px;
+        if(mob_masks[m->kind][frame][py]&(1u<<source))
+            dpixel(x+px,y+py,mob_pixels[m->kind][frame][py*16+source]);
+    }
+    if(m->health<game_mob_health(m->kind)) {
+        int barw=w<14?14:w,bx=x,by=y-5;
+        if(bx<0) bx=0;
+        if(bx>SCREEN_W-barw) bx=SCREEN_W-barw;
+        if(by<VIEW_TOP) by=VIEW_TOP;
+        if(by>VIEW_TOP+VIEW_H-4) by=VIEW_TOP+VIEW_H-4;
+        drect(bx,by,bx+barw-1,by+3,PANEL);outline(bx,by,barw,4,C_WHITE);
+        unsigned fill=(unsigned)(barw-2)*m->health/game_mob_health(m->kind);
+        if(fill) drect(bx+1,by+1,bx+(int)fill,by+2,C_RED);
+    }
+}
+static void player_equipment(const Game *g)
+{
+    int x=g->player.x/FIXED_ONE-g->camera_x;
+    int y=g->player.y/FIXED_ONE-g->camera_y+VIEW_TOP,h=game_player_height(&g->player);
+    int waist=g->player.sneaking?6:9,gray=C_RGB(24,26,28);
+    if(g->armor[0].count) drect(x+1,y,x+8,y+2,gray);
+    if(g->armor[1].count) drect(x+1,y+waist,x+8,y+h-7,gray);
+    if(g->armor[2].count) {drect(x+1,y+h-6,x+4,y+h-3,gray);drect(x+6,y+h-6,x+8,y+h-3,gray);}
+    if(g->armor[3].count) {drect(x+1,y+h-2,x+4,y+h-1,gray);drect(x+6,y+h-2,x+8,y+h-1,gray);}
+    if(g->swing_ticks) {
+        int sx=g->player.facing>0?x+PLAYER_W+2:x-13;
+        drect(sx,y+4,sx+8,y+5,C_WHITE);
+        drect(sx+7,y+5,sx+9,y+h-5,C_WHITE);
+    }
+}
+
 
 void render_world(const Game *game, const RenderInfo *info)
 {
@@ -267,7 +403,22 @@ void render_world(const Game *game, const RenderInfo *info)
         for(int x = first_x; x <= last_x; ++x)
             world_tile(game, game_tile(game, x, y), x * TILE_SIZE - game->camera_x,
                 y * TILE_SIZE - game->camera_y + VIEW_TOP, (x + y) % 3);
+    if(!info->benchmark && game->survival) {
+        for(unsigned i=0;i<FURNACE_LIMIT;++i) {
+            const Furnace *f=&game->furnaces[i];
+            if(f->active && f->burn_ticks) {
+                int fx=f->x*16-game->camera_x,fy=f->y*16-game->camera_y+VIEW_TOP;
+                drect(fx+5,fy+11,fx+10,fy+13,C_RGB(31,13,2));
+                dpixel(fx+7,fy+10,C_RGB(31,27,5));
+            }
+        }
+        for(unsigned i=0;i<DROP_LIMIT;++i) if(game->drops[i].active)
+            item_icon(game->drops[i].stack.item,game->drops[i].x/FIXED_ONE-game->camera_x-4,
+                game->drops[i].y/FIXED_ONE-game->camera_y+VIEW_TOP-8);
+        for(unsigned i=0;i<MOB_LIMIT;++i) if(game->mobs[i].active) draw_mob(game,&game->mobs[i]);
+    }
     player_draw(game);
+    if(!info->benchmark && game->survival) player_equipment(game);
     if(!info->benchmark) {
         int tx, ty;
         game_target(game, &tx, &ty);
@@ -288,8 +439,7 @@ void render_world(const Game *game, const RenderInfo *info)
         if(width) drect(x+1,y+1,x+(int)width,y+3,ACCENT);
     }
     if(!info->benchmark && game->notice_ticks)
-        dtext(8,VIEW_TOP+8,C_WHITE,game->notice==NOTICE_FULL?"Inventar voll":
-            game->notice==NOTICE_TOOL_BROKEN?"Spitzhacke zerbrochen":"Kein Platz");
+        dtext(8,VIEW_TOP+8,C_WHITE,game_notice_text(game->notice));
     if(!info->benchmark && info->dropped_ticks)
         dprint(8,VIEW_TOP+26,C_RED,"Simulationsverlust: %u Ticks",(unsigned)info->dropped_ticks);
     dwindow_set(previous);
@@ -299,11 +449,13 @@ void render_game(const Game *game,const RenderInfo *info)
 {
     render_world(game,info);
     if(!hud_valid || info->benchmark!=old_info.benchmark ||
-       memcmp(&info->perf,&old_info.perf,sizeof(info->perf))) header(info);
+       memcmp(&info->perf,&old_info.perf,sizeof(info->perf)) || old_health!=game->health ||
+       old_hunger!=game->hunger || old_survival!=game->survival) header(game,info);
     if(!hud_valid || info->benchmark!=old_info.benchmark ||
        (info->benchmark && (info->phase!=old_info.phase || info->phase_frame!=old_info.phase_frame)) ||
        memcmp(game->slots,old_hotbar,sizeof(old_hotbar)) ||
        game->selected!=old_selected || game->player.sneaking!=old_sneak) footer(game,info);
+    old_health=game->health;old_hunger=game->hunger;old_survival=game->survival;
     old_info=*info;
     memcpy(old_hotbar,game->slots,sizeof(old_hotbar));
     old_selected=game->selected;
@@ -339,40 +491,53 @@ void render_inventory(const Game *game,const InventoryUI *ui)
 {
     prepare_atlas();
     unsigned width=ui->craft_width==3?3:2;
-    page_title(width==3?"WERKBANK / PAUSE":"INVENTAR / PAUSE",
-        "Pfeile: Auswahl   EXE: Quelle/Ziel");
-    dtext(16,70,ACCENT,"Hotbar");
-    dtext(16,122,ACCENT,"Inventar");
-    for(unsigned i=0;i<TOTAL_SLOTS;++i) {
-        int row=(int)i/3,col=(int)i%3;
-        int x=16+col*98,y=row==0?85:140+(row-1)*34;
-        inventory_slot(&game->slots[i],i,ui,game->selected,x,y,92,30);
-    }
-    dprint(16,287,ACCENT,"Crafting %ux%u",width,width);
-    dtext(208,287,ACCENT,"Ergebnis");
-    for(unsigned i=0;i<width*width;++i) {
-        int x=16+(int)(i%width)*49,y=309+(int)(i/width)*36;
-        inventory_slot(&game->crafting[i],CRAFT_FIRST+i,ui,CRAFT_RESULT+1,x,y,45,32);
-    }
-    int output_y=width==3?345:327;
-    dtext(177,output_y+12,ACCENT,"=");
+    const char *title=ui->armor?"RUESTUNG / PAUSE":ui->furnace?"OFEN / PAUSE":
+        width==3?"WERKBANK / PAUSE":"INVENTAR / PAUSE";
+    page_title(title,"Pfeile: Auswahl   EXE: Quelle/Ziel");
+    dtext(16,70,ACCENT,"Hotbar");dtext(16,122,ACCENT,"Inventar");
+    if(ui->armor) {
+        dtext(16,287,ACCENT,"Eisenruestung");
+        dtext(16,299,MUTED,"Helm");dtext(161,299,MUTED,"Brustpanzer");
+        dtext(16,354,MUTED,"Hose");dtext(161,354,MUTED,"Stiefel");
+    } else if(ui->furnace) {
+        dtext(16,287,ACCENT,"Ofen");dtext(16,298,MUTED,"Eingang");
+        dtext(16,360,MUTED,"Brennstoff");dtext(218,324,MUTED,"Ausgang");
+        if(ui->furnace<=FURNACE_LIMIT) {
+            const Furnace *f=&game->furnaces[ui->furnace-1];
+            dtext(110,347,MUTED,"Schmelzen");outline(110,362,92,6,MUTED);
+            unsigned n=90*f->progress/600;
+            if(n) drect(111,363,110+(int)n,366,ACCENT);
+            dtext(110,382,MUTED,"Feuer");outline(110,397,92,6,MUTED);
+            n=f->burn_total?90*f->burn_ticks/f->burn_total:0;
+            if(n) drect(111,398,110+(int)n,401,C_RGB(31,15,3));
+        }
+    } else {dprint(16,287,ACCENT,"Crafting %ux%u",width,width);dtext(208,287,ACCENT,"Ergebnis");}
     ItemStack result=game_craft_preview(game,width);
-    inventory_slot(&result,CRAFT_RESULT,ui,CRAFT_RESULT+1,218,output_y,70,36);
-    const ItemStack *selected=ui->cursor==CRAFT_RESULT?&result:game_stack_at(game,ui->cursor);
+    UISlot list[UI_MAX_SLOTS];unsigned count=ui_slots(ui,list);
+    const ItemStack *selected=0;
+    for(unsigned i=0;i<count;++i) {
+        const UISlot *p=&list[i];
+        const ItemStack *at=p->result?&result:game_ref_stack(game,p->ref);
+        if(!at) continue;
+        inventory_slot(at,p->id,ui,game->selected,p->x,p->y,p->w,p->h);
+        if(p->id==ui->cursor) selected=at;
+    }
     if(selected) {
         dprint(16,430,C_WHITE,"%s / %u",game_item_name(selected->item),(unsigned)selected->count);
         if(game_tool_durability(selected->item))
             dprint(16,449,MUTED,"Haltbarkeit: %u/%u",(unsigned)selected->durability,
                 game_tool_durability(selected->item));
     }
-    if(game->notice==NOTICE_FULL) dtext(16,449,C_WHITE,"Inventar voll: Platz schaffen");
-    dtext(16,470,MUTED,ui->source<0?"EXE: Quelle / Ergebnis herstellen":"EXE: Stapel   5: ein Item");
-    dtext(16,499,ACCENT,"5: ein Item  Keyboard/CLEAR: Zu");
+    if(game->notice==NOTICE_FULL || game->notice==NOTICE_WRONG_SLOT)
+        dtext(16,449,C_WHITE,game_notice_text(game->notice));
+    dtext(16,470,MUTED,"EXE: Stapel / Ergebnis   5: ein Item");
+    dtext(16,487,MUTED,"X/Y/Z: Hotbar her  SHIFT: Ruestung");
+    dtext(16,508,ACCENT,"Keyboard / CLEAR: Schliessen");
 }
 
 void render_help(void)
 {
-    page_title("CASIO SANDBOX","ClassPad II / Hollyhock 3 / " SANDBOX_VERSION);
+    page_title("MINIMINE","ClassPad II / Hollyhock 3 / " SANDBOX_VERSION);
     static const char *const lines[]={
         "Links / Rechts   Laufen + Zielen",
         "Hoch / SHIFT     Springen",
@@ -381,19 +546,19 @@ void render_help(void)
         "X / Y / Z        Hotbar 1 / 2 / 3",
         "Keyboard         Inventar / Pause",
         "DEL halten       Block abbauen",
-        "EXE              Bauen / Werkbank",
+        "EXE halten       Kampf/Essen/Bauen",
         "0                Benchmark",
-        "CLEAR            Pause / Hilfe"
+        "CLEAR            Menue / Speichern"
     };
     for(unsigned i=0;i<sizeof(lines)/sizeof(lines[0]);++i)
         dtext(16,80+(int)i*24,MUTED,lines[i]);
-    dtext(16,335,C_WHITE,"Crafting: EXE Stapel, 5 einzelnes Item");
+    dtext(16,335,C_WHITE,"Inventar: X/Y/Z holen den Hotbarstapel");
     dtext(16,359,MUTED,"L = Logik, Z = Zeichnen, LCD = Transfer");
     dtext(16,383,MUTED,"Physik 60 Hz. Benchmark: 3 Szenen.");
-    dtext(16,407,MUTED,"Testwelt getrennt vom Spiel.");
-    dtext(16,431,MUTED,"Noch keine Speicherfunktion.");
+    dtext(16,407,MUTED,"SHIFT im Inventar: Ruestung");
+    dtext(16,431,MUTED,"Speichern/Laden: CLEAR-Menue");
     dtext(16,477,ACCENT,"EXE: Spielen / Fortsetzen");
-    dtext(16,499,MUTED,"0: Benchmark   CLEAR: Launcher");
+    dtext(16,499,MUTED,"0: Benchmark   CLEAR: Menue");
 }
 
 void render_results(const PerfSummary results[BENCH_PHASES])
@@ -415,13 +580,63 @@ void render_results(const PerfSummary results[BENCH_PHASES])
     dtext(16, 419, MUTED, "P95: 95% der Bilder sind so schnell");
     dtext(16, 437, MUTED, "oder schneller. Werte bitte ablesen.");
     dtext(16, 477, ACCENT, "EXE: Spielen   0: Test wiederholen");
-    dtext(16, 499, MUTED, "CLEAR: Hilfe");
+    dtext(16, 499, MUTED, "CLEAR: Menue");
 }
 
 void render_error(const char *message)
 {
-    page_title("START NICHT MOEGLICH", "Casio Sandbox");
+    page_title("START NICHT MOEGLICH", "Minimine");
     dtext(16, 100, C_WHITE, message);
     dtext(16, 140, MUTED, "EXE / CLEAR: Zurueck zum Launcher");
 }
 
+
+void render_menu(bool pause,unsigned cursor)
+{
+    page_title("MINIMINE " SANDBOX_VERSION,pause?"PAUSE / SPIELZEIT ANGEHALTEN":"ClassPad II / Hollyhock 3");
+    static const char *const start[]={"Neues Spiel","Spielstand laden","Hilfe","Benchmark","Beenden"};
+    static const char *const paused[]={"Fortsetzen","Spielstand speichern","Spielstand laden","Hilfe","Beenden"};
+    const char *const *labels=pause?paused:start;
+    for(unsigned i=0;i<5;++i) {
+        int y=92+(int)i*53;
+        if(cursor==i) outline(12,y-8,296,34,ACCENT);
+        dtext(24,y,cursor==i?C_WHITE:MUTED,labels[i]);
+    }
+    dtext(16,435,MUTED,"Pfeile: Auswahl   EXE: Bestaetigen");
+    dtext(16,464,MUTED,pause?"CLEAR: Fortsetzen":"3 manuelle Spielstaende");
+    dtext(16,493,MUTED,"0: Benchmark");
+}
+void render_slots(bool saving,const SaveInfo slots[3],unsigned cursor)
+{
+    page_title(saving?"SPIELSTAND SPEICHERN":"SPIELSTAND LADEN","Drei voneinander getrennte Slots");
+    for(unsigned i=0;i<3;++i) {
+        int y=88+(int)i*92;
+        outline(16,y,288,78,cursor==i?ACCENT:MUTED);
+        dprint(26,y+9,C_WHITE,"Slot %u",i+1);
+        const SaveInfo *s=&slots[i];
+        if(s->status==SAVE_OK) {
+            unsigned seconds=s->ticks/SIM_HZ;
+            dprint(26,y+31,MUTED,"Spielzeit %u:%02u min",seconds/60,seconds%60);
+            dprint(26,y+52,MUTED,"Leben %u.%u  Hunger %u",(unsigned)s->health/100,
+                (unsigned)s->health/10%10,(unsigned)s->hunger);
+        } else dtext(26,y+35,MUTED,save_result_text(s->status));
+    }
+    if(cursor==3) outline(16,370,288,34,ACCENT);
+    dtext(26,380,C_WHITE,"Zurueck");
+    dtext(16,461,MUTED,"Pfeile: Auswahl   EXE: Bestaetigen");
+    dtext(16,493,MUTED,"CLEAR: Zurueck");
+}
+void render_confirm(const char *question,bool yes)
+{
+    page_title("BESTAETIGEN","Das Spiel bleibt waehrenddessen pausiert");
+    dtext(16,116,C_WHITE,question);
+    outline(16,184,132,42,yes?MUTED:ACCENT);dtext(50,199,C_WHITE,"Nein");
+    outline(172,184,132,42,yes?ACCENT:MUTED);dtext(219,199,C_WHITE,"Ja");
+    dtext(16,461,MUTED,"Pfeile: Auswahl   EXE: Bestaetigen");
+    dtext(16,493,MUTED,"CLEAR: Abbrechen");
+}
+void render_message(const char *message)
+{
+    page_title("MINIMINE","Spielstand");dtext(16,116,C_WHITE,message);
+    dtext(16,481,ACCENT,"EXE / CLEAR: Weiter");
+}

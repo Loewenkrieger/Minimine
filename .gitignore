@@ -3,5 +3,6 @@
 *.hh3
 *.elf
 *.map
+*.sav
 !releases/**/*.hh3
 !releases/0.1.0/CasioSandbox.map

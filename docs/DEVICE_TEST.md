@@ -1,104 +1,124 @@
-# Gerätetest für Version 0.3.0
+# Geraetetest fuer Minimine 0.4.0
 
-Die Prüfungen am PC und der Gerätebau sind dokumentiert in
-[VERIFICATION.md](VERIFICATION.md). Dieses Protokoll erfasst die echte Hardware.
-
-## Gerät
+Die PC-Tests und der Geraetebau stehen in [VERIFICATION.md](VERIFICATION.md).
+Diese Liste ist fuer den echten ClassPad II fx-CP400 mit Hollyhock 3 vorgesehen.
+Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 
 | Angabe | Wert |
 | --- | --- |
-| Modell | Casio ClassPad II fx-CP400 |
-| Hollyhock-Version | |
-| OS-Version | |
-| Spielversion | 0.3.0; SHA-256 siehe VERIFICATION.md |
-| Datum | |
-| Geräteeinstellungen / Takt | |
+| Hollyhock-/OS-Version | |
+| Spielversion | 0.4.0; SHA-256 siehe VERIFICATION.md |
+| Datum, Takt, Einstellungen | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
 
-## Bedienung und Bewegung
+## Start, Bewegung und Zielen
 
-- [ ] Hilfe erscheint, EXE startet, CLEAR in der Hilfe kehrt zum Launcher zurück.
-- [ ] Links/rechts laufen und das Ziel folgt, auch an einer Wand.
-- [ ] Gehaltene Zahlentasten haben beim Laufen Vorrang. Nach Loslassen zeigt
-      das Ziel beim Laufen nach vorn; im Stand bleibt die letzte Richtung.
-- [ ] Hoch und SHIFT lösen jeweils einen Sprung aus. Gehaltene Tasten lösen
-      nach der Landung keinen weiteren Sprung aus.
-- [ ] Runter schaltet Sneak einmal ein, erneutes Drücken aus. Halten schaltet
-      nicht wiederholt um.
-- [ ] Sneak: Figur kleiner, halbes Tempo, Füße unverändert, kein Kamerasprung.
-- [ ] An linker und rechter Kante stoppt Sneak; Sprung über die Kante bleibt möglich.
-- [ ] Ein ein Block hoher Gang ist geduckt passierbar. Aufrichten unter der
-      Decke zeigt „Kein Platz“. Nach Verlassen erneut Runter drücken.
-- [ ] Entfernen des Bodens lässt die Figur trotz Sneak fallen.
+- [ ] `.hh3` startet im Launcher; Startmenue bietet neues Spiel und Laden.
+- [ ] Startinventar: je 32 Erde, Stein und Bretter; Hotbar zeigt Namen.
+- [ ] Links/rechts waehlt unmittelbar die benachbarte Spalte, auch an einer Wand.
+- [ ] 1/3 Fuss-, 4/6 Augenhoehe, 7/9 eine Reihe ueber dem Kopf; 2 unter den Fuessen,
+      8 ueber dem Kopf. Auch an Blockgrenzen, im Lauf und geduckt pruefen.
+- [ ] Gehaltenes manuelles Zielen hat Vorrang. Nach Loslassen: im Lauf nach vorn,
+      im Stand zuletzt gewaehlte Richtung.
+- [ ] Hoch und SHIFT: ein Sprung je Druck, keiner durch Halten nach der Landung.
+- [ ] Runter: Sneak einmal je Druck; kleiner, halbes Tempo, Fuesse/Kamera fest.
+- [ ] Sneak stoppt an beiden Kanten, erlaubt Spruenge, faellt bei entferntem Boden.
+- [ ] Niedriger Gang passierbar; versuchtes Aufrichten zeigt Kein Platz und bleibt
+      geduckt. Nach dem Gang erneut Runter druecken.
 
-## Inventar
+## Inventar, Rezepte und Haltbarkeit
 
-- [ ] Keyboard öffnet und schließt; CLEAR schließt ebenfalls.
-- [ ] Drei Hotbarplätze plus zwölf Inventarplätze in drei Spalten sichtbar.
-- [ ] Pfeile bewegen nur den Cursor; Hoch springt nicht, Runter schaltet Sneak nicht.
-- [ ] EXE: Quelle, dann Ziel. Gleicher Platz hebt die Markierung auf.
-- [ ] Leeres Ziel übernimmt, gleiche Materialien werden bis 64 zusammengeführt
-      (Rest bleibt in der Quelle), unterschiedliche Materialien werden getauscht.
-- [ ] Mit markierter Quelle schließen: kein Gegenstandsverlust.
-- [ ] X/Y/Z wählen im Spiel direkt Platz 1/2/3; im Inventar zusätzlich den Cursor.
-- [ ] Leerer aktiver Hotbarplatz wird nicht aus dem Inventar nachgefüllt.
-- [ ] Spiel und Sneak bleiben beim Öffnen/Schließen von Inventar und Hilfe erhalten.
-- [ ] Nach langer Pause kein Physiksprung; gehaltenes EXE/DEL baut nichts
-      versehentlich. Erst nach Loslassen werden diese Aktionen wieder freigegeben.
+- [ ] Keyboard/CLEAR schliesst; Pfeile bedienen ausschliesslich das Menue.
+- [ ] EXE Quelle/Ziel, 5 einzelnes Item; gleiche Quelle mit EXE abwaehlen.
+- [ ] X/Y/Z holt Hotbarstapel zum Cursor, aendert Cursor und aktiven Platz nicht.
+      Leeres Ziel, Tausch, 64er-Grenze mit Rest und ungueltiges Ergebnisziel pruefen.
+- [ ] SHIFT zeigt vier Ruestungsslots und wieder zurueck. Zutaten bleiben erhalten.
+      SHIFT springt dort nicht; Hoch/Runter aendern Bewegung/Sneak nicht.
+- [ ] Quickmove zu Crafting, passendem Ruestungsslot und Ofen funktioniert;
+      falscher Ruestungstyp, falscher Brennstoff und eingehender Ausgangstransfer scheitern.
+- [ ] Haltbarkeit bleibt beim Verschieben/Tauschen zwischen allen Bereichen erhalten.
+- [ ] Alle Rezepte aus [ANLEITUNG.md](ANLEITUNG.md) herstellen; verschobene Muster,
+      falsche Materialien, Zusatzfelder, fehlender Platz und Zutatenrueckgabe pruefen.
+- [ ] Werkbank platzieren, EXE loslassen, neu druecken: 3x3-Feld oeffnet.
+- [ ] Menue lange offen lassen, dann EXE/DEL gehalten schliessen: kein Nachlauf,
+      keine versehentliche Aktion; erst nach Loslassen wieder aktiv.
 
-## Crafting und Werkzeuge
+## Abbauen, Erz und Oefen
 
-- [ ] Hotbar zeigt Namen und Anzahl statt X/Y/Z; alle Namen passen in die Slots.
-- [ ] Start: je 32 Erde, Stein und Holzbretter. Materialien maximal 64, Werkzeuge einzeln.
-- [ ] Ein Baumstamm ergibt vier Bretter, zwei Bretter uebereinander vier Stoecke.
-- [ ] Vier Bretter im 2x2-Quadrat ergeben eine Werkbank.
-- [ ] EXE markiert eine Quelle; 5 verteilt einzelne Zutaten auf die Felder.
-- [ ] Vorschau verbraucht nichts; EXE auf dem Ergebnis stellt einmal her.
-- [ ] Falsche Muster und zusaetzliche Zutaten ergeben kein Rezept.
-- [ ] Werkbank platzieren, EXE loslassen, erneut EXE: 3x3-Menue oeffnet.
-- [ ] Drei Bretter/Steine oben und zwei Stoecke mittig ergeben die passende Spitzhacke.
-- [ ] Keyboard/CLEAR gibt Zutaten zurueck; bei fehlendem Platz kein Verlust.
-- [ ] Crafting mit vollem Inventar verliert nichts und verbaut keine Zutatenrueckgabe.
-- [ ] Die Werkbank kann wieder abgebaut und eingesammelt werden.
-- [ ] Ohne aktive Spitzhacke verschwindet Stein/Erz ohne Item, auch bei vollem Inventar.
-- [ ] Spitzhacke in der Hotbar auswaehlen: Stein-Drop entsteht. Werkzeug im Rucksack reicht nicht.
-- [ ] Holzspitzhacke: 64 Nutzungen; Steinspitzhacke: 128, Steinabbau in 0,5 s.
-- [ ] Abbruch, Grundgestein und blockierter Abbau kosten keine Haltbarkeit.
-- [ ] Letzter Werkzeuggebrauch liefert noch den Drop, dann erscheint der Zerbrech-Hinweis.
-- [ ] Beschaedigte Werkzeuge behalten ihre Haltbarkeit beim Verschieben/Tauschen.
-- [ ] Menuepfeile bewegen die Figur nicht; gehaltenes EXE oeffnet die Werkbank nicht mehrfach.
+- [ ] DEL-Zeiten laut Anleitung; Fortschrittsleiste auch an Bildschirmraendern sichtbar.
+- [ ] Loslassen, Ziel-/Werkzeugwechsel und Menues loeschen den Fortschritt.
+- [ ] Ohne Spitzhacke kein Stein/Kohle-Drop; Eisenerz nur mit Steinspitzhacke
+      zu rohem Eisen. Holzspitzhacke reicht fuer Kohle.
+- [ ] Kohle und Eisenerz sind optisch unterscheidbar und in Stein vorhanden.
+- [ ] Letzter Werkzeuggebrauch liefert Drop, danach Bruch. Abbruch und volles
+      Inventar kosten keine Nutzung. Grundgestein bleibt bestehen.
+- [ ] Ofen platzieren und oeffnen: Eingang/Brennstoff/Ausgang und beide Leisten.
+- [ ] Eisen und alle drei Fleischsorten in zehn Spielsekunden verarbeiten.
+- [ ] Kohle 80 s, Stamm/Bretter 15 s, Stock 5 s. Zwei Stoecke fuer einen Vorgang pruefen.
+- [ ] Mehrere Oefen arbeiten bei geschlossenem Menue weiter, in Menues nicht.
+- [ ] Voller Ausgang haelt Fortschritt an; Restfeuer laeuft weiter. Anderer Eingang
+      setzt Fortschritt zurueck. Neuer Brennstoff startet nur bei gueltigem Vorgang.
+- [ ] Ofenabbau ohne Spitzhacke scheitert. Bei fehlendem Platz bleibt Ofen samt
+      Inhalt bestehen; bei Platz wird alles einmalig eingesammelt.
+- [ ] 32 Oefen moeglich; weitere Platzierung verbraucht kein Item.
 
-## Abbau und Darstellung
+## Mobs, Kampf und Ueberleben
 
-- [ ] DEL halten: Erde/Gras 0,35 s, Bretter/Stamm/Werkbank 0,6 s, Stein/Erz 1,0 s
-      (mit Steinspitzhacke 0,5 s),
-      Blätter 0,15 s. Grundgestein bleibt bestehen.
-- [ ] Fortschrittsleiste über dem Ziel, auch am Rand innerhalb des Spielausschnitts.
-- [ ] Loslassen, anderes Ziel und Öffnen von Inventar/Hilfe setzen Fortschritt zurück.
-- [ ] Abgebautes Material erscheint im passenden Stapel. Blätter liefern kein Material.
-- [ ] Volles Inventar bei vorgesehenem Drop: Block bleibt stehen, Hinweis „Inventar voll“.
-- [ ] EXE platziert sofort; keine Platzierung im Körper, auch beim Ducken.
-- [ ] Keine Grafikreste nach Menüwechseln; Bäume transparent, Bildschirmränder sauber.
-- [ ] Unter Belastung auf Verzögerungen und „Simulationsverlust“ achten.
+- [ ] Schwein, Kuh und Huhn oberirdisch; Zombies oberirdisch und in Hoehlen.
+- [ ] Keine Zombiespawns innerhalb zwoelf Bloecken um den Startpunkt.
+- [ ] Tiere wandern und fliehen nach Treffern; Zombies verfolgen und springen
+      ein Block hohes Hindernis. Entfernte Mobs verschwinden.
+- [ ] Leere Hand und alle drei Schwerter schlagen mit EXE, gehalten wiederholt.
+- [ ] Nur naechster erreichbarer Mob getroffen; Waende verhindern Treffer.
+- [ ] Mob hat Vorrang vor Werkbank/Ofen. Nach Tod oeffnet gehaltenes EXE kein Menue;
+      neu druecken erlaubt Interaktion. Schwert verliert nur bei Treffern Haltbarkeit.
+- [ ] Lebensleisten nur bei verletzten Mobs, auch am Rand innerhalb des Ausschnitts.
+- [ ] Tiere hinterlassen Fleisch, bei vollem Inventar bleibt Beute liegen.
+- [ ] Zehn Herz-/Hungersymbole sichtbar; Hunger nach Minute und je 20 Aktionen pruefen.
+- [ ] Regeneration ab 18 Hunger, kein Essenverbrauch bei vollem Hunger, Hunger-Schaden
+      bei null. Alle rohen/gebratenen Sorten fuellen die richtigen Punkte.
+- [ ] Zombie-Hit: zwei Schaden ohne Ruestung; Schutzzeit verhindert schnelle Mehrfachtreffer.
+- [ ] Eisenruestung wirkt nur im passenden Slot, kompletter Satz 60 Prozent Schutz;
+      Teile verschleissen nur bei erlittenem Mobtreffer. Letzte Nutzung schuetzt noch.
+- [ ] Tod: freie Startposition, volles Leben/Hunger, fuenf Sekunden Schutz; Inventar
+      und Ausruestung mit unveraenderter Resthaltbarkeit erhalten.
 
-## Benchmark
+## Speichern und Laden auf dem CP400
 
-**0** startet den Vergleichstest. Die bearbeitete Spielwelt und Sneak müssen
-danach beim Fortsetzen erhalten sein. Je Szene 30 Aufwärm- und 150 Messbilder.
-Drei vollständige Läufe bei denselben Einstellungen wie 0.1.0 ausführen.
-Das alte Foto steht ausgewertet in [BENCHMARK.md](BENCHMARK.md).
+- [ ] Erstes Speichern erzeugt `/Minimine` ohne vorbereitete Zusatzdateien.
+- [ ] Alle drei Slots schreiben und nach Beenden/Neustart zurueckladen.
+- [ ] Welt, Position/Bewegung, ausgewahlte Hotbar, Ruestung/Verschleiss, Leben/Hunger,
+      Mobs/Beute sowie mehrere laufende Oefen stimmen nach Laden.
+- [ ] Spielzeit und Ofenfortschritt holen die ausgeschaltete Zeit nicht nach.
+- [ ] Ueberschreiben und Verwerfen ungespeicherter Aenderungen: Nein vorausgewaehlt,
+      Nein/CLEAR behaelt das Spiel, Ja fuehrt die Aktion aus.
+- [ ] Je Slot entstehen wechselnde A/B-Dateien; nach wiederholtem Speichern wird
+      der neueste gueltige Stand geladen.
+- [ ] Mit vorheriger Sicherung der sechs Dateien eine Kopie am PC beschaedigen:
+      andere Kopie laedt mit Sicherungshinweis. Beide defekt: Fehler, laufendes Spiel bleibt.
+- [ ] Fehlender Speicherplatz meldet Fehler, bisherige gueltige Kopie bleibt ladbar.
+      Speicherunterbrechungen nur mit vorheriger Sicherung kontrolliert testen.
+
+## Darstellung, Last und Vergleich
+
+- [ ] Keine Grafikreste nach Menues, saubere Transparenz, neue Itemnamen gut lesbar.
+- [ ] Mehrere Mobs, Beute und Oefen gleichzeitig: Bedienung, FPS und Simulationsverlust notieren.
+- [ ] 0 startet getrennten Benchmark, Spielzustand bleibt erhalten; EXE setzt fort.
+- [ ] Weiterhin drei Szenen, 30 Aufwaerm- und 150 Messbilder je Szene, Sneak aus.
+
+Drei Laeufe unter denselben Einstellungen wie 0.1.0 fotografieren.
+Ausgangswerte stehen in [BENCHMARK.md](BENCHMARK.md).
 
 | Lauf | Szene | FPS | Mittel ms | P95 ms | Max ms | L us | Z us | LCD us |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Oberfläche | | | | | | | |
-| 1 | Höhlen | | | | | | | |
+| 1 | Oberflaeche | | | | | | | |
+| 1 | Hoehlen | | | | | | | |
 | 1 | Tiefengestein | | | | | | | |
-| 2 | Oberfläche | | | | | | | |
-| 2 | Höhlen | | | | | | | |
+| 2 | Oberflaeche | | | | | | | |
+| 2 | Hoehlen | | | | | | | |
 | 2 | Tiefengestein | | | | | | | |
-| 3 | Oberfläche | | | | | | | |
-| 3 | Höhlen | | | | | | | |
+| 3 | Oberflaeche | | | | | | | |
+| 3 | Hoehlen | | | | | | | |
 | 3 | Tiefengestein | | | | | | | |
 
 Beobachtungen:
-

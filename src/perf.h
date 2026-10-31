@@ -26,4 +26,3 @@ void perf_push(PerfHistory *history, PerfSample sample);
 PerfSummary perf_summarize(const PerfSample *samples, size_t count);
 
 #endif
-

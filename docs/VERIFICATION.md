@@ -1,86 +1,110 @@
-# Pruefstand - Version 0.3.0, 31. Oktober 2026
+# Pruefstand - Minimine 0.4.0, 31. Oktober 2026
 
 ## Bestanden
 
-- Nativer GCC-Bau mit strengen Warnungen als Fehler, AddressSanitizer und
-  UndefinedBehaviorSanitizer ohne Befunde.
-- Bestehende Physik, Sneak, Kollisionen, acht Zielrichtungen und Kameragrenzen.
-  20.000 gemischte Spielschritte ohne ungueltige Koerperposition oder Stapel.
-- Welt und alle 540 Benchmark-Schritte stimmen mit dem eingefrorenen Kern
-  von 0.1.0 ueberein; weiterhin 30 Aufwaerm- plus 150 Messbilder je Szene.
-- Pixelgenauer Vergleich der bisherigen Weltgrafik mit dem alten Renderer.
-  Neue Stamm-/Werkbankgrafiken an Ausschnittsraendern und geschuetzter
-  Bildpuffer; Vorschauen von Hotbar, 2x2-/3x3-Crafting und Werkzeugen visuell geprueft.
-- Materialien maximal 64, Werkzeuge einzeln; Stapel verschieben,
-  zusammenfuehren, tauschen und einzelne Zutaten verteilen.
-- 5.000 bisherige Inventartransaktionen plus 5.000 gemischte Inventar-/
-  Craftingtransaktionen: alle Mengen und Werkzeughaltbarkeiten bleiben erhalten.
-- Baumstamm zu vier Brettern, zwei Bretter zu vier Stoecken, vier Bretter zur
-  Werkbank; verschobene Muster, falsche Muster und versteckte Zusatzfelder.
-- Beide Spitzhacken nur im 3x3-Feld, richtige Mengen, frische Haltbarkeit
-  und getrennte Werkzeugslots bei wiederholtem Herstellen.
-- Ergebnisse werden nur vollstaendig eingefuegt, Zutaten erst bei Erfolg
-  verbraucht. Fehlender Platz fuer Ergebnis oder uebrige Zutaten aendert nichts.
-  Die Kapazitaetspruefung verhindert ein spaeter nicht schliessbares Craftingmenue.
-- Uebrige Zutaten werden beim Schliessen gemeinsam zurueckgegeben; bei
-  Platzmangel bleiben Inventar und Zutaten unveraendert.
-- Von Hand kein Stein-/Erz-Drop, auch bei vollem Inventar; Werkzeug im Rucksack
-  reicht nicht. Aktive Holz-/Steinspitzhacke liefert Stein.
-- Holzspitzhacke genau 64, Steinspitzhacke genau 128 erfolgreiche Blockabbaue.
-  Letzter Drop wird gutgeschrieben, bevor das Werkzeug zerbricht.
-  Abbruch, Grundgestein und fehlender Platz kosten keine Nutzung.
-- Steinspitzhacke baut Stein/Erz in 30 statt 60 Physikschritten ab.
-  Werkzeug-/Zielwechsel setzen Fortschritt zurueck.
-- Platzierbare Werkbank und Baumstaemme: Kollision, Abbau und passende Drops.
-- Echter Programmeinstieg mit simulierten Tasten: 2x2-Crafting,
-  Werkbank per EXE oeffnen, im 3x3-Feld einzelne Zutaten verteilen,
-  Holzspitzhacke herstellen und ohne erneutes Oeffnen durch gehaltenes EXE fortsetzen.
-- Menuepfeile steuern nur die Auswahl; Sneak bleibt erhalten. Keine nachgeholte
-  Menuezeit, mehrfachen Spruenge oder Sneak-Wiederholungen bei Nachholschritten.
-- Vollstaendiger Benchmark, Erhalt der Spielwelt, Timerueberlauf und Beenden.
-- Echte ClassPad-gint-Header geprueft; vollstaendiger SuperH-Geraetebau mit
-  GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91.
-- Statisches ELF32 big endian SuperH EXEC, Maschinenflags 0x6 (SH4AL-DSP),
-  Einstiegspunkt 0x8c0590bc in einem ausfuehrbaren Ladesegment.
-- Vier Hollyhock-Metadatenfelder vorhanden, Name Casio Sandbox, Version 0.3.0.
-  Keine dynamischen, ueberlappenden oder ausserhalb der Geraeteregionen
-  liegenden Ladesegmente; unabhaengiger readelf-Bericht vorhanden.
+- Nativer GCC-Bau: strenge Warnungen als Fehler, AddressSanitizer und
+  UndefinedBehaviorSanitizer ohne Befund in allen fuenf Testprogrammen.
+- Bestehende Physik, Kollisionen, Sneak, Kantenbremse, Spruenge und Kameragrenzen;
+  20.000 gemischte Spielschritte.
+- Angrenzende Zielspalten bei 32 Positionen an Blockgrenzen, sechs seitliche
+  Zielhoehen sowie Zielen unter die Fuesse und ueber den Kopf mit/ohne Sneak.
+- Alte Welt und alle 540 Benchmark-Schritte direkt gegen den eingefrorenen Kern
+  von 0.1.0 verglichen. Benchmark ohne Survival und Kohle; unveraendert
+  30 Aufwaerm- und 150 Messbilder je Szene.
+- Pixelidentische bisherige Weltgrafik gegen den alten Renderer; geschuetzter
+  Bildpuffer, Baumtransparenz, neue Itemgrafiken und Lebensleisten aller vier
+  Mobtypen an allen Ausschnittsraendern geprueft. Darstellung aendert keine Mengen.
+- Vorschauen von Spiel, allen vier Mobs, Ruestung, Ofen, Crafting, Hotbar und
+  Start-/Pause-/Speichermenues erzeugt und visuell geprueft.
+- 5.000 Inventar- und 5.000 gemischte Inventar-/Craftingtransaktionen erhalten
+  Mengen und Haltbarkeiten. 64er-Grenzen, Einzelstapel fuer dauerhafte Items,
+  Quickmove mit Rest, Tausch, ungueltige Ziele und Zutatenrueckgabe geprueft.
+- Alle sichtbaren Slots sind ueber Pfeiltasten erreichbar, auch Ruestung und Ofen.
+  Cursor/aktive Hotbar bleiben bei X/Y/Z erhalten. SHIFT bewahrt Zutaten.
+- Rezepte fuer Bretter, Stoecke, Werkbank, beide Spitzhacken, drei Schwerter,
+  Ofen und vier Eisenruestungsteile; falsche und verschobene Muster, voller
+  Rucksack, frische Haltbarkeit und atomare Zutaten-/Ergebnistransaktionen.
+- Deterministische Kohleverteilung; Hand/Schwert gelten nicht als Spitzhacke.
+  Kohle- und Eisenerz-Drops und Abbauzeiten fuer jede Werkzeugstufe geprueft.
+  Letzte Werkzeugnutzung liefert noch Material; Abbrueche kosten nichts.
+- Naechster einzelner Mob, Reichweite, Waende, Angriffspausen, Schwertbruch,
+  Beute und EXE-Menueereignisse. Gleicher Kampfverlauf bei 10/15/30/60/120
+  simulierten Bildraten; gehaltener Angriff oeffnet kein Menue.
+- Voller Eisenruestungssatz reduziert 2 Schaden auf 0,8 Lebenspunkte;
+  zerbrechende Teile schuetzen noch. Schutzzeit, Hunger, Zusatzverbrauch,
+  Regeneration, Hunger-Schaden, alle sechs Nahrungsmittel und Respawn mit
+  erhaltenem Verschleiss geprueft.
+- Mobgrenzen, geschuetzter Startbereich, Hoehlen, Zombie-Sprung, Tierflucht,
+  Distanzentfernung sowie Beute bei vollem Inventar, Zusammenfuehren,
+  Ablauf und Ersetzung des aeltesten Stapels.
+- Ofen: 600 Schritte je Rezept, alle Brennstoffe, voller Ausgang,
+  Eingangswechsel, Restbrennzeit, Entnahme und sichere Rueckgabe beim Abbau.
+  33. Ofenplatzierung verbraucht kein Item.
+- Separater Belastungstest mit anfangs 16 Mobs und 32 aktiven Oefen ueber
+  18.000 Schritte. Regelmaessige Zustandspruefung und 30 fertige Barren je Ofen.
+- Echter Programmeinstieg mit simulierten Tasten: Sprung-/Sneak-Ereignisse
+  werden trotz Nachholschritten einmal verarbeitet. Menuezeit erzeugt keinen
+  Nachlauf. Pfeile/SHIFT im Inventar veraendern keine Bewegung. EXE/DEL sind
+  nach Pausen gesperrt, bis sie losgelassen wurden.
+- Start-/Pausenmenues, Laden, Ueberschreiben/Verwerfen mit standardmaessigem Nein,
+  Abbrechen, Werkbankinteraktion, vollstaendiger Benchmark und Beenden.
+- Alle drei Speicherplaetze mit maximalen Mob-/Beute-/Ofenpools und verschlissenen
+  Gegenstaenden vollstaendig rundgetestet; kanonische erneute Kodierung stimmt
+  mit den urspruenglichen Nutzdaten ueberein. Kurzlesen/-schreiben mit sieben
+  Byte je Aufruf wird korrekt fortgesetzt.
+- A/B-Generationen, teilweises Schreiben und Speichermangel an sieben Positionen,
+  defekte neueste Kopie und Wiederherstellung. Die gueltige alte Datei bleibt
+  bei Schreibfehlern unveraendert. Zuruecklesen nach Schreiben ist erforderlich.
+- Header-/Nutzdaten-/CRC-Fehler, abgeschnittene und zu lange Dateien, unbekannte
+  Versionen, ungueltige Items/Stapel/Weltwerte mit gueltiger CRC sowie 300
+  weitere veraenderte Dateien geprueft. Laden erfolgt im getrennten Zustand.
+- Fehler bei mkdir/open/read/write/close und Zuruecklesen; ausgeglichene
+  Dateideskriptoren. Echte POSIX-Dateizugriffe fuer alle drei Slots am Host getestet.
+- Vollstaendiger SuperH-Bau mit GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91
+  einschliesslich der echten ClassPad-Dateischnittstelle.
+- ELF32 big endian SuperH EXEC, Maschinenflags 0x6, Einstiegspunkt
+  0x8c05e77c im ausfuehrbaren Ladesegment. Hollyhock-Metadaten Name
+  Minimine, Version 0.4.0; keine dynamischen oder ungueltigen Ladesegmente.
 
 ## Auslieferung und Speicher
 
-[CasioSandbox.hh3](../releases/0.3.0/CasioSandbox.hh3), **120.580 Byte**.
+[CasioSandbox.hh3](../releases/0.4.0/CasioSandbox.hh3), **151.412 Byte**.
 
 SHA-256:
 
 ```text
-d41aee8da0783dafb2edcbda3c9e475f25409993e80f485100d507d9eac36878
+d43aad2704aaf15a0ebc5502b97c8837f391f81a0c8cedaacb1afa64a34dfd06
 ```
 
 | Bereich | Groesse |
 | --- | ---: |
-| Beide Spielzustaende | 50.240 Byte |
-| RGB565-Atlas | 16.896 Byte |
-| Transparenzmasken | 1.056 Byte |
+| Ein Spielzustand | 29.444 Byte |
+| Spiel + Benchmark/Ladezustand | 58.888 Byte |
+| RGB565-Tileatlas | 8.704 Byte |
+| Tilemasken | 544 Byte |
+| Mobgrafiken, vier Typen mit zwei Bildern | 6.144 Byte |
+| Mobmasken | 384 Byte |
 | Hintergrundkontur | 1.280 Byte |
-| Grafikpuffer gesamt | 19.232 Byte, unter 20 KiB |
-| Hauptladebereich belegt | 119.824 von 337.920 Byte |
-| Hauptladebereich frei | 218.096 Byte |
+| Grafikpuffer gesamt | **17.056 Byte**, unter 20 KiB |
+| Hauptladebereich belegt | 150.656 von 337.920 Byte |
+| Hauptladebereich frei | 187.264 Byte |
 
-Kein weiterer Vollbildpuffer und keine Speicheranforderungen des Projektcodes
-in der Spielschleife. Kleine Transaktionskopien liegen auf dem Stack.
-Die Hauptladebelegung ist kein vollstaendiger Geraetespeicherverbrauch:
-Stack, System-VRAM und OS-Heap sind darin nicht vollstaendig erfasst.
+Die Groessen der Spielzustaende und Grafikpuffer wurden auch aus den Symbolen
+im fertigen Geraete-ELF gelesen. Kein weiterer Vollbildpuffer; keine laufenden
+Speicheranforderungen im Projektcode. Speichern verwendet einen 512-Byte-Puffer
+und den vorhandenen Benchmarkzustand als Ladepruefzustand. Stack, System-VRAM
+und OS-Heap sind nicht vollstaendig in der Hauptladebelegung enthalten.
 
-[Buildbericht](../releases/0.3.0/build-info.json),
-[ELF-Bericht](../releases/0.3.0/elf-info.txt) und
-[Abschnittsgroessen](../releases/0.3.0/section-sizes.txt) sind beigelegt.
-Die Quellpruefsummen wurden mit den ausgelieferten Quellen abgeglichen.
-Ungestrippte ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
+[Buildbericht](../releases/0.4.0/build-info.json),
+[ELF-Bericht](../releases/0.4.0/elf-info.txt) und
+[Abschnittsgroessen](../releases/0.4.0/section-sizes.txt) sind beigelegt.
+Quellpruefsummen werden mit dem ausgelieferten Stand abgeglichen. Ungestrippte
+ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
 
-## Geraetetest noch offen
+## Echte Hardware noch offen
 
-Version 0.3.0 wurde noch nicht auf dem echten CP400 gestartet. Tastenmatrix,
-Darstellung und Performance muessen dort geprueft werden:
-[DEVICE_TEST.md](DEVICE_TEST.md). Die bisherigen Werte von 0.1.0 stehen
-in [BENCHMARK.md](BENCHMARK.md). Simulierte Zeitwerte liefern keine CP400-FPS.
-
+Version 0.4.0 wurde noch nicht auf dem CP400 gestartet. Dateizugriffe ueber
+Fugue, Haltbarkeit der Sicherungen bei Stromunterbrechung, Tastenmatrix,
+Darstellung und Performance muessen dort noch geprueft werden:
+[DEVICE_TEST.md](DEVICE_TEST.md). Die Messungen von 0.1.0 stehen in
+[BENCHMARK.md](BENCHMARK.md). Host-Zeitwerte sind keine CP400-FPS.
