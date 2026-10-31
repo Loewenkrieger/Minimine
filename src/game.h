@@ -10,29 +10,39 @@ enum {
     VIEW_TOP = 56, VIEW_H = 400,
     PLAYER_W = 10, PLAYER_H = 22, PLAYER_CROUCH_H = 14,
     FIXED_ONE = 256, SIM_HZ = 60,
-    INVENTORY_LIMIT = 999, HOTBAR_SLOTS = 3, BAG_SLOTS = 12,
+    INVENTORY_LIMIT = 64, HOTBAR_SLOTS = 3, BAG_SLOTS = 12,
     TOTAL_SLOTS = HOTBAR_SLOTS + BAG_SLOTS,
+    CRAFT_SLOTS = 9, CRAFT_FIRST = TOTAL_SLOTS,
+    CRAFT_RESULT = TOTAL_SLOTS + CRAFT_SLOTS,
     BENCH_PHASES = 3, BENCH_WARMUP = 30, BENCH_SAMPLES = 150,
     BENCH_PHASE_FRAMES = BENCH_WARMUP + BENCH_SAMPLES
 };
 
 #define WORLD_SEED UINT32_C(0x43503430)
-#define SANDBOX_VERSION "0.2.0"
+#define SANDBOX_VERSION "0.3.0"
 
 typedef enum {
     TILE_AIR, TILE_GRASS, TILE_DIRT, TILE_STONE, TILE_WOOD,
-    TILE_TRUNK, TILE_LEAVES, TILE_ORE, TILE_BEDROCK, TILE_COUNT
+    TILE_TRUNK, TILE_LEAVES, TILE_ORE, TILE_BEDROCK,
+    TILE_LOG, TILE_WORKBENCH, TILE_COUNT
 } Tile;
 
-typedef enum { ITEM_NONE, ITEM_DIRT, ITEM_STONE, ITEM_WOOD, ITEM_COUNT } Item;
+typedef enum {
+    ITEM_NONE, ITEM_DIRT, ITEM_STONE, ITEM_PLANKS, ITEM_LOG,
+    ITEM_STICK, ITEM_WORKBENCH, ITEM_WOOD_PICKAXE, ITEM_STONE_PICKAXE, ITEM_COUNT
+} Item;
 
-typedef struct { Item item; uint16_t count; } ItemStack;
-typedef enum { NOTICE_NONE, NOTICE_FULL, NOTICE_NO_SPACE } Notice;
+typedef struct { Item item; uint16_t count, durability; } ItemStack;
+typedef enum { NOTICE_NONE, NOTICE_FULL, NOTICE_NO_SPACE, NOTICE_TOOL_BROKEN } Notice;
+typedef enum { INTERACT_NONE, INTERACT_WORKBENCH } GameInteraction;
 
 typedef struct {
     int x, y;
     Tile tile;
     unsigned elapsed, required;
+    unsigned tool_slot;
+    Item tool;
+    uint16_t tool_durability;
     bool active;
 } Mining;
 
@@ -45,7 +55,7 @@ typedef struct {
 typedef struct {
     int move;
     int aim_x, aim_y; /* Zero/zero leaves the current aim unchanged. */
-    bool jump, toggle_sneak, mine, place;
+    bool jump, toggle_sneak, mine, place, interact;
 } GameInput;
 
 typedef struct {
@@ -53,6 +63,7 @@ typedef struct {
     uint8_t surface[WORLD_W];
     Player player;
     ItemStack slots[TOTAL_SLOTS];
+    ItemStack crafting[CRAFT_SLOTS];
     unsigned selected;
     int aim_x, aim_y;
     int camera_x, camera_y;
@@ -64,7 +75,7 @@ typedef struct {
 } Game;
 
 void game_init(Game *game, uint32_t seed);
-void game_step(Game *game, GameInput input);
+GameInteraction game_step(Game *game, GameInput input);
 Tile game_tile(const Game *game, int x, int y);
 bool game_set_tile(Game *game, int x, int y, Tile tile);
 bool game_tile_solid(Tile tile);
@@ -76,6 +87,14 @@ void game_cancel_mining(Game *game);
 unsigned game_mining_ticks(Tile tile);
 bool game_add_item(Game *game, Item item);
 bool game_inventory_transfer(Game *game, unsigned from, unsigned to);
+bool game_inventory_transfer_one(Game *game, unsigned from, unsigned to);
+const ItemStack *game_stack_at(const Game *game, unsigned slot);
+unsigned game_stack_limit(Item item);
+unsigned game_tool_durability(Item item);
+ItemStack game_craft_preview(const Game *game, unsigned width);
+bool game_craft(Game *game, unsigned width);
+bool game_close_crafting(Game *game);
+GameInteraction game_interaction(const Game *game);
 unsigned game_item_total(const Game *game, Item item);
 void game_select_hotbar(Game *game, unsigned slot);
 const char *game_item_name(Item item);

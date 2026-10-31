@@ -69,6 +69,21 @@ static void make_tile(Tile tile, int variant)
         paint(tile, variant, x, y + 7, x + 15, y + 8, C_RGB(12, 8, 4));
         paint(tile, variant, x + 1, y + 1, x + 14, y + 1, C_RGB(25, 18, 10));
         break;
+    case TILE_LOG:
+        paint(tile, variant, 0, 0, 15, 15, C_RGB(12, 8, 5));
+        paint(tile, variant, 2, 0, 3, 15, C_RGB(21, 14, 7));
+        paint(tile, variant, 8, 0, 9, 15, C_RGB(18, 11, 6));
+        paint(tile, variant, 13, 0, 14, 15, C_RGB(8, 5, 3));
+        break;
+    case TILE_WORKBENCH:
+        paint(tile, variant, 0, 0, 15, 15, C_RGB(16, 10, 5));
+        paint(tile, variant, 1, 1, 14, 5, C_RGB(24, 17, 9));
+        paint(tile, variant, 5, 1, 5, 5, C_RGB(10, 6, 3));
+        paint(tile, variant, 10, 1, 10, 5, C_RGB(10, 6, 3));
+        paint(tile, variant, 1, 3, 14, 3, C_RGB(10, 6, 3));
+        paint(tile, variant, 3, 8, 12, 12, C_RGB(23, 15, 7));
+        paint(tile, variant, 7, 8, 8, 15, C_RGB(9, 6, 4));
+        break;
     case TILE_TRUNK:
         paint(tile, variant, x + 5, y, x + 10, y + 15, C_RGB(12, 8, 5));
         paint(tile, variant, x + 6, y, x + 7, y + 15, C_RGB(21, 14, 7));
@@ -147,6 +162,22 @@ static void icon(Tile tile,int x,int y)
         if(masks[tile][0][py]&(1u<<px))
             dpixel(x+px,y+py,atlas[tile][0][py*16+px]);
 }
+static void item_icon(Item item, int x, int y)
+{
+    Tile tile = game_item_tile(item);
+    if(tile != TILE_AIR) { icon(tile, x, y); return; }
+    if(item != ITEM_STICK && !game_tool_durability(item)) return;
+    for(int i = 0; i < 11; ++i) {
+        dpixel(x + 2 + i, y + 13 - i, C_RGB(22,15,8));
+        dpixel(x + 3 + i, y + 13 - i, C_RGB(12,8,4));
+    }
+    if(game_tool_durability(item)) {
+        int color = item == ITEM_WOOD_PICKAXE ? C_RGB(23,16,8) : C_RGB(21,23,25);
+        drect(x + 3, y + 2, x + 12, y + 4, color);
+        drect(x + 2, y + 3, x + 4, y + 7, color);
+        drect(x + 11, y + 3, x + 13, y + 6, color);
+    }
+}
 static void player_draw(const Game *game)
 {
     const Player *p = &game->player;
@@ -179,7 +210,7 @@ static void header(const RenderInfo *info)
     const PerfSummary *p = &info->perf;
     drect(0, 0, SCREEN_W - 1, VIEW_TOP - 1, PANEL);
     dtext(8, 5, ACCENT, info->benchmark ? "CASIO SANDBOX / BENCHMARK" :
-        "CASIO SANDBOX / 0.2.0");
+        "CASIO SANDBOX / " SANDBOX_VERSION);
     dprint(8, 20, C_WHITE, "%u.%u FPS    Bild %u.%u ms",
         (unsigned)p->fps_x10 / 10, (unsigned)p->fps_x10 % 10,
         (unsigned)p->mean_us / 1000, (unsigned)p->mean_us / 100 % 10);
@@ -201,18 +232,27 @@ static void footer(const Game *game, const RenderInfo *info)
         dtext(8, top + 43, ACCENT, "CLEAR: Test abbrechen");
         return;
     }
-    static const char *const keys[]={"X","Y","Z"};
     for(unsigned i=0;i<HOTBAR_SLOTS;++i) {
         int x=7+(int)i*104;
         const ItemStack *stack=&game->slots[i];
-        icon(game_item_tile(stack->item),x+4,top+7);
-        dprint(x+25,top+7,C_WHITE,"%s %u",keys[i],(unsigned)stack->count);
-        if(game->selected==i) outline(x,top+3,100,25,ACCENT);
+        outline(x,top+3,100,47,game->selected==i?ACCENT:MUTED);
+        bool tool=game_tool_durability(stack->item)!=0;
+        const char *name=tool?(stack->item==ITEM_WOOD_PICKAXE?"Holz-":"Stein-"):
+            game_item_name(stack->item);
+        dtext(x+4,top+6,C_WHITE,name);
+        if(tool) dtext(x+4,top+18,C_WHITE,"spitzhacke");
+        item_icon(stack->item,x+4,top+29);
+        dprint(x+25,top+32,C_WHITE,"%u",(unsigned)stack->count);
+        if(tool) {
+            unsigned width=90u*stack->durability/game_tool_durability(stack->item);
+            drect(x+4,top+46,x+93,top+47,INK);
+            if(width) drect(x+4,top+46,x+3+(int)width,top+47,ACCENT);
+        }
     }
-    dtext(8,top+34,MUTED,"DEL: Abbau halten  EXE: Bauen");
-    dtext(8,top+49,MUTED,game->player.sneaking?
+    dtext(8,top+56,MUTED,game->player.sneaking?
         "SNEAK  Keyboard: Inventar":"Keyboard: Inventar  CLEAR: Hilfe");
 }
+
 void render_world(const Game *game, const RenderInfo *info)
 {
     prepare_atlas();
@@ -248,7 +288,8 @@ void render_world(const Game *game, const RenderInfo *info)
         if(width) drect(x+1,y+1,x+(int)width,y+3,ACCENT);
     }
     if(!info->benchmark && game->notice_ticks)
-        dtext(8,VIEW_TOP+8,C_WHITE,game->notice==NOTICE_FULL?"Inventar voll":"Kein Platz");
+        dtext(8,VIEW_TOP+8,C_WHITE,game->notice==NOTICE_FULL?"Inventar voll":
+            game->notice==NOTICE_TOOL_BROKEN?"Spitzhacke zerbrochen":"Kein Platz");
     if(!info->benchmark && info->dropped_ticks)
         dprint(8,VIEW_TOP+26,C_RED,"Simulationsverlust: %u Ticks",(unsigned)info->dropped_ticks);
     dwindow_set(previous);
@@ -279,28 +320,54 @@ static void page_title(const char *title, const char *subtitle)
     drect(16, 58, SCREEN_W - 17, 59, C_RGB(9, 13, 16));
 }
 
+static void inventory_slot(const ItemStack *stack, unsigned index,
+    const InventoryUI *ui, unsigned selected, int x, int y, int w, int h)
+{
+    int border=index==ui->cursor?C_WHITE:MUTED;
+    outline(x,y,w,h,border);
+    if(index==selected) outline(x+1,y+1,w-2,h-2,ACCENT);
+    if((int)index==ui->source) outline(x+3,y+3,w-6,h-6,ACCENT);
+    item_icon(stack->item,x+5,y+6);
+    if(stack->count) dprint(x+25,y+9,C_WHITE,"%u",(unsigned)stack->count);
+    if(game_tool_durability(stack->item)) {
+        unsigned length=(unsigned)(w-10)*stack->durability/game_tool_durability(stack->item);
+        if(length) drect(x+5,y+h-4,x+4+(int)length,y+h-3,ACCENT);
+    }
+}
+
 void render_inventory(const Game *game,const InventoryUI *ui)
 {
     prepare_atlas();
-    page_title("INVENTAR / PAUSE","Pfeile: Auswahl   EXE: Verschieben");
-    dtext(16,73,ACCENT,"Hotbar: X / Y / Z");
-    dtext(16,151,ACCENT,"Inventar");
+    unsigned width=ui->craft_width==3?3:2;
+    page_title(width==3?"WERKBANK / PAUSE":"INVENTAR / PAUSE",
+        "Pfeile: Auswahl   EXE: Quelle/Ziel");
+    dtext(16,70,ACCENT,"Hotbar");
+    dtext(16,122,ACCENT,"Inventar");
     for(unsigned i=0;i<TOTAL_SLOTS;++i) {
         int row=(int)i/3,col=(int)i%3;
-        int x=16+col*98,y=row==0?94:174+(row-1)*54;
-        const ItemStack *stack=&game->slots[i];
-        outline(x,y,92,46,i==ui->cursor?C_WHITE:MUTED);
-        if((int)i==ui->source) outline(x+2,y+2,88,42,ACCENT);
-        if(i==game->selected) dtext(x+4,y+5,ACCENT,"Aktiv");
-        icon(game_item_tile(stack->item),x+6,y+23);
-        if(stack->count) dprint(x+28,y+26,C_WHITE,"%u",(unsigned)stack->count);
+        int x=16+col*98,y=row==0?85:140+(row-1)*34;
+        inventory_slot(&game->slots[i],i,ui,game->selected,x,y,92,30);
     }
-    const ItemStack *selected=&game->slots[ui->cursor];
-    dprint(16,400,C_WHITE,"%s / %u",game_item_name(selected->item),(unsigned)selected->count);
-    dtext(16,425,MUTED,ui->source<0?"EXE: Quellplatz markieren":"EXE: Ziel bestaetigen");
-    dtext(16,447,MUTED,"Gleicher Platz: Auswahl aufheben");
-    dtext(16,469,MUTED,"X/Y/Z: Hotbarplatz aktivieren");
-    dtext(16,499,ACCENT,"Keyboard / CLEAR: Fortsetzen");
+    dprint(16,287,ACCENT,"Crafting %ux%u",width,width);
+    dtext(208,287,ACCENT,"Ergebnis");
+    for(unsigned i=0;i<width*width;++i) {
+        int x=16+(int)(i%width)*49,y=309+(int)(i/width)*36;
+        inventory_slot(&game->crafting[i],CRAFT_FIRST+i,ui,CRAFT_RESULT+1,x,y,45,32);
+    }
+    int output_y=width==3?345:327;
+    dtext(177,output_y+12,ACCENT,"=");
+    ItemStack result=game_craft_preview(game,width);
+    inventory_slot(&result,CRAFT_RESULT,ui,CRAFT_RESULT+1,218,output_y,70,36);
+    const ItemStack *selected=ui->cursor==CRAFT_RESULT?&result:game_stack_at(game,ui->cursor);
+    if(selected) {
+        dprint(16,430,C_WHITE,"%s / %u",game_item_name(selected->item),(unsigned)selected->count);
+        if(game_tool_durability(selected->item))
+            dprint(16,449,MUTED,"Haltbarkeit: %u/%u",(unsigned)selected->durability,
+                game_tool_durability(selected->item));
+    }
+    if(game->notice==NOTICE_FULL) dtext(16,449,C_WHITE,"Inventar voll: Platz schaffen");
+    dtext(16,470,MUTED,ui->source<0?"EXE: Quelle / Ergebnis herstellen":"EXE: Stapel   5: ein Item");
+    dtext(16,499,ACCENT,"5: ein Item  Keyboard/CLEAR: Zu");
 }
 
 void render_help(void)
@@ -314,13 +381,13 @@ void render_help(void)
         "X / Y / Z        Hotbar 1 / 2 / 3",
         "Keyboard         Inventar / Pause",
         "DEL halten       Block abbauen",
-        "EXE              Block platzieren",
+        "EXE              Bauen / Werkbank",
         "0                Benchmark",
         "CLEAR            Pause / Hilfe"
     };
     for(unsigned i=0;i<sizeof(lines)/sizeof(lines[0]);++i)
         dtext(16,80+(int)i*24,MUTED,lines[i]);
-    dtext(16,335,C_WHITE,"Sneak: ducken + Kantenbremse");
+    dtext(16,335,C_WHITE,"Crafting: EXE Stapel, 5 einzelnes Item");
     dtext(16,359,MUTED,"L = Logik, Z = Zeichnen, LCD = Transfer");
     dtext(16,383,MUTED,"Physik 60 Hz. Benchmark: 3 Szenen.");
     dtext(16,407,MUTED,"Testwelt getrennt vom Spiel.");

@@ -1,4 +1,4 @@
-# Gerätetest für Version 0.2.0
+# Gerätetest für Version 0.3.0
 
 Die Prüfungen am PC und der Gerätebau sind dokumentiert in
 [VERIFICATION.md](VERIFICATION.md). Dieses Protokoll erfasst die echte Hardware.
@@ -10,7 +10,7 @@ Die Prüfungen am PC und der Gerätebau sind dokumentiert in
 | Modell | Casio ClassPad II fx-CP400 |
 | Hollyhock-Version | |
 | OS-Version | |
-| Spielversion | 0.2.0; SHA-256 siehe VERIFICATION.md |
+| Spielversion | 0.3.0; SHA-256 siehe VERIFICATION.md |
 | Datum | |
 | Geräteeinstellungen / Takt | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
@@ -37,7 +37,7 @@ Die Prüfungen am PC und der Gerätebau sind dokumentiert in
 - [ ] Drei Hotbarplätze plus zwölf Inventarplätze in drei Spalten sichtbar.
 - [ ] Pfeile bewegen nur den Cursor; Hoch springt nicht, Runter schaltet Sneak nicht.
 - [ ] EXE: Quelle, dann Ziel. Gleicher Platz hebt die Markierung auf.
-- [ ] Leeres Ziel übernimmt, gleiche Materialien werden bis 999 zusammengeführt
+- [ ] Leeres Ziel übernimmt, gleiche Materialien werden bis 64 zusammengeführt
       (Rest bleibt in der Quelle), unterschiedliche Materialien werden getauscht.
 - [ ] Mit markierter Quelle schließen: kein Gegenstandsverlust.
 - [ ] X/Y/Z wählen im Spiel direkt Platz 1/2/3; im Inventar zusätzlich den Cursor.
@@ -46,14 +46,37 @@ Die Prüfungen am PC und der Gerätebau sind dokumentiert in
 - [ ] Nach langer Pause kein Physiksprung; gehaltenes EXE/DEL baut nichts
       versehentlich. Erst nach Loslassen werden diese Aktionen wieder freigegeben.
 
+## Crafting und Werkzeuge
+
+- [ ] Hotbar zeigt Namen und Anzahl statt X/Y/Z; alle Namen passen in die Slots.
+- [ ] Start: je 32 Erde, Stein und Holzbretter. Materialien maximal 64, Werkzeuge einzeln.
+- [ ] Ein Baumstamm ergibt vier Bretter, zwei Bretter uebereinander vier Stoecke.
+- [ ] Vier Bretter im 2x2-Quadrat ergeben eine Werkbank.
+- [ ] EXE markiert eine Quelle; 5 verteilt einzelne Zutaten auf die Felder.
+- [ ] Vorschau verbraucht nichts; EXE auf dem Ergebnis stellt einmal her.
+- [ ] Falsche Muster und zusaetzliche Zutaten ergeben kein Rezept.
+- [ ] Werkbank platzieren, EXE loslassen, erneut EXE: 3x3-Menue oeffnet.
+- [ ] Drei Bretter/Steine oben und zwei Stoecke mittig ergeben die passende Spitzhacke.
+- [ ] Keyboard/CLEAR gibt Zutaten zurueck; bei fehlendem Platz kein Verlust.
+- [ ] Crafting mit vollem Inventar verliert nichts und verbaut keine Zutatenrueckgabe.
+- [ ] Die Werkbank kann wieder abgebaut und eingesammelt werden.
+- [ ] Ohne aktive Spitzhacke verschwindet Stein/Erz ohne Item, auch bei vollem Inventar.
+- [ ] Spitzhacke in der Hotbar auswaehlen: Stein-Drop entsteht. Werkzeug im Rucksack reicht nicht.
+- [ ] Holzspitzhacke: 64 Nutzungen; Steinspitzhacke: 128, Steinabbau in 0,5 s.
+- [ ] Abbruch, Grundgestein und blockierter Abbau kosten keine Haltbarkeit.
+- [ ] Letzter Werkzeuggebrauch liefert noch den Drop, dann erscheint der Zerbrech-Hinweis.
+- [ ] Beschaedigte Werkzeuge behalten ihre Haltbarkeit beim Verschieben/Tauschen.
+- [ ] Menuepfeile bewegen die Figur nicht; gehaltenes EXE oeffnet die Werkbank nicht mehrfach.
+
 ## Abbau und Darstellung
 
-- [ ] DEL halten: Erde/Gras 0,35 s, Holz/Stamm 0,6 s, Stein/Erz 1,0 s,
+- [ ] DEL halten: Erde/Gras 0,35 s, Bretter/Stamm/Werkbank 0,6 s, Stein/Erz 1,0 s
+      (mit Steinspitzhacke 0,5 s),
       Blätter 0,15 s. Grundgestein bleibt bestehen.
 - [ ] Fortschrittsleiste über dem Ziel, auch am Rand innerhalb des Spielausschnitts.
 - [ ] Loslassen, anderes Ziel und Öffnen von Inventar/Hilfe setzen Fortschritt zurück.
 - [ ] Abgebautes Material erscheint im passenden Stapel. Blätter liefern kein Material.
-- [ ] Volles Inventar: Block bleibt stehen, Hinweis „Inventar voll“.
+- [ ] Volles Inventar bei vorgesehenem Drop: Block bleibt stehen, Hinweis „Inventar voll“.
 - [ ] EXE platziert sofort; keine Platzierung im Körper, auch beim Ducken.
 - [ ] Keine Grafikreste nach Menüwechseln; Bäume transparent, Bildschirmränder sauber.
 - [ ] Unter Belastung auf Verzögerungen und „Simulationsverlust“ achten.

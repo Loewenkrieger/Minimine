@@ -49,9 +49,9 @@ Tags `main` verändert den Projektbuild deshalb nicht automatisch.
 
 ## Ergebnis
 
-Zwei frische Builds, davon einer über den Windows-Helfer, erzeugten die identische
-37.732 Byte große `.hh3`. Hauptladebereich: 92.400 von 337.920 Byte belegt.
-Prüfsumme und weitere Angaben stehen in `docs/VERIFICATION.md` und im erzeugten
-`build-cp/build-info.json`.
+Die dokumentierte Werkzeugkette baut auch Version 0.3.0. Aktuelle Dateigroesse,
+Pruefsumme und Speicherbelegung stehen in [VERIFICATION.md](VERIFICATION.md)
+und im erzeugten `build-cp/build-info.json`.
 
-Ein Start auf dem echten CP400 und echte Performance-Werte stehen noch aus.
+Version 0.1.0 wurde auf dem CP400 gestartet und gemessen. Fuer 0.3.0 stehen
+Start, neue Funktionen und Performance auf dem echten Geraet noch aus.

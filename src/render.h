@@ -12,7 +12,7 @@ typedef struct {
 } RenderInfo;
 
 /* Navigation belongs to the controller; rendering never changes stacks. */
-typedef struct { unsigned cursor; int source; } InventoryUI;
+typedef struct { unsigned cursor; int source; unsigned craft_width; } InventoryUI;
 
 void render_invalidate(void);
 void render_world(const Game *game, const RenderInfo *info);

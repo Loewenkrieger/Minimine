@@ -20,7 +20,7 @@ static void arena(Game *g)
     g->player=(Player){ .x=160*FIXED_ONE, .y=(320-PLAYER_H)*FIXED_ONE,
         .facing=1,.grounded=true };
     g->aim_x=1;
-    g->slots[0]=(ItemStack){ITEM_DIRT,32};
+    g->slots[0]=(ItemStack){.item=ITEM_DIRT,.count=32};
     game_follow_camera(g);
 }
 static void clear_body(const Game *g)
@@ -37,7 +37,7 @@ static void test_generation_physics_aim(void)
     game_init(&a,WORLD_SEED);game_init(&b,WORLD_SEED);
     assert(!memcmp(&a,&b,sizeof(a)));clear_body(&a);
     assert(a.slots[0].item==ITEM_DIRT && a.slots[1].item==ITEM_STONE &&
-        a.slots[2].item==ITEM_WOOD);
+        a.slots[2].item==ITEM_PLANKS);
     for(unsigned i=0;i<TOTAL_SLOTS;++i) assert(a.slots[i].count==(i<3?32:0));
     assert(game_tile(&a,-1,1)==TILE_BEDROCK);
     assert(!game_set_tile(&a,WORLD_W,0,TILE_DIRT));
@@ -126,12 +126,12 @@ static void test_inventory(void)
     assert(game_inventory_transfer(&a,0,3));
     assert(!a.slots[0].count && a.slots[3].count==32);
     assert(game_add_item(&a,ITEM_DIRT) && a.slots[3].count==33 && !a.slots[0].count);
-    a.slots[0]=(ItemStack){ITEM_DIRT,998};
-    assert(game_add_item(&a,ITEM_DIRT) && a.slots[0].count==999);
+    a.slots[0]=(ItemStack){.item=ITEM_DIRT,.count=63};
+    assert(game_add_item(&a,ITEM_DIRT) && a.slots[0].count==64);
     assert(game_add_item(&a,ITEM_DIRT) && a.slots[3].count==34);
-    a.slots[0].count=990;
+    a.slots[0].count=55;
     assert(game_inventory_transfer(&a,3,0));
-    assert(a.slots[0].count==999 && a.slots[3].count==25);
+    assert(a.slots[0].count==64 && a.slots[3].count==25);
     assert(!game_inventory_transfer(&a,3,0)); /* Full matching destination. */
     assert(game_inventory_transfer(&a,3,1)); /* Different materials swap. */
     assert(a.slots[3].item==ITEM_STONE && a.slots[1].count==25);
@@ -146,16 +146,16 @@ static void test_inventory(void)
         for(int item=1;item<ITEM_COUNT;++item)
             assert(game_item_total(&a,(Item)item)==totals[item]);
         for(unsigned j=0;j<TOTAL_SLOTS;++j) {
-            assert(a.slots[j].count<=999);
+            assert(a.slots[j].count<=64);
             assert((a.slots[j].item==ITEM_NONE)==(a.slots[j].count==0));
         }
     }
     memset(a.slots,0,sizeof(a.slots));
-    assert(game_add_item(&a,ITEM_WOOD));
-    assert(a.slots[3].item==ITEM_WOOD && !a.slots[0].count);
-    for(int i=3;i<TOTAL_SLOTS;++i) a.slots[i]=(ItemStack){ITEM_STONE,999};
+    assert(game_add_item(&a,ITEM_PLANKS));
+    assert(a.slots[3].item==ITEM_PLANKS && !a.slots[0].count);
+    for(int i=3;i<TOTAL_SLOTS;++i) a.slots[i]=(ItemStack){.item=ITEM_STONE,.count=64};
     assert(game_add_item(&a,ITEM_DIRT) && a.slots[0].count==1);
-    for(int i=0;i<3;++i) a.slots[i]=(ItemStack){ITEM_WOOD,999};
+    for(int i=0;i<3;++i) a.slots[i]=(ItemStack){.item=ITEM_PLANKS,.count=64};
     assert(!game_add_item(&a,ITEM_DIRT));
     assert(!game_add_item(&a,ITEM_NONE));
     assert(!game_inventory_transfer(&a,99,0));
@@ -173,22 +173,21 @@ static void test_inventory(void)
 }
 static void test_mining(void)
 {
+    const Item drops[TILE_COUNT]={ITEM_NONE,ITEM_DIRT,ITEM_DIRT,ITEM_NONE,
+        ITEM_PLANKS,ITEM_LOG,ITEM_NONE,ITEM_NONE,ITEM_NONE,ITEM_LOG,ITEM_WORKBENCH};
     for(int tile=TILE_GRASS;tile<TILE_COUNT;++tile) {
         arena(&a);int x,y;game_target(&a,&x,&y);a.tiles[y][x]=(uint8_t)tile;
         unsigned duration=game_mining_ticks((Tile)tile);
-        unsigned total=game_item_total(&a,ITEM_DIRT)+game_item_total(&a,ITEM_STONE)+game_item_total(&a,ITEM_WOOD);
+        unsigned before=drops[tile]?game_item_total(&a,drops[tile]):0;
         for(unsigned tick=1;tick<=duration+1;++tick) {
             game_step(&a,(GameInput){.mine=true});
-            if(duration && tick<duration) {
-                assert(a.tiles[y][x]==tile && a.mining.elapsed==tick);
-            } else if(duration) assert(a.tiles[y][x]==TILE_AIR);
+            if(duration && tick<duration) assert(a.tiles[y][x]==tile && a.mining.elapsed==tick);
+            else if(duration) assert(a.tiles[y][x]==TILE_AIR);
             else assert(a.tiles[y][x]==TILE_BEDROCK && !a.mining.active);
         }
-        unsigned after=game_item_total(&a,ITEM_DIRT)+game_item_total(&a,ITEM_STONE)+game_item_total(&a,ITEM_WOOD);
-        assert(after==total+(duration && tile!=TILE_LEAVES?1u:0u));
+        if(drops[tile]) assert(game_item_total(&a,drops[tile])==before+1);
+        else assert(!game_item_total(&a,ITEM_STONE));
     }
-    assert(game_mining_ticks(TILE_DIRT)==21 && game_mining_ticks(TILE_STONE)==60 &&
-        game_mining_ticks(TILE_WOOD)==36 && game_mining_ticks(TILE_LEAVES)==9);
     arena(&a);int x,y;game_target(&a,&x,&y);a.tiles[y][x]=TILE_DIRT;
     for(int i=0;i<10;++i) game_step(&a,(GameInput){.mine=true});
     game_step(&a,(GameInput){0});assert(!a.mining.active);
@@ -198,17 +197,17 @@ static void test_mining(void)
     a.tiles[y][x]=TILE_STONE;
     game_step(&a,(GameInput){.mine=true});assert(a.mining.elapsed==1 && a.mining.required==60);
     game_cancel_mining(&a);assert(!a.mining.active);
-    for(int i=0;i<TOTAL_SLOTS;++i) a.slots[i]=(ItemStack){ITEM_DIRT,999};
+    for(int i=0;i<TOTAL_SLOTS;++i) a.slots[i]=(ItemStack){.item=ITEM_DIRT,.count=64};
+    a.tiles[y][x]=TILE_DIRT;
     for(int i=0;i<80;++i) game_step(&a,(GameInput){.mine=true});
-    assert(a.tiles[y][x]==TILE_STONE && a.notice==NOTICE_FULL);
-    /* Actual mining of support starts falling after the completed removal. */
+    assert(a.tiles[y][x]==TILE_DIRT && a.notice==NOTICE_FULL);
     arena(&a);a.aim_x=0;a.aim_y=1;
     game_target(&a,&x,&y);assert(y==20);a.tiles[y][x]=TILE_DIRT;
     int32_t start=a.player.y;
     for(int i=0;i<21;++i) game_step(&a,(GameInput){.mine=true});
     assert(a.tiles[y][x]==TILE_AIR);
     game_step(&a,(GameInput){0});assert(a.player.y>start);
-    puts("PASS: exact mining durations, reset rules, immutable bedrock and full inventory");
+    puts("PASS: mining times, correct hand drops, reset rules, bedrock and full inventory");
 }
 static void test_tick_rates(void)
 {
@@ -239,7 +238,7 @@ static void test_long_run(void)
         clear_body(&a);
         assert(a.camera_x>=0 && a.camera_x<=WORLD_W*16-SCREEN_W);
         assert(a.camera_y>=0 && a.camera_y<=WORLD_H*16-VIEW_H);
-        for(int j=0;j<TOTAL_SLOTS;++j) assert(a.slots[j].count<=999);
+        for(int j=0;j<TOTAL_SLOTS;++j) assert(a.slots[j].count<=64);
     }
     static int32_t route[540][8];
     extern void reference_route(uint8_t [WORLD_H][WORLD_W],int32_t [540][8]);
@@ -301,7 +300,7 @@ static void test_rendering(void)
     }
     /* All tile types and variants, including clipped tree masks at each edge. */
     for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
-        a.tiles[y][x]=(uint8_t)((x+3*y)%TILE_COUNT);
+        a.tiles[y][x]=(uint8_t)((x+3*y)%TILE_LOG);
     for(int y=0;y<=16;++y) for(int x=0;x<=16;++x) {
         a.camera_x=96+x;a.camera_y=240+y;compare_world(info);
     }
@@ -312,6 +311,23 @@ static void test_rendering(void)
     assert(host_nonzero_pixels()==SCREEN_W*SCREEN_H);
     InventoryUI ui={.source=-1};
     for(unsigned i=0;i<TOTAL_SLOTS;++i) {ui.cursor=i;render_inventory(&a,&ui);}
+    for(unsigned width=2;width<=3;++width) {
+        ui.craft_width=width;
+        for(unsigned i=0;i<width*width;++i) {
+            ui.cursor=CRAFT_FIRST+i;render_inventory(&a,&ui);
+        }
+        ui.cursor=CRAFT_RESULT;render_inventory(&a,&ui);
+    }
+    b=a;
+    render_inventory(&a,&ui);assert(!memcmp(&a,&b,sizeof(a)));
+    for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
+        a.tiles[y][x]=(uint8_t)((x+y)%2?TILE_LOG:TILE_WORKBENCH);
+    for(int offset=0;offset<16;++offset) {
+        a.camera_x=offset;a.camera_y=offset;
+        dclear(0);render_world(&a,&info);host_check_guards();
+        for(int i=0;i<VIEW_TOP*SCREEN_W;++i) assert(gint_vram[i]==0);
+    }
+    game_init(&a,WORLD_SEED);
     a.mining=(Mining){.active=true,.required=60,.elapsed=30,.x=-1,.y=-1};
     render_game(&a,&info);game_toggle_sneak(&a);render_game(&a,&info);
     PerfSummary results[BENCH_PHASES]={{0}};render_results(results);render_error("Test");

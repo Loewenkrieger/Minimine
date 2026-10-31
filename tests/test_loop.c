@@ -12,7 +12,7 @@ static bool profiler_quit,held[64];
 static key_event_t queue[32];
 static unsigned next_event,event_count;
 static Game saved_play,paused;
-typedef enum { START,INITIAL,INVENTORY,RESUMED,HELP_RESUME,BEFORE_BENCH,BENCH,
+typedef enum { START,INITIAL,INVENTORY,RESUMED,WORKBENCH_OPEN,AFTER_WORKBENCH,HELP_RESUME,BEFORE_BENCH,BENCH,
     AFTER_BENCH,EXIT_HELP } TestStage;
 static TestStage stage=START;
 
@@ -24,7 +24,7 @@ static void key(unsigned type,int code)
 static void presented(void)
 {
     ++presentations;counter-=20000;
-    assert(presentations<600);
+    assert(presentations<700);
     switch(stage) {
     case INITIAL:
         ++stage_frames;
@@ -60,8 +60,22 @@ static void presented(void)
         }
         if(stage_frames==4) {
             assert(play_game.selected==1);
-            key(KEYEV_DOWN,KEY_CLEAR);stage=HELP_RESUME;
+            Player *p=&play_game.player;
+            p->x=195*FIXED_ONE;p->y=(480-PLAYER_CROUCH_H)*FIXED_ONE;
+            p->vx=p->vy=0;p->grounded=true;
+            play_game.aim_x=1;play_game.aim_y=0;
+            game_follow_camera(&play_game);
+            int x,y;game_target(&play_game,&x,&y);
+            game_set_tile(&play_game,x,y,TILE_WORKBENCH);
+            play_game.slots[4]=(ItemStack){.item=ITEM_STICK,.count=2};
+            key(KEYEV_DOWN,KEY_EXE);stage=WORKBENCH_OPEN;stage_frames=0;
         }
+        break;
+    case AFTER_WORKBENCH:
+        assert(play_game.player.sneaking && play_game.slots[1].count==32);
+        assert(game_item_total(&play_game,ITEM_WOOD_PICKAXE)==1);
+        assert(game_item_total(&play_game,ITEM_PLANKS)==29);
+        if(++stage_frames==3) {key(KEYEV_DOWN,KEY_CLEAR);stage=HELP_RESUME;}
         break;
     case BEFORE_BENCH:
         if(++stage_frames==3) {
@@ -118,6 +132,26 @@ key_event_t getkey_opt(int options,volatile int *timeout)
             stage=RESUMED;stage_frames=0;
             held[KEY_EXE]=held[KEY_DEL]=true;
         }
+    } else if(stage==WORKBENCH_OPEN) {
+        if(!stage_frames) paused=play_game;
+        assert(play_game.ticks==paused.ticks && play_game.player.sneaking);
+        assert(!memcmp(&play_game.player,&paused.player,sizeof(Player)));
+        static const int keys[]={
+            KEY_Z,KEY_EXE,
+            KEY_DOWN,KEY_DOWN,KEY_DOWN,KEY_DOWN,KEY_DOWN,
+            KEY_5,KEY_LEFT,KEY_5,KEY_LEFT,KEY_5,
+            KEY_Z,KEY_EXE,KEY_Y,KEY_DOWN,KEY_EXE,
+            KEY_DOWN,KEY_DOWN,KEY_DOWN,KEY_DOWN,KEY_DOWN,
+            KEY_5,KEY_DOWN,KEY_5,KEY_RIGHT,KEY_RIGHT,KEY_EXE,KEY_CLEAR
+        };
+        assert(stage_frames<sizeof(keys)/sizeof(keys[0]));
+        code=keys[stage_frames++];
+        if(code==KEY_CLEAR) {
+            assert(game_item_total(&play_game,ITEM_WOOD_PICKAXE)==1);
+            assert(play_game.slots[3].item==ITEM_DIRT);
+            stage=AFTER_WORKBENCH;stage_frames=0;
+            held[KEY_EXE]=true;
+        }
     } else if(stage==HELP_RESUME) {
         assert(play_game.player.sneaking);
         stage=BEFORE_BENCH;stage_frames=0;
@@ -147,14 +181,37 @@ static void test_controller(void)
     inventory_key(&g,&ui,KEY_LEFT);assert(ui.cursor==0);
     inventory_key(&g,&ui,KEY_Z);assert(ui.cursor==2 && g.selected==2);
     for(int i=0;i<10;++i) inventory_key(&g,&ui,KEY_DOWN);
-    assert(ui.cursor==14);
-    inventory_key(&g,&ui,KEY_RIGHT);assert(ui.cursor==14);
+    assert(ui.cursor==CRAFT_FIRST+3);
+    inventory_key(&g,&ui,KEY_RIGHT);assert(ui.cursor==CRAFT_RESULT);
+    inventory_key(&g,&ui,KEY_LEFT);assert(ui.cursor==CRAFT_FIRST+3);
     inventory_key(&g,&ui,KEY_X);
     inventory_key(&g,&ui,KEY_EXE);assert(ui.source==0);
     inventory_key(&g,&ui,KEY_EXE);assert(ui.source==-1 && g.slots[0].count==32);
     inventory_key(&g,&ui,KEY_EXE);
     assert(inventory_key(&g,&ui,KEY_CLEAR) && ui.source==-1);
     assert(g.ticks==ticks && !memcmp(&player,&g.player,sizeof(player)));
+    /* Build a workbench through controller actions in the 2x2 grid. */
+    inventory_key(&g,&ui,KEY_Z);inventory_key(&g,&ui,KEY_EXE);
+    for(unsigned i=0;i<4;++i) {
+        ui.cursor=CRAFT_FIRST+i;inventory_key(&g,&ui,KEY_5);
+    }
+    assert(g.slots[2].count==28 && game_craft_preview(&g,2).item==ITEM_WORKBENCH);
+    ui.cursor=CRAFT_RESULT;inventory_key(&g,&ui,KEY_EXE);
+    assert(game_item_total(&g,ITEM_WORKBENCH)==1 && ui.source==-1);
+    assert(inventory_key(&g,&ui,KEY_KBD));
+    /* Every arrow stays in a visible slot for both grid sizes. */
+    for(unsigned width=2;width<=3;++width) {
+        ui.craft_width=width;
+        for(unsigned at=0;at<=CRAFT_RESULT;++at) {
+            if(at>=CRAFT_FIRST+width*width && at!=CRAFT_RESULT) continue;
+            const int directions[]={KEY_UP,KEY_DOWN,KEY_LEFT,KEY_RIGHT};
+            for(unsigned d=0;d<4;++d) {
+                ui.cursor=at;inventory_key(&g,&ui,directions[d]);
+                assert(ui.cursor<TOTAL_SLOTS || ui.cursor==CRAFT_RESULT ||
+                    (ui.cursor>=CRAFT_FIRST && ui.cursor<CRAFT_FIRST+width*width));
+            }
+        }
+    }
     /* Both jump keys and held manual direction override movement input. */
     key(KEYEV_DOWN,KEY_SHIFT);key(KEYEV_HOLD,KEY_DOWN);
     Presses p=read_input();assert(p.jump && !p.sneak_toggles);
@@ -173,7 +230,8 @@ int main(void)
     assert(sandbox_main()==0 && profiler_quit);
     assert(stage==EXIT_HELP && bench_frames==540);
     puts("PASS: real loop, edge-only jump/Sneak through catch-up, paused inventory navigation");
-    puts("PASS: menu action suppression, material conservation, 540 benchmark frames, timer wrap and exit");
+    puts("PASS: 2x2 crafting, real EXE workbench interaction, 3x3 pickaxe crafting and no held-key reopen");
+    puts("PASS: material conservation, 540 benchmark frames, timer wrap and exit");
     return 0;
 }
 

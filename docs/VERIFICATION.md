@@ -1,95 +1,86 @@
-# Prüfstand — Version 0.2.0, 31. Oktober 2026
+# Pruefstand - Version 0.3.0, 31. Oktober 2026
 
 ## Bestanden
 
-- Nativer Bau mit GCC, strengen Warnungen und Fehlerbehandlung
-  (`-Wall -Wextra -Werror -Wshadow -Wconversion -pedantic`).
-- AddressSanitizer und UndefinedBehaviorSanitizer ohne Befunde.
-- Deterministische Welt, Startpunkt, Block-IDs, geschütztes Grundgestein,
-  Boden-, Wand-, Decken- und Weltgrenzenkollisionen.
-- Acht manuelle Zielrichtungen, Vorrang gegenüber Bewegung und automatischer
-  Seitenwechsel auch bei blockierter Bewegung.
-- Sprung; Sneak mit 14/22 Pixel Höhe, fester Fußposition und Kamera, halbem
-  Maximaltempo, niedrigem Gang, verhindertem Aufrichten, beiden Kantenrichtungen,
-  Springen über die Kante und Schwerkraft bei fehlender Auflage.
-- Stapel verschieben, zusammenführen mit Rest, tauschen, leere Plätze und
-  volle Stapel; 5.000 Transaktionen mit Erhaltung aller Materialmengen.
-- Reihenfolge beim Aufsammeln, direkte Hotbarwahl, leere Hotbar,
-  Platzierungsverbrauch und Schutz vor Platzierung im Körper.
-- Exakte Abbauzeiten aller Materialien, unabbaubares Grundgestein,
-  Rücksetzung bei Loslassen/Zielwechsel/Materialwechsel, volles Inventar
-  und Abbau eines tragenden Bodenblocks.
-- Einsekündiger Steinabbau bei simulierten 10, 15, 30, 60 und 120 Bildern/s:
-  stets genau 60 Physikschritte.
-- 20.000 gemischte Spielschritte mit laufenden Kollisions-, Kamera- und
-  Stapelprüfungen.
-- Welt und alle 540 Benchmark-Schritte direkt gegen den eingefrorenen
-  Spielkern von 0.1.0 verglichen: Blockwelt, Spielerposition/-geschwindigkeit,
-  Bodenkontakt und Kamera stimmen überein.
-- Pixelgenauer Vergleich der Weltzeichnung mit dem alten Renderer:
-  alle Blockarten/Varianten, Transparenzen, Ausschnittsränder und Kamerafahrten.
-- Schutzbereiche vor/hinter dem Test-Bildpuffer und Prüfung, dass die
-  Weltzeichnung außerhalb des Spielausschnitts nichts verändert.
-- HUD-Invalidierung nach Menüseiten sowie Vorschauen von Spiel, Inventar,
-  Sneak/Abbau, Hilfe, drei Benchmark-Szenen und Ergebnis visuell geprüft.
-  Der Testadapter verwendet eine andere Schrift als das Gerät.
-- Echter Programmeinstieg mit simulierten Tasten und Timer: Sprungereignisse
-  für Hoch/SHIFT, Sneak ohne Wiederholung bei gehaltenen Tasten und
-  nachgeholten Physikschritten, mehrere Tastendrücke, pausierte Inventarnavigation,
-  EXE-Auswahl und Abbruch, Rücksetzung eines laufenden Abbaus beim Menüöffnen.
-- Sneak-Erhalt durch Inventar/Hilfe, keine nachgeholte Menüzeit und keine
-  versehentlichen DEL-/EXE-Aktionen beim Fortsetzen.
-- Vollständiger Benchmark mit genau 150 Messbildern je Szene, Erhalt der
-  Spielwelt, Timerüberlauf und Rückkehr zum Launcher.
-- Syntaxprüfung gegen die echten ClassPad-gint-Header am Quellstand
-  `120cffd9b8093c96047f10858c75a2adae62347b`.
-- Vollständiger Gerätebau über den Windows-Helfer mit SuperH GCC 14.1.0,
-  fxSDK 2.11.0, gint 2.11.0-91 und dem festgehaltenen Container-Digest.
-- ELF32 big endian, ausführbares statisches SuperH-Programm; Einstiegspunkt
-  `0x8c058428`, Maschinenflags `0x6` (SH4AL-DSP).
-- Alle vier Hollyhock-Metadatenfelder vorhanden; Name „Casio Sandbox“,
-  Version „0.2.0“. Keine dynamischen Ladesegmente, keine überlappenden oder
-  außerhalb der ClassPad-Region liegenden Ladebereiche.
-- Unabhängige ELF-Prüfung mit sh-elf-readelf; fertige Quellprüfsummen stimmen
-  mit dem Buildbericht überein. Sicherung von 0.1.0 unverändert.
+- Nativer GCC-Bau mit strengen Warnungen als Fehler, AddressSanitizer und
+  UndefinedBehaviorSanitizer ohne Befunde.
+- Bestehende Physik, Sneak, Kollisionen, acht Zielrichtungen und Kameragrenzen.
+  20.000 gemischte Spielschritte ohne ungueltige Koerperposition oder Stapel.
+- Welt und alle 540 Benchmark-Schritte stimmen mit dem eingefrorenen Kern
+  von 0.1.0 ueberein; weiterhin 30 Aufwaerm- plus 150 Messbilder je Szene.
+- Pixelgenauer Vergleich der bisherigen Weltgrafik mit dem alten Renderer.
+  Neue Stamm-/Werkbankgrafiken an Ausschnittsraendern und geschuetzter
+  Bildpuffer; Vorschauen von Hotbar, 2x2-/3x3-Crafting und Werkzeugen visuell geprueft.
+- Materialien maximal 64, Werkzeuge einzeln; Stapel verschieben,
+  zusammenfuehren, tauschen und einzelne Zutaten verteilen.
+- 5.000 bisherige Inventartransaktionen plus 5.000 gemischte Inventar-/
+  Craftingtransaktionen: alle Mengen und Werkzeughaltbarkeiten bleiben erhalten.
+- Baumstamm zu vier Brettern, zwei Bretter zu vier Stoecken, vier Bretter zur
+  Werkbank; verschobene Muster, falsche Muster und versteckte Zusatzfelder.
+- Beide Spitzhacken nur im 3x3-Feld, richtige Mengen, frische Haltbarkeit
+  und getrennte Werkzeugslots bei wiederholtem Herstellen.
+- Ergebnisse werden nur vollstaendig eingefuegt, Zutaten erst bei Erfolg
+  verbraucht. Fehlender Platz fuer Ergebnis oder uebrige Zutaten aendert nichts.
+  Die Kapazitaetspruefung verhindert ein spaeter nicht schliessbares Craftingmenue.
+- Uebrige Zutaten werden beim Schliessen gemeinsam zurueckgegeben; bei
+  Platzmangel bleiben Inventar und Zutaten unveraendert.
+- Von Hand kein Stein-/Erz-Drop, auch bei vollem Inventar; Werkzeug im Rucksack
+  reicht nicht. Aktive Holz-/Steinspitzhacke liefert Stein.
+- Holzspitzhacke genau 64, Steinspitzhacke genau 128 erfolgreiche Blockabbaue.
+  Letzter Drop wird gutgeschrieben, bevor das Werkzeug zerbricht.
+  Abbruch, Grundgestein und fehlender Platz kosten keine Nutzung.
+- Steinspitzhacke baut Stein/Erz in 30 statt 60 Physikschritten ab.
+  Werkzeug-/Zielwechsel setzen Fortschritt zurueck.
+- Platzierbare Werkbank und Baumstaemme: Kollision, Abbau und passende Drops.
+- Echter Programmeinstieg mit simulierten Tasten: 2x2-Crafting,
+  Werkbank per EXE oeffnen, im 3x3-Feld einzelne Zutaten verteilen,
+  Holzspitzhacke herstellen und ohne erneutes Oeffnen durch gehaltenes EXE fortsetzen.
+- Menuepfeile steuern nur die Auswahl; Sneak bleibt erhalten. Keine nachgeholte
+  Menuezeit, mehrfachen Spruenge oder Sneak-Wiederholungen bei Nachholschritten.
+- Vollstaendiger Benchmark, Erhalt der Spielwelt, Timerueberlauf und Beenden.
+- Echte ClassPad-gint-Header geprueft; vollstaendiger SuperH-Geraetebau mit
+  GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91.
+- Statisches ELF32 big endian SuperH EXEC, Maschinenflags 0x6 (SH4AL-DSP),
+  Einstiegspunkt 0x8c0590bc in einem ausfuehrbaren Ladesegment.
+- Vier Hollyhock-Metadatenfelder vorhanden, Name Casio Sandbox, Version 0.3.0.
+  Keine dynamischen, ueberlappenden oder ausserhalb der Geraeteregionen
+  liegenden Ladesegmente; unabhaengiger readelf-Bericht vorhanden.
 
-## Datei und Speicher
+## Auslieferung und Speicher
 
-[build-cp/CasioSandbox.hh3](../releases/0.2.0/CasioSandbox.hh3), **113.796 Byte**.
+[CasioSandbox.hh3](../releases/0.3.0/CasioSandbox.hh3), **120.580 Byte**.
 
 SHA-256:
 
 ```text
-8e241f9c4066f08326fcf062412e1713ffb3d240e67f5339941e8ee9113384d3
+d41aee8da0783dafb2edcbda3c9e475f25409993e80f485100d507d9eac36878
 ```
 
-| Bereich | Größe |
+| Bereich | Groesse |
 | --- | ---: |
-| Beide Spielzustände | 50.080 Byte |
-| RGB565-Atlas | 13.824 Byte |
-| Transparenzmasken | 864 Byte |
+| Beide Spielzustaende | 50.240 Byte |
+| RGB565-Atlas | 16.896 Byte |
+| Transparenzmasken | 1.056 Byte |
 | Hintergrundkontur | 1.280 Byte |
-| Zusätzliche Grafikpuffer gesamt | 15.968 Byte, unter 20 KiB |
-| Hauptladebereich belegt | 113.040 von 337.920 Byte |
-| Hauptladebereich frei | 224.880 Byte |
+| Grafikpuffer gesamt | 19.232 Byte, unter 20 KiB |
+| Hauptladebereich belegt | 119.824 von 337.920 Byte |
+| Hauptladebereich frei | 218.096 Byte |
 
 Kein weiterer Vollbildpuffer und keine Speicheranforderungen des Projektcodes
-während der Spielschleife. Die Hauptladebelegung ist kein vollständiger
-Gerätespeicherverbrauch: Stack, System-VRAM und OS-Heap sind darin nicht
-vollständig erfasst. Vergleichswert 0.1.0: 92.400 Byte im Hauptladebereich.
+in der Spielschleife. Kleine Transaktionskopien liegen auf dem Stack.
+Die Hauptladebelegung ist kein vollstaendiger Geraetespeicherverbrauch:
+Stack, System-VRAM und OS-Heap sind darin nicht vollstaendig erfasst.
 
-Der [Buildbericht](../releases/0.2.0/build-info.json) enthält Metadaten, Ladebereiche,
-Quellprüfsummen und Werkzeugketten-Digest. Ungestrippte ELF-Datei, Linkerkarte,
-ELF-Bericht und Abschnittsgrößen liegen ebenfalls in build-cp.
+[Buildbericht](../releases/0.3.0/build-info.json),
+[ELF-Bericht](../releases/0.3.0/elf-info.txt) und
+[Abschnittsgroessen](../releases/0.3.0/section-sizes.txt) sind beigelegt.
+Die Quellpruefsummen wurden mit den ausgelieferten Quellen abgeglichen.
+Ungestrippte ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
 
-## Noch auf dem Gerät zu prüfen
+## Geraetetest noch offen
 
-Version 0.1.0 wurde vom Benutzer gestartet und mit **14,5 / 11,9 / 11,0 FPS**
-gemessen; die Werte stehen in [BENCHMARK.md](BENCHMARK.md).
-**Version 0.2.0 wurde noch nicht auf dem CP400 ausgeführt.**
-Echte Tastenmatrix, Darstellung und Performance müssen dort geprüft werden.
-Vorlage: [DEVICE_TEST.md](DEVICE_TEST.md).
-
-Die simulierten Zeitwerte testen die Messlogik. Sie liefern keine
-Performance-Aussage über die Hardware.
+Version 0.3.0 wurde noch nicht auf dem echten CP400 gestartet. Tastenmatrix,
+Darstellung und Performance muessen dort geprueft werden:
+[DEVICE_TEST.md](DEVICE_TEST.md). Die bisherigen Werte von 0.1.0 stehen
+in [BENCHMARK.md](BENCHMARK.md). Simulierte Zeitwerte liefern keine CP400-FPS.
 

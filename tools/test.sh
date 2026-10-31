@@ -12,6 +12,10 @@ sanitizers=(-fsanitize=address,undefined -fno-omit-frame-pointer)
     -o build/native/test_core
 ASAN_OPTIONS=detect_leaks=1 ./build/native/test_core
 
+"$compiler" "${flags[@]}" "${sanitizers[@]}" -Isrc \
+    src/game.c tests/test_crafting.c -o build/native/test_crafting
+ASAN_OPTIONS=detect_leaks=1 ./build/native/test_crafting
+
 # The device entry point is syntax-checked against the small host adapter.
 # This does not replace compiling/linking against the real ClassPad SDK.
 "$compiler" "${flags[@]}" -Itests/host -Isrc -fsyntax-only src/main.c

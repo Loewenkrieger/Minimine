@@ -41,3 +41,12 @@ Nach der Messung FPS und Mittel/P95/Max sowie Logik/Zeichnen/LCD vergleichen.
 Eine schnellere Zeichnung kann die Gesamtrate nur bis zur Grenze der weiterhin
 vollständigen LCD-Übertragung verbessern.
 
+
+## Version 0.3.0
+
+Crafting, Werkbank und Werkzeuge sind im Benchmark inaktiv. Welt und alle
+540 Schritte werden weiterhin direkt gegen 0.1.0 getestet. Die normale
+Spielsteuerung enthaelt nun Namen und Werkzeuganzeigen; Aufwaerm-/Messbilder
+und die vollstaendige LCD-Uebertragung bleiben unveraendert.
+
+Eine Messung von 0.3.0 auf dem echten CP400 steht aus.

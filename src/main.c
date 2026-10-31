@@ -72,29 +72,61 @@ static uint32_t elapsed_us(uint32_t start, uint32_t end)
     return prof_time(context);
 }
 
-/* Cursor and unfinished selection are controller state, not item state. */
+/* Cursor, source selection and menu dimensions belong to the controller. */
 static bool inventory_key(Game *game, InventoryUI *ui, int key)
 {
-    if(key == KEY_CLEAR || key == KEY_KBD) { ui->source = -1; return true; }
-    if(key == KEY_LEFT && ui->cursor % 3) --ui->cursor;
-    if(key == KEY_RIGHT && ui->cursor % 3 < 2) ++ui->cursor;
-    if(key == KEY_UP && ui->cursor >= 3) ui->cursor -= 3;
-    if(key == KEY_DOWN && ui->cursor + 3 < TOTAL_SLOTS) ui->cursor += 3;
+    unsigned width = ui->craft_width == 3 ? 3 : 2;
+    if(key == KEY_CLEAR || key == KEY_KBD) {
+        if(!game_close_crafting(game)) return false;
+        ui->source = -1;
+        return true;
+    }
+    if(ui->cursor < TOTAL_SLOTS) {
+        unsigned col = ui->cursor % 3;
+        if(key == KEY_LEFT && col) --ui->cursor;
+        if(key == KEY_RIGHT && col < 2) ++ui->cursor;
+        if(key == KEY_UP && ui->cursor >= 3) ui->cursor -= 3;
+        if(key == KEY_DOWN) {
+            if(ui->cursor + 3 < TOTAL_SLOTS) ui->cursor += 3;
+            else ui->cursor = CRAFT_FIRST + (col < width ? col : width - 1);
+        }
+    } else if(ui->cursor < CRAFT_FIRST + width * width) {
+        unsigned index = ui->cursor - CRAFT_FIRST, col = index % width;
+        if(key == KEY_LEFT && col) --ui->cursor;
+        if(key == KEY_RIGHT)
+            ui->cursor = col + 1 < width ? ui->cursor + 1 : CRAFT_RESULT;
+        if(key == KEY_UP)
+            ui->cursor = index >= width ? ui->cursor - width : TOTAL_SLOTS - 3 + col;
+        if(key == KEY_DOWN && index + width < width * width) ui->cursor += width;
+    } else if(ui->cursor == CRAFT_RESULT) {
+        if(key == KEY_LEFT) ui->cursor = CRAFT_FIRST + width * (width / 2) + width - 1;
+        if(key == KEY_UP) ui->cursor = CRAFT_FIRST + width - 1;
+        if(key == KEY_DOWN) ui->cursor = CRAFT_FIRST + width * width - 1;
+    }
     int hotbar = key == KEY_X ? 0 : key == KEY_Y ? 1 : key == KEY_Z ? 2 : -1;
     if(hotbar >= 0) {
         ui->cursor = (unsigned)hotbar;
         game_select_hotbar(game, (unsigned)hotbar);
     }
-    if(key == KEY_EXE) {
-        if(ui->source < 0) {
-            if(game->slots[ui->cursor].count) ui->source = (int)ui->cursor;
-        } else {
-            game_inventory_transfer(game, (unsigned)ui->source, ui->cursor);
-            ui->source = -1;
-        }
+    if(key != KEY_EXE && key != KEY_5) return false;
+    if(ui->cursor == CRAFT_RESULT) {
+        if(key == KEY_EXE) { game_craft(game, width); ui->source = -1; }
+        return false;
+    }
+    const ItemStack *stack = game_stack_at(game, ui->cursor);
+    if(ui->source < 0) {
+        if(stack && stack->count) ui->source = (int)ui->cursor;
+    } else if(key == KEY_5) {
+        game_inventory_transfer_one(game, (unsigned)ui->source, ui->cursor);
+        const ItemStack *source = game_stack_at(game, (unsigned)ui->source);
+        if(!source || !source->count) ui->source = -1;
+    } else {
+        game_inventory_transfer(game, (unsigned)ui->source, ui->cursor);
+        ui->source = -1;
     }
     return false;
 }
+
 
 int main(void)
 {
@@ -109,7 +141,7 @@ int main(void)
     game_init(&play_game, WORLD_SEED);
     Mode mode = MODE_HELP;
     bool running = true, page_dirty = true, actions_armed = false;
-    InventoryUI inventory = { .source = -1 };
+    InventoryUI inventory = { .source = -1, .craft_width = 2 };
     unsigned phase = 0, phase_frame = 0;
     uint32_t frame_start = *prof_tcnt, previous_start = frame_start;
     uint32_t previous_end = frame_start;
@@ -173,7 +205,7 @@ int main(void)
         if(pressed.clear || (pressed.inventory && mode == MODE_PLAY)) {
             game_cancel_mining(&play_game);
             mode = pressed.clear ? MODE_HELP : MODE_INVENTORY;
-            inventory = (InventoryUI){ .cursor = play_game.selected, .source = -1 };
+            inventory = (InventoryUI){ .cursor = play_game.selected, .source = -1, .craft_width = 2 };
             page_dirty = true;
             continue;
         }
@@ -211,14 +243,24 @@ int main(void)
                     --pending_sneak;
                 }
                 input.place |= pending.place;
-                game_step(game, input);
+                input.interact = pending.place;
+                GameInteraction interaction = game_step(game, input);
                 pending = (GameInput){0};
-                input.jump = false;
+                input.jump = input.interact = false;
                 input.mine = actions_armed && keydown(KEY_DEL);
                 input.place = actions_armed && keydown(KEY_EXE);
                 accumulator -= 1000000;
                 ++steps;
+                if(interaction == INTERACT_WORKBENCH) {
+                    inventory = (InventoryUI){ .cursor = game->selected,
+                        .source = -1, .craft_width = 3 };
+                    mode = MODE_INVENTORY;
+                    page_dirty = true;
+                    accumulator = 0;
+                    break;
+                }
             }
+            if(mode == MODE_INVENTORY) continue;
             /* Keep input responsive during extreme stalls and expose loss. */
             if(accumulator >= 1000000) {
                 dropped_ticks += (uint32_t)(accumulator / 1000000);
