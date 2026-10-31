@@ -1,0 +1,4 @@
+# Preserve the source bytes recorded in the release build reports.
+* -text
+*.sh text eol=lf
+*.hh3 binary

@@ -1,0 +1,7 @@
+/build*/
+/.cache/
+*.hh3
+*.elf
+*.map
+!releases/**/*.hh3
+!releases/0.1.0/CasioSandbox.map

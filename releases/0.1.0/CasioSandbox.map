@@ -1,0 +1,1287 @@
+Archive member included to satisfy reference by file (symbol)
+
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_div_table.o)
+                              CMakeFiles/casio_sandbox.dir/src/game.c.obj (___sdivsi3_i4i)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (___udivdi3)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (___umoddi3)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivsi3.o)
+                              /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o) (___udivsi3)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udiv_qrnnd_16.o)
+                              /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o) (___udiv_qrnnd_16)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+                              /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o) (___clz_tab)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(hhk3_start.c.obj)
+                              (_hhk3_entry)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(syscalls.S.obj)
+                              hhk3_start.c.obj (symbol from plugin) (___malloc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(getkey.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (_getkey_opt)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(keydev.c.obj)
+                              getkey.c.obj (symbol from plugin) (_keydev_transform)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(keysc.c.obj)
+                              getkey.c.obj (symbol from plugin) (_keydev_std)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(prof.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (_prof_quit)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dprint.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/render.c.obj (_dprint)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dtext.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/render.c.obj (_dtext)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dwindow.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/render.c.obj (_dwindow_set)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dclear.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/render.c.obj (_dclear)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dpixel.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/render.c.obj (_dpixel)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(drect.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/render.c.obj (_drect)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dupdate.c.obj)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (_dupdate)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dvram.c.obj)
+                              dclear.c.obj (symbol from plugin) (_gint_vram)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dvram.S.obj)
+                              dvram.c.obj (symbol from plugin) (_gint_vrambackup_encode)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(topti.c.obj)
+                              dprint.c.obj (symbol from plugin) (_dtext_opt)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(tmu.c.obj)
+                              keysc.c.obj (symbol from plugin) (_timer_configure)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(video.c.obj)
+                              dvram.c.obj (symbol from plugin) (_video_update)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(touch.c.obj)
+                              keysc.c.obj (symbol from plugin) (_touch_scan)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(driver.c.obj)
+                              touch.c.obj (symbol from plugin) (___touch_drv_info)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(font8x9.png.o)
+                              topti.c.obj (symbol from plugin) (_gint_font8x9)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(cpg.c.obj)
+                              prof.c.obj (symbol from plugin) (_clock_freq)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(overclock.c.obj)
+                              cpg.c.obj (symbol from plugin) (_cpg_get_overclock_setting)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(atomic.c.obj)
+                              touch.c.obj (symbol from plugin) (_cpu_atomic_start)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(registers.s.obj)
+                              tmu.c.obj (symbol from plugin) (_cpu_getVBR)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(sleep.c.obj)
+                              keydev.c.obj (symbol from plugin) (_sleep)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(image_create_vram.c.obj)
+                              dvram.c.obj (symbol from plugin) (_image_create_vram)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(image_free.c.obj)
+                              dvram.c.obj (symbol from plugin) (_image_free)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(intc.c.obj)
+                              tmu.c.obj (symbol from plugin) (_intc_priority)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.s.obj)
+                              intc.c.obj (symbol from plugin) (_intc_generic_handler)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.c.obj)
+                              hhk3_start.c.obj (symbol from plugin) (_gint_panic)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(hardware.c.obj)
+                              keysc.c.obj (symbol from plugin) (_gint)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+                              intc.c.obj (symbol from plugin) (_gint_inth_callback)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(kernel.c.obj)
+                              overclock.c.obj (symbol from plugin) (_gint_driver_flags)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(osmenu.c.obj)
+                              getkey.c.obj (symbol from plugin) (_gint_osmenu)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(start.c.obj)
+                              hhk3_start.c.obj (symbol from plugin) (_start)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(tlbh.S.obj)
+                              kernel.c.obj (symbol from plugin) (_gint_tlbh)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(world.c.obj)
+                              kernel.c.obj (symbol from plugin) (_gint_world_alloc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(kmalloc.c.obj)
+                              kernel.c.obj (symbol from plugin) (_kmalloc_init)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(mmu.c.obj)
+                              image_free.c.obj (symbol from plugin) (_mmu_is_rom)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(r61523.c.obj)
+                              dupdate.c.obj (symbol from plugin) (_r61523_display)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dupdate_hook.c.obj)
+                              dupdate.c.obj (symbol from plugin) (_dupdate_get_hook)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(topti.c.obj)
+                              exch.c.obj (symbol from plugin) (_dfont)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(topti-asm.S.obj)
+                              topti.c.obj (symbol from plugin) (_topti_glyph_fg_bg)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-etmu.s.obj)
+                              tmu.c.obj (symbol from plugin) (_inth_etmu4)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-tmu.s.obj)
+                              tmu.c.obj (symbol from plugin) (_inth_tmu)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(i2c.c.obj)
+                              touch.c.obj (symbol from plugin) (_i2c_reg_read)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(i2c_inth.c.obj)
+                              i2c.c.obj (symbol from plugin) (_i2c_inth_trans)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(cpu.c.obj)
+                              kernel.c.obj (symbol from plugin) (_cpu_configure_VBR)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(image_create.c.obj)
+                              image_create_vram.c.obj (symbol from plugin) (_image_create)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.s.obj)
+                              kernel.c.obj (symbol from plugin) (_gint_exch)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(syscall.c.obj)
+                              /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.s.obj) (_syscall_entry)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(arena_osheap.c.obj)
+                              kmalloc.c.obj (symbol from plugin) (_kmalloc_arena_osheap)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(vsnprintf.c.obj)
+                              dprint.c.obj (symbol from plugin) (_vsnprintf)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(abort.c.obj)
+                              keysc.c.obj (symbol from plugin) (_abort)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(exit.c.obj)
+                              start.c.obj (symbol from plugin) (_exit)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strtoul.c.obj)
+                              hhk3_start.c.obj (symbol from plugin) (_strtoul)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strcmp.c.obj)
+                              hhk3_start.c.obj (symbol from plugin) (_strcmp)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strncmp.c.obj)
+                              hhk3_start.c.obj (symbol from plugin) (_strncmp)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strnlen.c.obj)
+                              hhk3_start.c.obj (symbol from plugin) (_strnlen)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(setjmp.S.obj)
+                              start.c.obj (symbol from plugin) (_setjmp)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(longjmp.S.obj)
+                              start.c.obj (symbol from plugin) (_longjmp)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcmp.S.obj)
+                              touch.c.obj (symbol from plugin) (_memcmp)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcpy.S.obj)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (_memcpy)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memset.S.obj)
+                              CMakeFiles/casio_sandbox.dir/src/main.c.obj (_memset)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(cpucap.c.obj)
+                              /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcmp.S.obj) (___cpucap)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(free.c.obj)
+                              dvram.c.obj (symbol from plugin) (_free)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(malloc.c.obj)
+                              dvram.c.obj (symbol from plugin) (_malloc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(dso.c.obj)
+                              exit.c.obj (symbol from plugin) (___cxa_finalize)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(errno.c.obj)
+                              strtoul.c.obj (symbol from plugin) (_errno)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(raise.c.obj)
+                              abort.c.obj (symbol from plugin) (_raise)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(print.c.obj)
+                              vsnprintf.c.obj (symbol from plugin) (___printf)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(scan_base.c.obj)
+                              strtoul.c.obj (symbol from plugin) (___scanf_start)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(ungetc.c.obj)
+                              scan_base.c.obj (symbol from plugin) (_ungetc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strto_int.c.obj)
+                              strtoul.c.obj (symbol from plugin) (___strto_int)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strchr.c.obj)
+                              print.c.obj (symbol from plugin) (_strchr)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memmove.S.obj)
+                              ungetc.c.obj (symbol from plugin) (_memmove)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(signal.c.obj)
+                              raise.c.obj (symbol from plugin) (_signal)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(fgetc.c.obj)
+                              scan_base.c.obj (symbol from plugin) (_fgetc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(fileutil.c.obj)
+                              fgetc.c.obj (symbol from plugin) (___fp_remove_buffer)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(fseek.c.obj)
+                              ungetc.c.obj (symbol from plugin) (_fseek)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(fwrite.c.obj)
+                              print.c.obj (symbol from plugin) (_fwrite)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(format_usual.c.obj)
+                              print.c.obj (symbol from plugin) (___printf_format_c)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(util.c.obj)
+                              format_usual.c.obj (symbol from plugin) (___printf_compute_geometry)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(setvbuf.c.obj)
+                              fileutil.c.obj (symbol from plugin) (_setvbuf)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memrchr.c.obj)
+                              fwrite.c.obj (symbol from plugin) (_memrchr)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strerror.c.obj)
+                              format_usual.c.obj (symbol from plugin) (_strerror)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memchr.S.obj)
+                              fileutil.c.obj (symbol from plugin) (_memchr)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strlen.S.obj)
+                              format_usual.c.obj (symbol from plugin) (_strlen)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(fflush.c.obj)
+                              fileutil.c.obj (symbol from plugin) (_fflush)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(fxlibc_hal.c.obj)
+                              malloc.c.obj (symbol from plugin) (_fxlibc_hal_malloc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(close.c.obj)
+                              fileutil.c.obj (symbol from plugin) (_close)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(fs.c.obj)
+                              close.c.obj (symbol from plugin) (_fs_get_descriptor)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(lseek.c.obj)
+                              fseek.c.obj (symbol from plugin) (_lseek)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(read.c.obj)
+                              fileutil.c.obj (symbol from plugin) (_read)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(write.c.obj)
+                              print.c.obj (symbol from plugin) (_write)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(rtc.c.obj)
+                              fxlibc_hal.c.obj (symbol from plugin) (_rtc_get_time)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(rtc_ticks.c.obj)
+                              fxlibc_hal.c.obj (symbol from plugin) (_rtc_ticks)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(calloc.c.obj)
+                              fs.c.obj (symbol from plugin) (_calloc)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_movmem.o)
+                              /tmp/ccN5ibw7.ltrans0.ltrans.o (___movmemSI20)
+/home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_sdivsi3.o)
+                              /tmp/ccN5ibw7.ltrans0.ltrans.o (___sdivsi3)
+
+Discarded input sections
+
+ .text          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .data          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .bss           0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .comment       0x00000000       0x13 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .text          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .data          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .bss           0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .comment       0x00000000       0x13 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .text          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .data          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .bss           0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .comment       0x00000000       0x13 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .text          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .data          0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .bss           0x00000000        0x0 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .comment       0x00000000       0x13 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .comment       0x00000000       0x13 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .comment       0x00000000       0x13 /tmp/ccpgdcfu.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccNJNzqc.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccycIS0Y.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccavEhd4.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccbB8Q6t.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccGN0oYA.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccUwnpk2.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccdHABiN.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc6mlDXu.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccPeUJBm.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc1Ykg8n.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc4buMpl.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccP9zRSF.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccfNSEus.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cchXvnGK.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccJ0IHIH.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccM9opev.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cckYh08B.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccLqh5eV.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc1eK4wR.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccu2N1h0.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc5f7g4K.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccG8PQ8K.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccZS7tFU.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccjtKGcE.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cczln76O.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc2HYUk0.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc9vNEX4.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccSdDU7g.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cclgZxIG.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc1HJRrC.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccjEuAkn.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccAts1am.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccYOe52Q.debug.temp.o
+ .debug_info    0x00000000      0x771 /tmp/ccLYLrWL.debug.temp.o
+ .debug_abbrev  0x00000000      0x103 /tmp/ccLYLrWL.debug.temp.o
+ .debug_line    0x00000000       0x4c /tmp/ccLYLrWL.debug.temp.o
+ .debug_str     0x00000000      0x3c1 /tmp/ccLYLrWL.debug.temp.o
+ .debug_line_str
+                0x00000000      0x16d /tmp/ccLYLrWL.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccLYLrWL.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccAP9OMF.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc8uCLqt.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccazBuOo.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccc58ZkW.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccjaimlL.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccsM6TA9.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc65IXlC.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccfSwYfZ.debug.temp.o
+ .debug_info    0x00000000      0x1fc /tmp/ccMFPg1B.debug.temp.o
+ .debug_abbrev  0x00000000       0xf8 /tmp/ccMFPg1B.debug.temp.o
+ .debug_line    0x00000000       0x68 /tmp/ccMFPg1B.debug.temp.o
+ .debug_str     0x00000000      0x1ff /tmp/ccMFPg1B.debug.temp.o
+ .debug_line_str
+                0x00000000      0x1e4 /tmp/ccMFPg1B.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccMFPg1B.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccNy2TT5.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cclpCRT1.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/cc0o8yZI.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccWaTgtT.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccPxHcwY.debug.temp.o
+ .debug_info    0x00000000      0x15d /tmp/ccgjLmlB.debug.temp.o
+ .debug_abbrev  0x00000000       0xac /tmp/ccgjLmlB.debug.temp.o
+ .debug_line    0x00000000       0x4c /tmp/ccgjLmlB.debug.temp.o
+ .debug_str     0x00000000      0x1ff /tmp/ccgjLmlB.debug.temp.o
+ .debug_line_str
+                0x00000000      0x15b /tmp/ccgjLmlB.debug.temp.o
+ .comment       0x00000000       0x13 /tmp/ccgjLmlB.debug.temp.o
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_div_table.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_div_table.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .comment       0x00000000       0x13 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .eh_frame      0x00000000       0x80 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .comment       0x00000000       0x13 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .eh_frame      0x00000000       0x94 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivsi3.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivsi3.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udiv_qrnnd_16.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udiv_qrnnd_16.o)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+ .comment       0x00000000       0x13 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_movmem.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_movmem.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_sdivsi3.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_sdivsi3.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(syscalls.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(syscalls.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dvram.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dvram.S.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(font8x9.png.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(font8x9.png.o)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(font8x9.png.o)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(registers.s.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(registers.s.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.s.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.s.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.s.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(tlbh.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(tlbh.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(tlbh.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(topti-asm.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(topti-asm.S.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-etmu.s.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-etmu.s.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-etmu.s.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-tmu.s.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-tmu.s.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-tmu.s.obj)
+ .text          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.s.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.s.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.s.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(setjmp.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(setjmp.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(longjmp.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(longjmp.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcmp.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcmp.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcpy.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcpy.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memset.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memset.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memmove.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memmove.S.obj)
+ .text          0x00000000       0xa0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memchr.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memchr.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memchr.S.obj)
+ .data          0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strlen.S.obj)
+ .bss           0x00000000        0x0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strlen.S.obj)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ram              0x8c052800         0x00052800         xrw
+eram             0x8cff0000         0x0000ef00         xrw
+vbr              0x8cffef00         0x00001100         xrw
+ilram            0xe5200000         0x00001000         xrw
+xyram            0xe500e000         0x00004000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a
+LOAD CMakeFiles/casio_sandbox.dir/src/main.c.obj
+LOAD CMakeFiles/casio_sandbox.dir/src/game.c.obj
+LOAD CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+LOAD CMakeFiles/casio_sandbox.dir/src/render.c.obj
+LOAD /tmp/ccN5ibw7.ltrans0.ltrans.o
+LOAD /tmp/ccpgdcfu.debug.temp.o
+LOAD /tmp/ccNJNzqc.debug.temp.o
+LOAD /tmp/ccycIS0Y.debug.temp.o
+LOAD /tmp/ccavEhd4.debug.temp.o
+LOAD /tmp/ccbB8Q6t.debug.temp.o
+LOAD /tmp/ccGN0oYA.debug.temp.o
+LOAD /tmp/ccUwnpk2.debug.temp.o
+LOAD /tmp/ccdHABiN.debug.temp.o
+LOAD /tmp/cc6mlDXu.debug.temp.o
+LOAD /tmp/ccPeUJBm.debug.temp.o
+LOAD /tmp/cc1Ykg8n.debug.temp.o
+LOAD /tmp/cc4buMpl.debug.temp.o
+LOAD /tmp/ccP9zRSF.debug.temp.o
+LOAD /tmp/ccfNSEus.debug.temp.o
+LOAD /tmp/cchXvnGK.debug.temp.o
+LOAD /tmp/ccJ0IHIH.debug.temp.o
+LOAD /tmp/ccM9opev.debug.temp.o
+LOAD /tmp/cckYh08B.debug.temp.o
+LOAD /tmp/ccLqh5eV.debug.temp.o
+LOAD /tmp/cc1eK4wR.debug.temp.o
+LOAD /tmp/ccu2N1h0.debug.temp.o
+LOAD /tmp/cc5f7g4K.debug.temp.o
+LOAD /tmp/ccG8PQ8K.debug.temp.o
+LOAD /tmp/ccZS7tFU.debug.temp.o
+LOAD /tmp/ccjtKGcE.debug.temp.o
+LOAD /tmp/cczln76O.debug.temp.o
+LOAD /tmp/cc2HYUk0.debug.temp.o
+LOAD /tmp/cc9vNEX4.debug.temp.o
+LOAD /tmp/ccSdDU7g.debug.temp.o
+LOAD /tmp/cclgZxIG.debug.temp.o
+LOAD /tmp/cc1HJRrC.debug.temp.o
+LOAD /tmp/ccjEuAkn.debug.temp.o
+LOAD /tmp/ccAts1am.debug.temp.o
+LOAD /tmp/ccYOe52Q.debug.temp.o
+LOAD /tmp/ccLYLrWL.debug.temp.o
+LOAD /tmp/ccAP9OMF.debug.temp.o
+LOAD /tmp/cc8uCLqt.debug.temp.o
+LOAD /tmp/ccazBuOo.debug.temp.o
+LOAD /tmp/ccc58ZkW.debug.temp.o
+LOAD /tmp/ccjaimlL.debug.temp.o
+LOAD /tmp/ccsM6TA9.debug.temp.o
+LOAD /tmp/cc65IXlC.debug.temp.o
+LOAD /tmp/ccfSwYfZ.debug.temp.o
+LOAD /tmp/ccMFPg1B.debug.temp.o
+LOAD /tmp/ccNy2TT5.debug.temp.o
+LOAD /tmp/cclpCRT1.debug.temp.o
+LOAD /tmp/cc0o8yZI.debug.temp.o
+LOAD /tmp/ccWaTgtT.debug.temp.o
+LOAD /tmp/ccPxHcwY.debug.temp.o
+LOAD /tmp/ccgjLmlB.debug.temp.o
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libopenlibm.a
+LOAD /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a
+                0x8c052800                        _brom = ORIGIN (ram)
+                0x00008d22                        _srom = (((SIZEOF (.text) + SIZEOF (.rodata)) + SIZEOF (.gint.drivers)) + SIZEOF (.gint.blocks))
+
+.hh3
+ *(.hh3*)
+ *(.eram*)
+
+.note.hollyhock
+                0x8c052800       0xb8
+ *(.note.hollyhock)
+ .note.hollyhock
+                0x8c052800       0xb8 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+
+.text           0x8c0528c0     0x73ce
+ *(.text.entry)
+                0x8c0528c0                        _bctors = .
+ *(.ctors .ctors.*)
+ .ctors         0x8c0528c0        0x4 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c0528c4                        _ectors = .
+                0x8c0528c4                        _bdtors = .
+ *(.dtors .dtors.*)
+                0x8c0528c4                        _edtors = .
+                0x8c0528d0                        . = ALIGN (0x10)
+ *fill*         0x8c0528c4        0xc 
+                0x8c0528d0                        _gint_exch_start = .
+ *(.gint.exch)
+ .gint.exch     0x8c0528d0       0xa0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(exch.s.obj)
+                0x8c0528d0                _gint_exch
+                0x8c052970                        _gint_exch_end = .
+                0x8c052970                        . = ALIGN (0x10)
+                0x8c052970                        _gint_tlbh_start = .
+ *(.gint.tlbh)
+ .gint.tlbh     0x8c052970       0x20 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(tlbh.S.obj)
+                0x8c052970                _gint_tlbh
+                0x8c052990                        _gint_tlbh_end = .
+ *(.text .text.*)
+ .text.elapsed_us
+                0x8c052990       0x10 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .text.startup.main
+                0x8c0529a0      0x6f8 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+                0x8c0529a0                _main
+ .text.floor_div
+                0x8c053098       0x24 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .text.hash     0x8c0530bc       0x2c CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .text.terrain_noise
+                0x8c0530e8       0x94 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .text.game_tile
+                0x8c05317c       0x1e CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c05317c                _game_tile
+ .text.game_set_tile
+                0x8c05319a       0x2c CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c05319a                _game_set_tile
+ .text.game_tile_solid
+                0x8c0531c6       0x14 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c0531c6                _game_tile_solid
+ .text.game_follow_camera
+                0x8c0531da       0x54 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c0531da                _game_follow_camera
+ *fill*         0x8c05322e        0x2 
+ .text.game_init
+                0x8c053230      0x2c8 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c053230                _game_init
+ .text.game_target
+                0x8c0534f8       0x6c CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c0534f8                _game_target
+ .text.game_mine
+                0x8c053564       0xb8 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c053564                _game_mine
+ .text.game_place
+                0x8c05361c       0xd4 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c05361c                _game_place
+ .text.game_step
+                0x8c0536f0      0x270 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c0536f0                _game_step
+ .text.game_benchmark_step
+                0x8c053960       0xf4 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c053960                _game_benchmark_step
+ .text.game_phase_name
+                0x8c053a54       0x1c CMakeFiles/casio_sandbox.dir/src/game.c.obj
+                0x8c053a54                _game_phase_name
+ .text.perf_reset
+                0x8c053a70       0x10 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+                0x8c053a70                _perf_reset
+ .text.perf_push
+                0x8c053a80       0x60 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+                0x8c053a80                _perf_push
+ .text.perf_summarize
+                0x8c053ae0      0x170 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+                0x8c053ae0                _perf_summarize
+ .text.tile_draw
+                0x8c053c50      0x238 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .text.outline  0x8c053e88       0x68 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .text.page_title
+                0x8c053ef0       0x60 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .text.render_game
+                0x8c053f50      0x5bc CMakeFiles/casio_sandbox.dir/src/render.c.obj
+                0x8c053f50                _render_game
+ .text.render_help
+                0x8c05450c       0xec CMakeFiles/casio_sandbox.dir/src/render.c.obj
+                0x8c05450c                _render_help
+ .text.render_results
+                0x8c0545f8      0x190 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+                0x8c0545f8                _render_results
+ .text.render_error
+                0x8c054788       0x50 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+                0x8c054788                _render_error
+ .text          0x8c0547d8     0x43f0 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c057478                _hhk3_entry
+                0x8c0575ec                ___realloc_c
+                0x8c057680                _pollevent
+                0x8c057690                _waitevent
+                0x8c0576f0                _keydown
+                0x8c057c84                _prof_time
+                0x8c057cb0                _dtext
+                0x8c057e2c                _dprint
+                0x8c058110                _drect
+                0x8c058228                _dwindow_set
+                0x8c058294                _dclear
+                0x8c0582b4                _dpixel
+                0x8c058304                _dupdate
+                0x8c058754                _getkey_opt
+                0x8c058a70                _timer_stop
+                0x8c058aec                _prof_quit
+                0x8c058b14                _prof_init
+                0x8c058bb8                _syscall_entry
+ .text.startup  0x8c058bc8       0x64 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .text          0x8c058c2c      0x424 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_div_table.o)
+                0x8c058c2c                ___udivsi3_i4i
+                0x8c058cfc                ___sdivsi3_i4i
+ .text          0x8c059050      0x200 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+                0x8c059050                ___udivdi3
+ .text          0x8c059250      0x218 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+                0x8c059250                ___umoddi3
+ .text          0x8c059468       0x6c /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivsi3.o)
+                0x8c05948a                ___udivsi3
+ *fill*         0x8c0594d4        0x4 
+ .text          0x8c0594d8       0x60 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udiv_qrnnd_16.o)
+                0x8c0594d8                ___udiv_qrnnd_16
+ .text          0x8c059538       0x78 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_movmem.o)
+                0x8c059538                ___movstr
+                0x8c059538                ___movmem
+                0x8c05956c                ___movmemSI64
+                0x8c05956c                ___movstrSI64
+                0x8c059570                ___movstrSI60
+                0x8c059570                ___movmemSI60
+                0x8c059574                ___movmemSI56
+                0x8c059574                ___movstrSI56
+                0x8c059578                ___movstrSI52
+                0x8c059578                ___movmemSI52
+                0x8c05957c                ___movstrSI48
+                0x8c05957c                ___movmemSI48
+                0x8c059580                ___movstrSI44
+                0x8c059580                ___movmemSI44
+                0x8c059584                ___movstrSI40
+                0x8c059584                ___movmemSI40
+                0x8c059588                ___movstrSI36
+                0x8c059588                ___movmemSI36
+                0x8c05958c                ___movmemSI32
+                0x8c05958c                ___movstrSI32
+                0x8c059590                ___movmemSI28
+                0x8c059590                ___movstrSI28
+                0x8c059594                ___movstrSI24
+                0x8c059594                ___movmemSI24
+                0x8c059598                ___movmemSI20
+                0x8c059598                ___movstrSI20
+                0x8c05959c                ___movstrSI16
+                0x8c05959c                ___movmemSI16
+                0x8c0595a0                ___movmemSI12
+                0x8c0595a0                ___movstrSI12
+                0x8c0595a4                ___movmemSI8
+                0x8c0595a4                ___movstrSI8
+                0x8c0595a8                ___movmemSI4
+                0x8c0595a8                ___movstrSI4
+ .text          0x8c0595b0       0xa0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_sdivsi3.o)
+                0x8c0595b0                ___sdivsi3
+ .text          0x8c059650       0xd8 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(syscalls.S.obj)
+                0x8c059650                ___malloc
+                0x8c059658                ___hhk_address_Mem_Malloc
+                0x8c05965c                ___realloc
+                0x8c059668                ___free
+                0x8c059670                ___hhk_address_Mem_Free
+                0x8c059674                ___Reset
+                0x8c059680                _BFile_FindFirst
+                0x8c059688                ___hhk_address_File_FindFirst
+                0x8c05968c                _BFile_FindNext
+                0x8c059694                ___hhk_address_File_FindNext
+                0x8c059698                _BFile_FindClose
+                0x8c0596a0                ___hhk_address_File_FindClose
+                0x8c0596a4                _BFile_Remove
+                0x8c0596ac                ___hhk_address_File_Remove
+                0x8c0596b0                _BFile_Open
+                0x8c0596b8                ___hhk_address_File_Open
+                0x8c0596bc                _BFile_Write
+                0x8c0596c4                ___hhk_address_File_Write
+                0x8c0596c8                _BFile_Close
+                0x8c0596d0                ___hhk_address_File_Close
+                0x8c0596d4                _BFile_Read
+                0x8c0596dc                ___hhk_address_File_Read
+                0x8c0596e0                _BFile_Flush
+                0x8c0596e8                ___hhk_address_File_Flush
+                0x8c0596ec                _BFile_Mkdir
+                0x8c0596f4                ___hhk_address_File_Mkdir
+                0x8c0596f8                _BFile_Stat
+                0x8c059700                ___hhk_address_File_Stat
+                0x8c059704                _BFile_Rename
+                0x8c05970c                ___hhk_address_File_Rename
+                0x8c059710                _BFile_FStat
+                0x8c059718                ___hhk_address_File_Fstat
+                0x8c05971c                _BFile_Seek
+                0x8c059724                ___hhk_address_File_Lseek
+ .text          0x8c059728      0x194 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(dvram.S.obj)
+                0x8c059728                _gint_vrambackup_encode
+                0x8c0597e0                _gint_vrambackup_palette
+ *fill*         0x8c0598bc        0x4 
+ .text          0x8c0598c0       0x60 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(registers.s.obj)
+                0x8c0598c0                _cpu_setVBR
+                0x8c0598c6                _cpu_getVBR
+                0x8c0598cc                _cpu_setCPUOPM
+                0x8c0598de                _cpu_getCPUOPM
+                0x8c0598f4                _cpu_getSR
+                0x8c0598fa                _cpu_setSR
+ .text          0x8c059920       0xd0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(topti-asm.S.obj)
+                0x8c059920                _topti_glyph_fg_bg
+                0x8c05995e                _topti_glyph_fg
+                0x8c059998                _topti_glyph_bg
+ .text          0x8c0599f0       0x24 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(setjmp.S.obj)
+                0x8c0599f0                _setjmp
+ .text          0x8c059a14       0x2c /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(longjmp.S.obj)
+                0x8c059a14                _longjmp
+ .text          0x8c059a40       0xa0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcmp.S.obj)
+                0x8c059a40                _memcmp
+ .text          0x8c059ae0       0xc0 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memcpy.S.obj)
+                0x8c059ae0                _memcpy
+ .text          0x8c059ba0       0x56 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memset.S.obj)
+                0x8c059ba0                _memset
+ *fill*         0x8c059bf6        0xa 
+ .text          0x8c059c00       0x60 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(memmove.S.obj)
+                0x8c059c00                _memmove
+ .text          0x8c059c60       0x2e /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libc.a(strlen.S.obj)
+                0x8c059c60                _strlen
+
+.gint.blocks    0x8c059c90      0x120
+ *(.gint.blocks)
+ .gint.blocks   0x8c059c90       0x20 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.s.obj)
+                0x8c059c90                _intc_generic_handler
+ .gint.blocks   0x8c059cb0       0x20 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+                0x8c059cb0                _gint_inth_7305
+ .gint.blocks   0x8c059cd0       0x80 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-etmu.s.obj)
+                0x8c059cd0                _inth_etmu4
+                0x8c059d30                _inth_etmux
+ .gint.blocks   0x8c059d50       0x60 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth-tmu.s.obj)
+                0x8c059d50                _inth_tmu
+
+.gint.drivers   0x8c059db0      0x1b0
+                0x8c059db0                        _gint_drivers = .
+ *(SORT_BY_NAME(.gint.drivers.*))
+ .gint.drivers.00
+                0x8c059db0       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059db0                _drv_cpu
+ .gint.drivers.01
+                0x8c059de0       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059de0                _drv_intc
+ .gint.drivers.02
+                0x8c059e10       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059e10                _drv_mmu
+ .gint.drivers.05
+                0x8c059e40       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059e40                _drv_cpg
+ .gint.drivers.13
+                0x8c059e70       0x60 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059e70                _drv_rtc
+                0x8c059ea0                _drv_tmu
+ .gint.drivers.22
+                0x8c059ed0       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059ed0                _drv_touch
+ .gint.drivers.23
+                0x8c059f00       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059f00                _drv_keysc
+ .gint.drivers.26
+                0x8c059f30       0x30 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c059f30                _drv_r61523
+                0x8c059f60                        _gint_drivers_end = .
+
+.rodata         0x8c059f60     0x1684
+ *(.rodata.4)
+ *(.rodata .rodata.*)
+ .rodata.main.str1.4
+                0x8c059f60      0xd37 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+                                 0x24 (size before relaxing)
+ .rodata.game_phase_name.str1.4
+                0x8c05ac97        0xa CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .rodata.str1.4
+                0x8c05ac97       0x22 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ *fill*         0x8c05ac97        0x1 
+ .rodata.names.0
+                0x8c05ac98        0xc CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .rodata.tiles.1
+                0x8c05aca4        0xc CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .rodata.render_game.str1.4
+                0x8c05acb0      0x12d CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata        0x8c05acb0       0x10 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.render_help.str1.4
+                0x8c05acc0      0x14f CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.render_results.str1.4
+                0x8c05acc0      0x10d CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.render_error.str1.4
+                0x8c05acc0       0x4a CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.str1.4
+                0x8c05acc0      0x119 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.lines.0
+                0x8c05acc0       0x20 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.names.1
+                0x8c05ace0        0xc CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.tiles.2
+                0x8c05acec        0xc CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .rodata.str1.4
+                0x8c05acf8      0x7ff /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .rodata        0x8c05acf8      0x334 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .rodata        0x8c05b02c      0x100 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+                0x8c05b02c                ___clz_tab
+ .rodata        0x8c05b12c      0x4b8 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(font8x9.png.o)
+                0x8c05b12c                _gint_font8x9
+
+.rela.dyn       0x8c05b5e4        0x0
+ .rela.text     0x8c05b5e4        0x0 /tmp/ccN5ibw7.ltrans0.ltrans.o
+
+.data           0x8c05b5e4      0x12c
+                0x8c05b5e4                        _ldata = LOADADDR (.data)
+                0x8c05b5e4                        _rdata = .
+ *(.data .data.*)
+ .data          0x8c05b5e4       0x88 /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c05b650                _gint_exc_panic
+ *(.gint.mapped)
+ *fill*         0x8c05b66c        0x4 
+ .gint.mapped   0x8c05b670       0x90 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+ *(.gint.mappedrel)
+ .gint.mappedrel
+                0x8c05b700        0x4 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/../../../../sh3eb-elf/lib/libgint-cp.a(inth.S.obj)
+                0x8c05b700                _gint_inth_callback
+                0x8c05b710                        . = ALIGN (0x10)
+ *fill*         0x8c05b704        0xc 
+
+.data.4         0x8c05b710        0x0
+ *(.data.4)
+                0x8c05b710                        . = ALIGN (0x10)
+                0x0000012c                        _sdata = (SIZEOF (.data) + SIZEOF (.data.4))
+                0xe5200000                        . = ORIGIN (ilram)
+
+.ilram          0xe5200000        0x0
+                0x71252800                        _lilram = ABSOLUTE ((LOADADDR (.ilram) + ORIGIN (ram)))
+                0xe5200000                        _rilram = .
+ *(.ilram)
+                0xe5200000                        . = ALIGN (0x10)
+                0xe500e000                        . = ORIGIN (xyram)
+
+.xyram          0xe500e000        0x0
+                0x71060800                        _lxyram = ABSOLUTE ((LOADADDR (.xyram) + ORIGIN (ram)))
+                0xe500e000                        _rxyram = .
+ *(.xram .yram .xyram)
+                0xe500e000                        . = ALIGN (0x10)
+                0x00000000                        _silram = SIZEOF (.ilram)
+                0x00000000                        _sxyram = SIZEOF (.xyram)
+                0x00000000                        _lgmapped = ABSOLUTE (0x0)
+                0x00000000                        _sgmapped = ABSOLUTE (0x0)
+                0x00000000                        _lreloc = ABSOLUTE (0x0)
+                0x00000000                        _sreloc = ABSOLUTE (0x0)
+                0x8cffef00                        _gint_region_vbr = ORIGIN (vbr)
+
+.bss            0x8c05b710     0xd970
+                0x8c05b710                        _rbss = .
+ *(.bss .bss.* COMMON)
+ .bss.results   0x8c05b710       0x60 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .bss.bench_history
+                0x8c05b770      0x968 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .bss.live_history
+                0x8c05c0d8      0x968 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .bss.bench_game
+                0x8c05ca40     0x6140 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .bss.play_game
+                0x8c062b80     0x6140 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .bss           0x8c068cc0      0x3bc /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c068cc0                _gint_exc_catcher
+                0x8c068cc4                ___cpucap
+                0x8c068cc8                _tmu_callbacks
+                0x8c068d7c                _prof_tcnt
+                0x8c069080                        . = ALIGN (0x10)
+ *fill*         0x8c06907c        0x4 
+                0x0000d970                        _sbss = SIZEOF (.bss)
+
+.gint.bss       0x8c069080       0x70
+ *(.gint.bss)
+ .gint.bss      0x8c069080       0x6c /tmp/ccN5ibw7.ltrans0.ltrans.o
+                0x8c0690ac                _gint
+                0x8c0690f0                        . = ALIGN (0x10)
+ *fill*         0x8c0690ec        0x4 
+                0x8c0690f0                        _euram = .
+                0x00000070                        _sgbss = SIZEOF (.gint.bss)
+
+/DISCARD/
+ *(.gint.rodata.sh3 .gint.data.sh3 .gint.bss.sh3)
+ *(.jcr)
+ *(.eh_frame_hdr)
+ *(.eh_frame)
+ *(.comment)
+OUTPUT(casio_sandbox elf32-sh)
+
+.debug_info     0x00000000    0x1bf00
+ .debug_info    0x00000000     0x1576 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_info    0x00001576     0x111f CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_info    0x00002695      0x391 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_info    0x00002a26     0x16e1 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_info    0x00004107     0x4aa8 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_info    0x00008baf      0x38b /tmp/ccpgdcfu.debug.temp.o
+                0x00008baf                _hhk3_start.c.109e48b5
+ .debug_info    0x00008f3a      0x7e3 /tmp/ccNJNzqc.debug.temp.o
+                0x00008f3a                _getkey.c.20ef2095
+ .debug_info    0x0000971d      0xa91 /tmp/ccycIS0Y.debug.temp.o
+                0x0000971d                _keydev.c.a961d1f0
+ .debug_info    0x0000a1ae     0x108a /tmp/ccavEhd4.debug.temp.o
+                0x0000a1ae                _keysc.c.734d510e
+ .debug_info    0x0000b238      0xb73 /tmp/ccbB8Q6t.debug.temp.o
+                0x0000b238                _prof.c.f33d9b8c
+ .debug_info    0x0000bdab      0x203 /tmp/ccGN0oYA.debug.temp.o
+                0x0000bdab                _dprint.c.e262b872
+ .debug_info    0x0000bfae      0x173 /tmp/ccUwnpk2.debug.temp.o
+                0x0000bfae                _dtext.c.73e2fe32
+ .debug_info    0x0000c121      0x18e /tmp/ccdHABiN.debug.temp.o
+                0x0000c121                _dwindow.c.36bcbb06
+ .debug_info    0x0000c2af       0xdb /tmp/cc6mlDXu.debug.temp.o
+                0x0000c2af                _dclear.c.25aa79d2
+ .debug_info    0x0000c38a      0x16c /tmp/ccPeUJBm.debug.temp.o
+                0x0000c38a                _dpixel.c.5392160c
+ .debug_info    0x0000c4f6      0x284 /tmp/cc1Ykg8n.debug.temp.o
+                0x0000c4f6                _drect.c.eef61fa1
+ .debug_info    0x0000c77a      0x7d0 /tmp/cc4buMpl.debug.temp.o
+                0x0000c77a                _dupdate.c.9116ea81
+ .debug_info    0x0000cf4a      0x32f /tmp/ccP9zRSF.debug.temp.o
+                0x0000cf4a                _dvram.c.0015b306
+ .debug_info    0x0000d279      0x645 /tmp/ccfNSEus.debug.temp.o
+                0x0000d279                _topti.c.074213b8
+ .debug_info    0x0000d8be     0x1409 /tmp/cchXvnGK.debug.temp.o
+                0x0000d8be                _tmu.c.49fcc073
+ .debug_info    0x0000ecc7      0x3f5 /tmp/ccJ0IHIH.debug.temp.o
+                0x0000ecc7                _video.c.0a4d761a
+ .debug_info    0x0000f0bc      0x6b7 /tmp/ccM9opev.debug.temp.o
+                0x0000f0bc                _touch.c.673cb769
+ .debug_info    0x0000f773      0x501 /tmp/cckYh08B.debug.temp.o
+                0x0000f773                _driver.c.90e49095
+ .debug_info    0x0000fc74      0x76b /tmp/ccLqh5eV.debug.temp.o
+                0x0000fc74                _cpg.c.e37270a2
+ .debug_info    0x000103df     0x11ed /tmp/cc1eK4wR.debug.temp.o
+                0x000103df                _overclock.c.0a70533d
+ .debug_info    0x000115cc      0x194 /tmp/ccu2N1h0.debug.temp.o
+                0x000115cc                _atomic.c.4337ed29
+ .debug_info    0x00011760       0x9b /tmp/cc5f7g4K.debug.temp.o
+                0x00011760                _sleep.c.410c14c7
+ .debug_info    0x000117fb      0x1ab /tmp/ccG8PQ8K.debug.temp.o
+                0x000117fb                _image_create_vram.c.eda768ed
+ .debug_info    0x000119a6      0x186 /tmp/ccZS7tFU.debug.temp.o
+                0x000119a6                _image_free.c.15c4195d
+ .debug_info    0x00011b2c     0x17a7 /tmp/ccjtKGcE.debug.temp.o
+                0x00011b2c                _intc.c.9b659b1a
+ .debug_info    0x000132d3      0xc52 /tmp/cczln76O.debug.temp.o
+                0x000132d3                _exch.c.4841ea3e
+ .debug_info    0x00013f25       0xa4 /tmp/cc2HYUk0.debug.temp.o
+                0x00013f25                _hardware.c.56b03c64
+ .debug_info    0x00013fc9      0x441 /tmp/cc9vNEX4.debug.temp.o
+                0x00013fc9                _kernel.c.2d7405b0
+ .debug_info    0x0001440a      0x7a7 /tmp/ccSdDU7g.debug.temp.o
+                0x0001440a                _osmenu.c.bdf41384
+ .debug_info    0x00014bb1      0x2b0 /tmp/cclgZxIG.debug.temp.o
+                0x00014bb1                _start.c.7df3fd5f
+ .debug_info    0x00014e61      0xc10 /tmp/cc1HJRrC.debug.temp.o
+                0x00014e61                _world.c.61df4710
+ .debug_info    0x00015a71      0x410 /tmp/ccjEuAkn.debug.temp.o
+                0x00015a71                _kmalloc.c.8643d931
+ .debug_info    0x00015e81      0x8db /tmp/ccAts1am.debug.temp.o
+                0x00015e81                _mmu.c.86628bd2
+ .debug_info    0x0001675c      0x61f /tmp/ccYOe52Q.debug.temp.o
+                0x0001675c                _r61523.c.108b37da
+ .debug_info    0x00016d7b      0x48a /tmp/ccAP9OMF.debug.temp.o
+                0x00016d7b                _topti.c.641bcdc1
+ .debug_info    0x00017205     0x184b /tmp/cc8uCLqt.debug.temp.o
+                0x00017205                _i2c.c.a6e76f84
+ .debug_info    0x00018a50      0x3aa /tmp/ccazBuOo.debug.temp.o
+                0x00018a50                _i2c_inth.c.d8d35edd
+ .debug_info    0x00018dfa      0x371 /tmp/ccc58ZkW.debug.temp.o
+                0x00018dfa                _cpu.c.0a3fc930
+ .debug_info    0x0001916b      0x1aa /tmp/ccjaimlL.debug.temp.o
+                0x0001916b                _image_create.c.ab11ae98
+ .debug_info    0x00019315      0x131 /tmp/ccsM6TA9.debug.temp.o
+                0x00019315                _syscall.c.e8325637
+ .debug_info    0x00019446      0x291 /tmp/cc65IXlC.debug.temp.o
+                0x00019446                _arena_osheap.c.53e15e80
+ .debug_info    0x000196d7      0x2c6 /tmp/ccfSwYfZ.debug.temp.o
+                0x000196d7                _fxlibc_hal.c.997f13bf
+ .debug_info    0x0001999d      0x272 /tmp/ccNy2TT5.debug.temp.o
+                0x0001999d                _fs.c.700ba562
+ .debug_info    0x00019c0f      0x1f5 /tmp/cclpCRT1.debug.temp.o
+                0x00019c0f                _lseek.c.54b87fbd
+ .debug_info    0x00019e04      0x1f5 /tmp/cc0o8yZI.debug.temp.o
+                0x00019e04                _read.c.34fed073
+ .debug_info    0x00019ff9      0x1f5 /tmp/ccWaTgtT.debug.temp.o
+                0x00019ff9                _write.c.4926f044
+ .debug_info    0x0001a1ee     0x1335 /tmp/ccPxHcwY.debug.temp.o
+                0x0001a1ee                _rtc.c.0a9e9b05
+ .debug_info    0x0001b523      0x482 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_info    0x0001b9a5      0x491 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .debug_info    0x0001be36       0xca /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+
+.debug_abbrev   0x00000000     0x6471
+ .debug_abbrev  0x00000000      0x376 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_abbrev  0x00000376      0x39f CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_abbrev  0x00000715      0x1c4 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_abbrev  0x000008d9      0x30d CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_abbrev  0x00000be6      0x49e /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_abbrev  0x00001084      0x173 /tmp/ccpgdcfu.debug.temp.o
+ .debug_abbrev  0x000011f7      0x2ab /tmp/ccNJNzqc.debug.temp.o
+ .debug_abbrev  0x000014a2      0x2e8 /tmp/ccycIS0Y.debug.temp.o
+ .debug_abbrev  0x0000178a      0x345 /tmp/ccavEhd4.debug.temp.o
+ .debug_abbrev  0x00001acf      0x283 /tmp/ccbB8Q6t.debug.temp.o
+ .debug_abbrev  0x00001d52      0x108 /tmp/ccGN0oYA.debug.temp.o
+ .debug_abbrev  0x00001e5a       0xb5 /tmp/ccUwnpk2.debug.temp.o
+ .debug_abbrev  0x00001f0f       0xc7 /tmp/ccdHABiN.debug.temp.o
+ .debug_abbrev  0x00001fd6       0x96 /tmp/cc6mlDXu.debug.temp.o
+ .debug_abbrev  0x0000206c       0xf3 /tmp/ccPeUJBm.debug.temp.o
+ .debug_abbrev  0x0000215f      0x113 /tmp/cc1Ykg8n.debug.temp.o
+ .debug_abbrev  0x00002272      0x161 /tmp/cc4buMpl.debug.temp.o
+ .debug_abbrev  0x000023d3      0x199 /tmp/ccP9zRSF.debug.temp.o
+ .debug_abbrev  0x0000256c      0x20f /tmp/ccfNSEus.debug.temp.o
+ .debug_abbrev  0x0000277b      0x3b3 /tmp/cchXvnGK.debug.temp.o
+ .debug_abbrev  0x00002b2e      0x13d /tmp/ccJ0IHIH.debug.temp.o
+ .debug_abbrev  0x00002c6b      0x209 /tmp/ccM9opev.debug.temp.o
+ .debug_abbrev  0x00002e74      0x232 /tmp/cckYh08B.debug.temp.o
+ .debug_abbrev  0x000030a6      0x229 /tmp/ccLqh5eV.debug.temp.o
+ .debug_abbrev  0x000032cf      0x2f9 /tmp/cc1eK4wR.debug.temp.o
+ .debug_abbrev  0x000035c8      0x10b /tmp/ccu2N1h0.debug.temp.o
+ .debug_abbrev  0x000036d3       0x66 /tmp/cc5f7g4K.debug.temp.o
+ .debug_abbrev  0x00003739       0xec /tmp/ccG8PQ8K.debug.temp.o
+ .debug_abbrev  0x00003825       0xf3 /tmp/ccZS7tFU.debug.temp.o
+ .debug_abbrev  0x00003918      0x3a1 /tmp/ccjtKGcE.debug.temp.o
+ .debug_abbrev  0x00003cb9      0x3c0 /tmp/cczln76O.debug.temp.o
+ .debug_abbrev  0x00004079       0x78 /tmp/cc2HYUk0.debug.temp.o
+ .debug_abbrev  0x000040f1      0x21d /tmp/cc9vNEX4.debug.temp.o
+ .debug_abbrev  0x0000430e      0x132 /tmp/ccSdDU7g.debug.temp.o
+ .debug_abbrev  0x00004440      0x1e8 /tmp/cclgZxIG.debug.temp.o
+ .debug_abbrev  0x00004628      0x228 /tmp/cc1HJRrC.debug.temp.o
+ .debug_abbrev  0x00004850      0x180 /tmp/ccjEuAkn.debug.temp.o
+ .debug_abbrev  0x000049d0      0x223 /tmp/ccAts1am.debug.temp.o
+ .debug_abbrev  0x00004bf3      0x1b6 /tmp/ccYOe52Q.debug.temp.o
+ .debug_abbrev  0x00004da9      0x187 /tmp/ccAP9OMF.debug.temp.o
+ .debug_abbrev  0x00004f30      0x278 /tmp/cc8uCLqt.debug.temp.o
+ .debug_abbrev  0x000051a8      0x1bc /tmp/ccazBuOo.debug.temp.o
+ .debug_abbrev  0x00005364      0x1ae /tmp/ccc58ZkW.debug.temp.o
+ .debug_abbrev  0x00005512       0xeb /tmp/ccjaimlL.debug.temp.o
+ .debug_abbrev  0x000055fd       0xb8 /tmp/ccsM6TA9.debug.temp.o
+ .debug_abbrev  0x000056b5      0x13f /tmp/cc65IXlC.debug.temp.o
+ .debug_abbrev  0x000057f4      0x149 /tmp/ccfSwYfZ.debug.temp.o
+ .debug_abbrev  0x0000593d      0x142 /tmp/ccNy2TT5.debug.temp.o
+ .debug_abbrev  0x00005a7f       0xf3 /tmp/cclpCRT1.debug.temp.o
+ .debug_abbrev  0x00005b72       0xf3 /tmp/cc0o8yZI.debug.temp.o
+ .debug_abbrev  0x00005c65       0xf3 /tmp/ccWaTgtT.debug.temp.o
+ .debug_abbrev  0x00005d58      0x2cc /tmp/ccPxHcwY.debug.temp.o
+ .debug_abbrev  0x00006024      0x1e6 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_abbrev  0x0000620a      0x1f7 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .debug_abbrev  0x00006401       0x70 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+
+.debug_loclists
+                0x00000000     0x4fb5
+ .debug_loclists
+                0x00000000      0x804 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_loclists
+                0x00000804      0xa34 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_loclists
+                0x00001238      0x5b3 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_loclists
+                0x000017eb      0x5d8 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_loclists
+                0x00001dc3     0x29f7 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_loclists
+                0x000047ba      0x3c4 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_loclists
+                0x00004b7e      0x437 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+
+.debug_aranges  0x00000000      0x1a8
+ .debug_aranges
+                0x00000000       0x28 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_aranges
+                0x00000028       0x88 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_aranges
+                0x000000b0       0x30 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_aranges
+                0x000000e0       0x50 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_aranges
+                0x00000130       0x20 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_aranges
+                0x00000150       0x20 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_aranges
+                0x00000170       0x20 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .debug_aranges
+                0x00000190       0x18 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+
+.debug_rnglists
+                0x00000000     0x10e4
+ .debug_rnglists
+                0x00000000       0xc6 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_rnglists
+                0x000000c6      0x25f CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_rnglists
+                0x00000325       0x48 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_rnglists
+                0x0000036d       0xb3 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_rnglists
+                0x00000420      0xbdf /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_rnglists
+                0x00000fff       0x77 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_rnglists
+                0x00001076       0x6e /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+
+.debug_line     0x00000000     0x89a8
+ .debug_line    0x00000000      0x82c CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_line    0x0000082c      0xce1 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_line    0x0000150d      0x2ef CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_line    0x000017fc      0x74b CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_line    0x00001f47     0x51e5 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_line    0x0000712c       0x68 /tmp/ccpgdcfu.debug.temp.o
+ .debug_line    0x00007194       0x6d /tmp/ccNJNzqc.debug.temp.o
+ .debug_line    0x00007201       0x76 /tmp/ccycIS0Y.debug.temp.o
+ .debug_line    0x00007277       0x94 /tmp/ccavEhd4.debug.temp.o
+ .debug_line    0x0000730b       0x68 /tmp/ccbB8Q6t.debug.temp.o
+ .debug_line    0x00007373       0x5a /tmp/ccGN0oYA.debug.temp.o
+ .debug_line    0x000073cd       0x48 /tmp/ccUwnpk2.debug.temp.o
+ .debug_line    0x00007415       0x43 /tmp/ccdHABiN.debug.temp.o
+ .debug_line    0x00007458       0x4c /tmp/cc6mlDXu.debug.temp.o
+ .debug_line    0x000074a4       0x51 /tmp/ccPeUJBm.debug.temp.o
+ .debug_line    0x000074f5       0x51 /tmp/cc1Ykg8n.debug.temp.o
+ .debug_line    0x00007546       0x63 /tmp/cc4buMpl.debug.temp.o
+ .debug_line    0x000075a9       0x72 /tmp/ccP9zRSF.debug.temp.o
+ .debug_line    0x0000761b       0x68 /tmp/ccfNSEus.debug.temp.o
+ .debug_line    0x00007683       0x85 /tmp/cchXvnGK.debug.temp.o
+ .debug_line    0x00007708       0x5f /tmp/ccJ0IHIH.debug.temp.o
+ .debug_line    0x00007767       0x84 /tmp/ccM9opev.debug.temp.o
+ .debug_line    0x000077eb       0x84 /tmp/cckYh08B.debug.temp.o
+ .debug_line    0x0000786f       0x63 /tmp/ccLqh5eV.debug.temp.o
+ .debug_line    0x000078d2       0x6e /tmp/cc1eK4wR.debug.temp.o
+ .debug_line    0x00007940       0x4c /tmp/ccu2N1h0.debug.temp.o
+ .debug_line    0x0000798c       0x43 /tmp/cc5f7g4K.debug.temp.o
+ .debug_line    0x000079cf       0x51 /tmp/ccG8PQ8K.debug.temp.o
+ .debug_line    0x00007a20       0x5a /tmp/ccZS7tFU.debug.temp.o
+ .debug_line    0x00007a7a       0x7f /tmp/ccjtKGcE.debug.temp.o
+ .debug_line    0x00007af9       0x93 /tmp/cczln76O.debug.temp.o
+ .debug_line    0x00007b8c       0x4c /tmp/cc2HYUk0.debug.temp.o
+ .debug_line    0x00007bd8       0x7c /tmp/cc9vNEX4.debug.temp.o
+ .debug_line    0x00007c54       0x55 /tmp/ccSdDU7g.debug.temp.o
+ .debug_line    0x00007ca9       0x76 /tmp/cclgZxIG.debug.temp.o
+ .debug_line    0x00007d1f       0x7c /tmp/cc1HJRrC.debug.temp.o
+ .debug_line    0x00007d9b       0x55 /tmp/ccjEuAkn.debug.temp.o
+ .debug_line    0x00007df0       0x6c /tmp/ccAts1am.debug.temp.o
+ .debug_line    0x00007e5c       0x5f /tmp/ccYOe52Q.debug.temp.o
+ .debug_line    0x00007ebb       0x5e /tmp/ccAP9OMF.debug.temp.o
+ .debug_line    0x00007f19       0x8d /tmp/cc8uCLqt.debug.temp.o
+ .debug_line    0x00007fa6       0x63 /tmp/ccazBuOo.debug.temp.o
+ .debug_line    0x00008009       0x5a /tmp/ccc58ZkW.debug.temp.o
+ .debug_line    0x00008063       0x5a /tmp/ccjaimlL.debug.temp.o
+ .debug_line    0x000080bd       0x4c /tmp/ccsM6TA9.debug.temp.o
+ .debug_line    0x00008109       0x4c /tmp/cc65IXlC.debug.temp.o
+ .debug_line    0x00008155       0x68 /tmp/ccfSwYfZ.debug.temp.o
+ .debug_line    0x000081bd       0x68 /tmp/ccNy2TT5.debug.temp.o
+ .debug_line    0x00008225       0x68 /tmp/cclpCRT1.debug.temp.o
+ .debug_line    0x0000828d       0x68 /tmp/cc0o8yZI.debug.temp.o
+ .debug_line    0x000082f5       0x68 /tmp/ccWaTgtT.debug.temp.o
+ .debug_line    0x0000835d       0x80 /tmp/ccPxHcwY.debug.temp.o
+ .debug_line    0x000083dd      0x29e /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_line    0x0000867b      0x2db /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .debug_line    0x00008956       0x52 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+
+.debug_str      0x00000000     0x4f10
+ .debug_str     0x00000000     0x4f10 CMakeFiles/casio_sandbox.dir/src/main.c.obj
+                                0xb08 (size before relaxing)
+ .debug_str     0x00004f10      0x502 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_str     0x00004f10      0x25b CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_str     0x00004f10      0x5aa CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_str     0x00004f10      0x449 /tmp/ccN5ibw7.ltrans0.ltrans.o
+ .debug_str     0x00004f10      0x3fa /tmp/ccpgdcfu.debug.temp.o
+ .debug_str     0x00004f10      0x961 /tmp/ccNJNzqc.debug.temp.o
+ .debug_str     0x00004f10      0x92c /tmp/ccycIS0Y.debug.temp.o
+ .debug_str     0x00004f10      0xb9f /tmp/ccavEhd4.debug.temp.o
+ .debug_str     0x00004f10      0x524 /tmp/ccbB8Q6t.debug.temp.o
+ .debug_str     0x00004f10      0x1ff /tmp/ccGN0oYA.debug.temp.o
+ .debug_str     0x00004f10      0x224 /tmp/ccUwnpk2.debug.temp.o
+ .debug_str     0x00004f10      0x1b9 /tmp/ccdHABiN.debug.temp.o
+ .debug_str     0x00004f10      0x1bc /tmp/cc6mlDXu.debug.temp.o
+ .debug_str     0x00004f10      0x210 /tmp/ccPeUJBm.debug.temp.o
+ .debug_str     0x00004f10      0x228 /tmp/cc1Ykg8n.debug.temp.o
+ .debug_str     0x00004f10      0x3d4 /tmp/cc4buMpl.debug.temp.o
+ .debug_str     0x00004f10      0x328 /tmp/ccP9zRSF.debug.temp.o
+ .debug_str     0x00004f10      0x3f0 /tmp/ccfNSEus.debug.temp.o
+ .debug_str     0x00004f10      0x8cc /tmp/cchXvnGK.debug.temp.o
+ .debug_str     0x00004f10      0x34e /tmp/ccJ0IHIH.debug.temp.o
+ .debug_str     0x00004f10      0x483 /tmp/ccM9opev.debug.temp.o
+ .debug_str     0x00004f10      0x487 /tmp/cckYh08B.debug.temp.o
+ .debug_str     0x00004f10      0x3ee /tmp/ccLqh5eV.debug.temp.o
+ .debug_str     0x00004f10      0x765 /tmp/cc1eK4wR.debug.temp.o
+ .debug_str     0x00004f10      0x1d9 /tmp/ccu2N1h0.debug.temp.o
+ .debug_str     0x00004f10      0x1c5 /tmp/cc5f7g4K.debug.temp.o
+ .debug_str     0x00004f10      0x288 /tmp/ccG8PQ8K.debug.temp.o
+ .debug_str     0x00004f10      0x24c /tmp/ccZS7tFU.debug.temp.o
+ .debug_str     0x00004f10      0x784 /tmp/ccjtKGcE.debug.temp.o
+ .debug_str     0x00004f10      0x8fc /tmp/cczln76O.debug.temp.o
+ .debug_str     0x00004f10      0x18b /tmp/cc2HYUk0.debug.temp.o
+ .debug_str     0x00004f10      0x463 /tmp/cc9vNEX4.debug.temp.o
+ .debug_str     0x00004f10      0x418 /tmp/ccSdDU7g.debug.temp.o
+ .debug_str     0x00004f10      0x2a5 /tmp/cclgZxIG.debug.temp.o
+ .debug_str     0x00004f10      0x6c9 /tmp/cc1HJRrC.debug.temp.o
+ .debug_str     0x00004f10      0x2d4 /tmp/ccjEuAkn.debug.temp.o
+ .debug_str     0x00004f10      0x33d /tmp/ccAts1am.debug.temp.o
+ .debug_str     0x00004f10      0x454 /tmp/ccYOe52Q.debug.temp.o
+ .debug_str     0x00004f10      0x33e /tmp/ccAP9OMF.debug.temp.o
+ .debug_str     0x00004f10      0xc5d /tmp/cc8uCLqt.debug.temp.o
+ .debug_str     0x00004f10      0x47c /tmp/ccazBuOo.debug.temp.o
+ .debug_str     0x00004f10      0x2a7 /tmp/ccc58ZkW.debug.temp.o
+ .debug_str     0x00004f10      0x25d /tmp/ccjaimlL.debug.temp.o
+ .debug_str     0x00004f10      0x1f1 /tmp/ccsM6TA9.debug.temp.o
+ .debug_str     0x00004f10      0x28d /tmp/cc65IXlC.debug.temp.o
+ .debug_str     0x00004f10      0x2cf /tmp/ccfSwYfZ.debug.temp.o
+ .debug_str     0x00004f10      0x23d /tmp/ccNy2TT5.debug.temp.o
+ .debug_str     0x00004f10      0x1fa /tmp/cclpCRT1.debug.temp.o
+ .debug_str     0x00004f10      0x1f0 /tmp/cc0o8yZI.debug.temp.o
+ .debug_str     0x00004f10      0x1f1 /tmp/ccWaTgtT.debug.temp.o
+ .debug_str     0x00004f10      0x823 /tmp/ccPxHcwY.debug.temp.o
+ .debug_str     0x00004f10      0x214 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_udivdi3.o)
+ .debug_str     0x00004f10      0x214 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_umoddi3.o)
+ .debug_str     0x00004f10      0x191 /home/dev/.local/share/fxsdk/sysroot/lib/gcc/sh3eb-elf/14.1.0/libgcc.a(_clz.o)
+
+.debug_frame    0x00000000     0x19f8
+ .debug_frame   0x00000000       0x8c CMakeFiles/casio_sandbox.dir/src/main.c.obj
+ .debug_frame   0x0000008c      0x2f0 CMakeFiles/casio_sandbox.dir/src/game.c.obj
+ .debug_frame   0x0000037c       0xb8 CMakeFiles/casio_sandbox.dir/src/perf.c.obj
+ .debug_frame   0x00000434      0x264 CMakeFiles/casio_sandbox.dir/src/render.c.obj
+ .debug_frame   0x00000698     0x1360 /tmp/ccN5ibw7.ltrans0.ltrans.o
+
+.debug_line_str
+                0x00000000     0x156e
+ .debug_line_str
+                0x00000000     0x156e /tmp/ccpgdcfu.debug.temp.o
+                                0x200 (size before relaxing)
+ .debug_line_str
+                0x0000156e      0x214 /tmp/ccNJNzqc.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x252 /tmp/ccycIS0Y.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x285 /tmp/ccavEhd4.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1f6 /tmp/ccbB8Q6t.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1a3 /tmp/ccGN0oYA.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x117 /tmp/ccUwnpk2.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x10e /tmp/ccdHABiN.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x168 /tmp/cc6mlDXu.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x172 /tmp/ccPeUJBm.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x170 /tmp/cc1Ykg8n.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x20d /tmp/cc4buMpl.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x213 /tmp/ccP9zRSF.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x219 /tmp/ccfNSEus.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x263 /tmp/cchXvnGK.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1b6 /tmp/ccJ0IHIH.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x290 /tmp/ccM9opev.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x29f /tmp/cckYh08B.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1f2 /tmp/ccLqh5eV.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1c8 /tmp/cc1eK4wR.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x155 /tmp/ccu2N1h0.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x100 /tmp/cc5f7g4K.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x17e /tmp/ccG8PQ8K.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1a9 /tmp/ccZS7tFU.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x28f /tmp/ccjtKGcE.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x2bf /tmp/cczln76O.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x164 /tmp/cc2HYUk0.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x218 /tmp/cc9vNEX4.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1a6 /tmp/ccSdDU7g.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x23e /tmp/cclgZxIG.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x215 /tmp/cc1HJRrC.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x19f /tmp/ccjEuAkn.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x240 /tmp/ccAts1am.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1ba /tmp/ccYOe52Q.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1f7 /tmp/ccAP9OMF.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x2cf /tmp/cc8uCLqt.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1eb /tmp/ccazBuOo.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1a8 /tmp/ccc58ZkW.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1b0 /tmp/ccjaimlL.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x15e /tmp/ccsM6TA9.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x169 /tmp/cc65IXlC.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1ea /tmp/ccfSwYfZ.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1de /tmp/ccNy2TT5.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1e4 /tmp/cclpCRT1.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1e2 /tmp/cc0o8yZI.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x1e4 /tmp/ccWaTgtT.debug.temp.o
+ .debug_line_str
+                0x0000156e      0x254 /tmp/ccPxHcwY.debug.temp.o

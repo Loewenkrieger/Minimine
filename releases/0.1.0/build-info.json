@@ -1,0 +1,76 @@
+{
+  "artifact": "CasioSandbox.hh3",
+  "file_bytes": 37732,
+  "sha256": "0464f0abecc0afc7a38f5dd347ea3e209d230e8be684da2233111ea2bc36d1da",
+  "format": "ELF32 big-endian SuperH EXEC",
+  "entry_point": "0x8c057478",
+  "machine_flags": "0x6",
+  "metadata": {
+    "VERSION": "0.1.0",
+    "AUTHOR": "Casio Sandbox project",
+    "DESCRIPTION": "2D block sandbox and repeatable performance test",
+    "NAME": "Casio Sandbox"
+  },
+  "regions": {
+    "ram": {
+      "start": "0x8c052800",
+      "used_bytes": 92400,
+      "capacity_bytes": 337920,
+      "free_bytes": 245520
+    },
+    "eram": {
+      "start": "0x8cff0000",
+      "used_bytes": 0,
+      "capacity_bytes": 61184,
+      "free_bytes": 61184
+    },
+    "vbr": {
+      "start": "0x8cffef00",
+      "used_bytes": 0,
+      "capacity_bytes": 4352,
+      "free_bytes": 4352
+    },
+    "ilram": {
+      "start": "0xe5200000",
+      "used_bytes": 0,
+      "capacity_bytes": 4096,
+      "free_bytes": 4096
+    },
+    "xyram": {
+      "start": "0xe500e000",
+      "used_bytes": 0,
+      "capacity_bytes": 16384,
+      "free_bytes": 16384
+    }
+  },
+  "load_segments": [
+    {
+      "region": "ram",
+      "address": 2349148160,
+      "physical_address": 2349148160,
+      "memory_bytes": 92288,
+      "file_bytes": 36624,
+      "executable": true
+    },
+    {
+      "region": "ram",
+      "address": 2349240448,
+      "physical_address": 2349240448,
+      "memory_bytes": 112,
+      "file_bytes": 112,
+      "executable": false
+    }
+  ],
+  "toolchain_image": "ghcr.io/therainbowphoenix/gint-docker@sha256:9f358bfc47ee95cfd8ee973aabdd641d995ca4bdd1324c92dc1bd87c78d8661e",
+  "source_sha256": {
+    "src/game.c": "48e227384f4e4f053d8da85de083c6f9cf1c1d63a0cb9dc7c1e522b641e3a038",
+    "src/game.h": "cbd61da7533c1db0cd4960e35bf1e91aa00f124befe5c86b083330ea67c78d65",
+    "src/main.c": "56aa17c87f7639911d28bda735331ba594365f243aef114e050e005d046c433a",
+    "src/perf.c": "a15b33fb5b0b1695fa71884941e67f90cac899608fa6cb2a5cba5bff5c481e76",
+    "src/perf.h": "9c79a9a752aeee4e942acf00948cc28fd827a151cbace30e648e90c5aa50d5d5",
+    "src/render.c": "bec91ccdf192e2f6eff9d01d6fd58c21300c293c1a2c967ba1c68bbcfc97d833",
+    "src/render.h": "41a10973832267ff62822b1a4828f0830e8b5d4646efa6f29b3854da44480968",
+    "CMakeLists.txt": "f83ea16767018c6f3c28be2721fe805e17901f73f998b61a913854e131b527cd"
+  },
+  "hardware_tested": false
+}
