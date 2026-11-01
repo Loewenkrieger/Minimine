@@ -63,3 +63,10 @@ Regressionstest direkt geprueft. Der Grafikcache einschliesslich Mobs ist auf
 Neue Systeme werden separat mit anfangs 16 Mobs und 32 aktiven Oefen ueber
 18.000 Spielschritte getestet. Das misst keine Geschwindigkeit des CP400.
 Eine Messung von 0.4.0 auf dem echten Geraet steht weiterhin aus.
+
+
+## Version 0.4.1
+
+Touchbedienung und halbe Stapel betreffen nur pausierte Menues. Der alte
+Vergleichsbenchmark bleibt unveraendert und ist weiterhin gegen 0.1.0 geprueft.
+Messungen auf dem CP400 stehen noch aus.

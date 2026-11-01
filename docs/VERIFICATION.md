@@ -1,9 +1,30 @@
-# Pruefstand - Minimine 0.4.0, 31. Oktober 2026
+# Pruefstand - Minimine 0.4.1, 1. November 2026
+
+## Neu in 0.4.1
+
+- Ganze Stapel per Quelle/Ziel antippen oder ziehen; Transfer erst beim Loslassen.
+- DIV + Touch bewegt die aufgerundete Haelfte. Mengen 1, 17, 32, 33 und 64,
+  volle/teilvolle Ziele, verbotene Halbtauschversuche und Haltbarkeit geprueft.
+- 10.000 weitere gemischte ganze/halbe Touchtransfers erhalten alle Mengen und
+  Haltbarkeiten sowie den reservierten Platz fuer Crafting-Zutaten.
+- Ziehen nach ausserhalb, auf Ergebnisfelder und Schaltflaechen sowie Unterbrechen
+  durch Tasten/Menuwechsel kann keine Items verlieren oder Vorschauen duplizieren.
+- Ruestung/Schliessen antippbar; SHIFT bleibt Ruestungswechsel, DIV teilt Stapel.
+- Start, Pause, Hilfe, Ergebnisse, Speicherplaetze, Meldungen und Ja/Nein per Touch.
+  Zeichnung und Treffertest verwenden gemeinsame Rechtecke.
+- Echte Hauptschleife verarbeitet simulierte Touch-Down/Drag/Up-Ereignisse und
+  die gehaltene DIV-Taste. Mehrfaches Loslassen und der Wechsel auf eine neue
+  Seite loesen keine zweite Aktion aus. Menuezeiten bleiben pausiert.
+- Beenden mit ungespeichertem Spiel erfolgt direkt per Touch und Tastatur.
+  Speicher-/Ladebestaetigungen bleiben bestehen. Kein automatisches Speichern.
+- Touch-API und Ereigniserzeugung der tatsaechlich eingesetzten gint-Version
+  in der vorhandenen Werkzeugkette gelesen; echte CP400-Header erfolgreich gebaut.
+- Halbstapel-, Zieh-, Menue- und Rueckfrageansichten als Hostbilder geprueft.
 
 ## Bestanden
 
 - Nativer GCC-Bau: strenge Warnungen als Fehler, AddressSanitizer und
-  UndefinedBehaviorSanitizer ohne Befund in allen fuenf Testprogrammen.
+  UndefinedBehaviorSanitizer ohne Befund in allen sechs Testprogrammen.
 - Bestehende Physik, Kollisionen, Sneak, Kantenbremse, Spruenge und Kameragrenzen;
   20.000 gemischte Spielschritte.
 - Angrenzende Zielspalten bei 32 Positionen an Blockgrenzen, sechs seitliche
@@ -63,17 +84,18 @@
 - Vollstaendiger SuperH-Bau mit GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91
   einschliesslich der echten ClassPad-Dateischnittstelle.
 - ELF32 big endian SuperH EXEC, Maschinenflags 0x6, Einstiegspunkt
-  0x8c05e77c im ausfuehrbaren Ladesegment. Hollyhock-Metadaten Name
-  Minimine, Version 0.4.0; keine dynamischen oder ungueltigen Ladesegmente.
+  0x8c05ef9c im ausfuehrbaren Ladesegment. Zwei gepruefte RAM-Ladesegmente.
+  Hollyhock-Metadaten Name
+  Minimine, Version 0.4.1; keine dynamischen oder ungueltigen Ladesegmente.
 
 ## Auslieferung und Speicher
 
-[CasioSandbox.hh3](../releases/0.4.0/CasioSandbox.hh3), **151.412 Byte**.
+[CasioSandbox.hh3](../releases/0.4.1/CasioSandbox.hh3), **71.780 Byte**.
 
 SHA-256:
 
 ```text
-d43aad2704aaf15a0ebc5502b97c8837f391f81a0c8cedaacb1afa64a34dfd06
+7e875a2469f4d1920d9d16f2747c0270137eb8df3b017a8e8bb49f2fcfb4247c
 ```
 
 | Bereich | Groesse |
@@ -86,8 +108,8 @@ d43aad2704aaf15a0ebc5502b97c8837f391f81a0c8cedaacb1afa64a34dfd06
 | Mobmasken | 384 Byte |
 | Hintergrundkontur | 1.280 Byte |
 | Grafikpuffer gesamt | **17.056 Byte**, unter 20 KiB |
-| Hauptladebereich belegt | 150.656 von 337.920 Byte |
-| Hauptladebereich frei | 187.264 Byte |
+| Hauptladebereich belegt | 152.944 von 337.920 Byte |
+| Hauptladebereich frei | 184.976 Byte |
 
 Die Groessen der Spielzustaende und Grafikpuffer wurden auch aus den Symbolen
 im fertigen Geraete-ELF gelesen. Kein weiterer Vollbildpuffer; keine laufenden
@@ -95,16 +117,19 @@ Speicheranforderungen im Projektcode. Speichern verwendet einen 512-Byte-Puffer
 und den vorhandenen Benchmarkzustand als Ladepruefzustand. Stack, System-VRAM
 und OS-Heap sind nicht vollstaendig in der Hauptladebelegung enthalten.
 
-[Buildbericht](../releases/0.4.0/build-info.json),
-[ELF-Bericht](../releases/0.4.0/elf-info.txt) und
-[Abschnittsgroessen](../releases/0.4.0/section-sizes.txt) sind beigelegt.
-Quellpruefsummen werden mit dem ausgelieferten Stand abgeglichen. Ungestrippte
-ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
+[Buildbericht](../releases/0.4.1/build-info.json),
+[ELF-Bericht](../releases/0.4.1/elf-info.txt) und
+[Abschnittsgroessen](../releases/0.4.1/section-sizes.txt) sind beigelegt.
+Quellpruefsummen werden mit dem ausgelieferten Stand abgeglichen.
+Nicht initialisierte .bss-Daten belegen RAM, werden in dieser ELF-Datei aber
+nicht als Nullbytes gespeichert; die Dateigroesse ist daher kleiner als bei 0.4.0.
+Ungestrippte ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
 
 ## Echte Hardware noch offen
 
-Version 0.4.0 wurde noch nicht auf dem CP400 gestartet. Dateizugriffe ueber
-Fugue, Haltbarkeit der Sicherungen bei Stromunterbrechung, Tastenmatrix,
+Version 0.4.1 wurde noch nicht auf dem CP400 gestartet. Touch-Kalibrierung und
+Bedienung mit gehaltenem DIV, Dateizugriffe ueber Fugue, Haltbarkeit der
+Sicherungen bei Stromunterbrechung, Tastenmatrix,
 Darstellung und Performance muessen dort noch geprueft werden:
 [DEVICE_TEST.md](DEVICE_TEST.md). Die Messungen von 0.1.0 stehen in
 [BENCHMARK.md](BENCHMARK.md). Host-Zeitwerte sind keine CP400-FPS.

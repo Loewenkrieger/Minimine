@@ -1,4 +1,4 @@
-# Geraetetest fuer Minimine 0.4.0
+# Geraetetest fuer Minimine 0.4.1
 
 Die PC-Tests und der Geraetebau stehen in [VERIFICATION.md](VERIFICATION.md).
 Diese Liste ist fuer den echten ClassPad II fx-CP400 mit Hollyhock 3 vorgesehen.
@@ -7,7 +7,7 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 | Angabe | Wert |
 | --- | --- |
 | Hollyhock-/OS-Version | |
-| Spielversion | 0.4.0; SHA-256 siehe VERIFICATION.md |
+| Spielversion | 0.4.1; SHA-256 siehe VERIFICATION.md |
 | Datum, Takt, Einstellungen | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
 
@@ -25,6 +25,26 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 - [ ] Sneak stoppt an beiden Kanten, erlaubt Spruenge, faellt bei entferntem Boden.
 - [ ] Niedriger Gang passierbar; versuchtes Aufrichten zeigt Kein Platz und bleibt
       geduckt. Nach dem Gang erneut Runter druecken.
+
+## Touchscreen
+
+- [ ] Start-/Pausenmenue: jeden Eintrag direkt antippen, ohne Pfeil-/EXE-Auswahl.
+- [ ] Speichern/Laden: Slots, Zurueck sowie Ja/Nein in Rueckfragen antippen.
+- [ ] Hilfe/Ergebnisse: Spielen, Benchmark und Menue per Touch erreichbar.
+- [ ] Inventar: Quelle/Ziel antippen und alternativ Stapel per Ziehen absetzen.
+- [ ] DIV halten beim Ziehen bzw. Quellen-/Zieltippen: 32 gibt 16 ab, 33 gibt 17
+      ab, ein einzelnes Item bleibt nicht haengen. SHIFT wechselt nur Ruestung.
+- [ ] Gleiche Stapel bis 64 zusammenfuehren; Rest bleibt liegen. Ganze Stapel
+      tauschen, halbe Stapel bei anderem Material abweisen.
+- [ ] Ganze/halbe Stapel zwischen Hotbar, Rucksack, Crafting und Ofen bewegen.
+      Einzelne verschlissene Ausruestung in passende Slots ziehen und zurueck.
+- [ ] Loslassen ausserhalb, auf einer Vorschau oder einem ungueltigen Slot
+      verliert nichts. Gezogenes Ergebnis stellt nichts her, Antippen einmal.
+- [ ] Touchschaltflaechen fuer Ruestung und Schliessen funktionieren.
+- [ ] Getrennte Beruehrungen: Halten/Loslassen fuehrt keine doppelte Aktion aus;
+      Oeffnen eines Untermenues aktiviert dort nicht versehentlich einen Eintrag.
+- [ ] CLEAR, dann Beenden antippen: sofort zurueck zum Launcher, auch ungespeichert.
+      Kein automatisches Speichern. Dasselbe per Pfeile/EXE pruefen.
 
 ## Inventar, Rezepte und Haltbarkeit
 
@@ -84,6 +104,8 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
       und Ausruestung mit unveraenderter Resthaltbarkeit erhalten.
 
 ## Speichern und Laden auf dem CP400
+
+- [ ] Vorhandene Spielstaende von 0.4.0 lassen sich unveraendert laden.
 
 - [ ] Erstes Speichern erzeugt `/Minimine` ohne vorbereitete Zusatzdateien.
 - [ ] Alle drei Slots schreiben und nach Beenden/Neustart zurueckladen.

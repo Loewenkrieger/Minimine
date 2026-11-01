@@ -49,9 +49,9 @@ Tags `main` verändert den Projektbuild deshalb nicht automatisch.
 
 ## Ergebnis
 
-Die dokumentierte Werkzeugkette baut auch Version 0.3.0. Aktuelle Dateigroesse,
+Die dokumentierte Werkzeugkette baut auch Version 0.4.1. Aktuelle Dateigroesse,
 Pruefsumme und Speicherbelegung stehen in [VERIFICATION.md](VERIFICATION.md)
 und im erzeugten `build-cp/build-info.json`.
 
-Version 0.1.0 wurde auf dem CP400 gestartet und gemessen. Fuer 0.3.0 stehen
+Version 0.1.0 wurde auf dem CP400 gestartet und gemessen. Fuer 0.4.1 stehen
 Start, neue Funktionen und Performance auf dem echten Geraet noch aus.

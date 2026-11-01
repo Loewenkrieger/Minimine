@@ -1,4 +1,5 @@
 #include "render.h"
+#include "ui_layout.h"
 
 #include <gint/display.h>
 #include <string.h>
@@ -17,6 +18,14 @@ static void outline(int x, int y, int width, int height, int color)
     drect(x, y + height - 1, x + width - 1, y + height - 1, color);
     drect(x, y, x, y + height - 1, color);
     drect(x + width - 1, y, x + width - 1, y + height - 1, color);
+}
+static void button(UIRect r,const char *text,int color)
+{outline(r.x,r.y,r.w,r.h,color);dtext(r.x+8,r.y+11,color,text);}
+static void play_buttons(void)
+{
+    button(ui_play_rect(),"EXE: Spielen / Fortsetzen",ACCENT);
+    button(ui_benchmark_rect(),"0: Benchmark",MUTED);
+    button(ui_back_rect(),"CLEAR: Menue",MUTED);
 }
 
 enum { TILE_GRAPHICS=TILE_COUNT+4 };
@@ -493,7 +502,7 @@ void render_inventory(const Game *game,const InventoryUI *ui)
     unsigned width=ui->craft_width==3?3:2;
     const char *title=ui->armor?"RUESTUNG / PAUSE":ui->furnace?"OFEN / PAUSE":
         width==3?"WERKBANK / PAUSE":"INVENTAR / PAUSE";
-    page_title(title,"Pfeile: Auswahl   EXE: Quelle/Ziel");
+    page_title(title,"Touch / Pfeile   EXE: Quelle/Ziel");
     dtext(16,70,ACCENT,"Hotbar");dtext(16,122,ACCENT,"Inventar");
     if(ui->armor) {
         dtext(16,287,ACCENT,"Eisenruestung");
@@ -530,9 +539,10 @@ void render_inventory(const Game *game,const InventoryUI *ui)
     }
     if(game->notice==NOTICE_FULL || game->notice==NOTICE_WRONG_SLOT)
         dtext(16,449,C_WHITE,game_notice_text(game->notice));
-    dtext(16,470,MUTED,"EXE: Stapel / Ergebnis   5: ein Item");
-    dtext(16,487,MUTED,"X/Y/Z: Hotbar her  SHIFT: Ruestung");
-    dtext(16,508,ACCENT,"Keyboard / CLEAR: Schliessen");
+    dtext(16,467,MUTED,ui->dragging?"Loslassen: verschieben  DIV: halb":
+        ui->source_half?"Halber Stapel ausgewaehlt":"Touch: Ziehen / Tippen  DIV: halb");
+    button(ui_armor_rect(),ui->armor?"SHIFT: Zurueck":"SHIFT: Ruestung",ACCENT);
+    button(ui_close_rect(),"Schliessen",ACCENT);
 }
 
 void render_help(void)
@@ -553,12 +563,11 @@ void render_help(void)
     for(unsigned i=0;i<sizeof(lines)/sizeof(lines[0]);++i)
         dtext(16,80+(int)i*24,MUTED,lines[i]);
     dtext(16,335,C_WHITE,"Inventar: X/Y/Z holen den Hotbarstapel");
-    dtext(16,359,MUTED,"L = Logik, Z = Zeichnen, LCD = Transfer");
-    dtext(16,383,MUTED,"Physik 60 Hz. Benchmark: 3 Szenen.");
+    dtext(16,359,MUTED,"Touch: Ziehen / Quelle, dann Ziel");
+    dtext(16,383,MUTED,"DIV + Touch: halben Stapel bewegen");
     dtext(16,407,MUTED,"SHIFT im Inventar: Ruestung");
     dtext(16,431,MUTED,"Speichern/Laden: CLEAR-Menue");
-    dtext(16,477,ACCENT,"EXE: Spielen / Fortsetzen");
-    dtext(16,499,MUTED,"0: Benchmark   CLEAR: Menue");
+    play_buttons();
 }
 
 void render_results(const PerfSummary results[BENCH_PHASES])
@@ -579,8 +588,7 @@ void render_results(const PerfSummary results[BENCH_PHASES])
     }
     dtext(16, 419, MUTED, "P95: 95% der Bilder sind so schnell");
     dtext(16, 437, MUTED, "oder schneller. Werte bitte ablesen.");
-    dtext(16, 477, ACCENT, "EXE: Spielen   0: Test wiederholen");
-    dtext(16, 499, MUTED, "CLEAR: Menue");
+    play_buttons();
 }
 
 void render_error(const char *message)
@@ -595,14 +603,13 @@ void render_menu(bool pause,unsigned cursor)
 {
     page_title("MINIMINE " SANDBOX_VERSION,pause?"PAUSE / SPIELZEIT ANGEHALTEN":"ClassPad II / Hollyhock 3");
     static const char *const start[]={"Neues Spiel","Spielstand laden","Hilfe","Benchmark","Beenden"};
-    static const char *const paused[]={"Fortsetzen","Spielstand speichern","Spielstand laden","Hilfe","Beenden"};
+    static const char *const paused[]={"Fortsetzen","Spielstand speichern","Spielstand laden","Hilfe","Beenden (ohne Speichern)"};
     const char *const *labels=pause?paused:start;
     for(unsigned i=0;i<5;++i) {
-        int y=92+(int)i*53;
-        if(cursor==i) outline(12,y-8,296,34,ACCENT);
-        dtext(24,y,cursor==i?C_WHITE:MUTED,labels[i]);
+        UIRect r=ui_menu_rect(i);
+        button(r,labels[i],cursor==i?ACCENT:MUTED);
     }
-    dtext(16,435,MUTED,"Pfeile: Auswahl   EXE: Bestaetigen");
+    dtext(16,435,MUTED,"Antippen oder Pfeile / EXE");
     dtext(16,464,MUTED,pause?"CLEAR: Fortsetzen":"3 manuelle Spielstaende");
     dtext(16,493,MUTED,"0: Benchmark");
 }
@@ -610,8 +617,8 @@ void render_slots(bool saving,const SaveInfo slots[3],unsigned cursor)
 {
     page_title(saving?"SPIELSTAND SPEICHERN":"SPIELSTAND LADEN","Drei voneinander getrennte Slots");
     for(unsigned i=0;i<3;++i) {
-        int y=88+(int)i*92;
-        outline(16,y,288,78,cursor==i?ACCENT:MUTED);
+        UIRect r=ui_save_rect(i);int y=r.y;
+        outline(r.x,r.y,r.w,r.h,cursor==i?ACCENT:MUTED);
         dprint(26,y+9,C_WHITE,"Slot %u",i+1);
         const SaveInfo *s=&slots[i];
         if(s->status==SAVE_OK) {
@@ -621,22 +628,21 @@ void render_slots(bool saving,const SaveInfo slots[3],unsigned cursor)
                 (unsigned)s->health/10%10,(unsigned)s->hunger);
         } else dtext(26,y+35,MUTED,save_result_text(s->status));
     }
-    if(cursor==3) outline(16,370,288,34,ACCENT);
-    dtext(26,380,C_WHITE,"Zurueck");
-    dtext(16,461,MUTED,"Pfeile: Auswahl   EXE: Bestaetigen");
+    button(ui_save_rect(3),"Zurueck",cursor==3?ACCENT:MUTED);
+    dtext(16,461,MUTED,"Antippen oder Pfeile / EXE");
     dtext(16,493,MUTED,"CLEAR: Zurueck");
 }
 void render_confirm(const char *question,bool yes)
 {
     page_title("BESTAETIGEN","Das Spiel bleibt waehrenddessen pausiert");
     dtext(16,116,C_WHITE,question);
-    outline(16,184,132,42,yes?MUTED:ACCENT);dtext(50,199,C_WHITE,"Nein");
-    outline(172,184,132,42,yes?ACCENT:MUTED);dtext(219,199,C_WHITE,"Ja");
-    dtext(16,461,MUTED,"Pfeile: Auswahl   EXE: Bestaetigen");
+    button(ui_confirm_rect(false),"Nein",yes?MUTED:ACCENT);
+    button(ui_confirm_rect(true),"Ja",yes?ACCENT:MUTED);
+    dtext(16,461,MUTED,"Antippen oder Pfeile / EXE");
     dtext(16,493,MUTED,"CLEAR: Abbrechen");
 }
 void render_message(const char *message)
 {
     page_title("MINIMINE","Spielstand");dtext(16,116,C_WHITE,message);
-    dtext(16,481,ACCENT,"EXE / CLEAR: Weiter");
+    button(ui_message_rect(),"EXE / CLEAR: Weiter",ACCENT);
 }

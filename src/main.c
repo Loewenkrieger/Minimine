@@ -2,6 +2,7 @@
 #include "perf.h"
 #include "render.h"
 #include "storage.h"
+#include "ui_layout.h"
 #include <gint/config.h>
 #include <gint/display.h>
 #include <gint/keyboard.h>
@@ -18,7 +19,7 @@ typedef enum {
     MODE_START,MODE_PLAY,MODE_PAUSE,MODE_HELP,MODE_INVENTORY,
     MODE_SAVE,MODE_LOAD,MODE_CONFIRM,MODE_MESSAGE,MODE_BENCH,MODE_RESULTS
 } Mode;
-typedef enum { CONFIRM_SAVE,CONFIRM_LOAD,CONFIRM_EXIT } Confirmation;
+typedef enum { CONFIRM_SAVE,CONFIRM_LOAD } Confirmation;
 typedef struct {
     Mode mode,message_return,confirm_return;
     bool has_game,baseline,resume,page_dirty,running,yes;
@@ -28,6 +29,7 @@ typedef struct {
     const char *message;
     InventoryUI inventory;
     SaveInfo saves[3];
+    bool touching;Mode touch_mode;int touch_target;
 } App;
 typedef struct {bool jump,use,zero,clear,inventory,mine_released;int hotbar;unsigned sneak;} Presses;
 
@@ -40,9 +42,9 @@ static App app;
 static uint32_t elapsed_us(uint32_t start,uint32_t end)
 {prof_t context=prof_make();context.elapsed=start-end;return prof_time(context);}
 static void page(Mode mode)
-{app.mode=mode;app.page_dirty=true;app.cursor=0;}
+{app.mode=mode;app.page_dirty=true;app.cursor=0;app.touching=false;}
 static void enter_play(void)
-{app.mode=MODE_PLAY;app.resume=true;render_invalidate();}
+{app.mode=MODE_PLAY;app.resume=true;app.touching=false;render_invalidate();}
 static bool dirty(void)
 {return app.has_game && (!app.baseline || play_game.revision!=app.saved_revision);}
 static void new_game(void)
@@ -119,7 +121,6 @@ static void handle_page(int key)
         if(key==KEY_EXE && app.yes) {
             if(app.confirm==CONFIRM_SAVE) save_current();
             else if(app.confirm==CONFIRM_LOAD) load_current();
-            else app.running=false;
         }
         return;
     }
@@ -166,9 +167,66 @@ static void handle_page(int key)
         else if(app.cursor==1) slots_page(true);
         else if(app.cursor==2) slots_page(false);
         else if(app.cursor==3) page(MODE_HELP);
-        else if(dirty()) confirm(CONFIRM_EXIT,MODE_PAUSE);
         else app.running=false;
     }
+}
+static int page_hit(int x,int y)
+{
+    switch(app.mode) {
+    case MODE_START:case MODE_PAUSE:
+        for(unsigned i=0;i<5;++i) if(ui_contains(ui_menu_rect(i),x,y)) return (int)i;
+        break;
+    case MODE_SAVE:case MODE_LOAD:
+        for(unsigned i=0;i<4;++i) if(ui_contains(ui_save_rect(i),x,y)) return (int)i;
+        break;
+    case MODE_CONFIRM:
+        if(ui_contains(ui_confirm_rect(false),x,y)) return 0;
+        if(ui_contains(ui_confirm_rect(true),x,y)) return 1;
+        break;
+    case MODE_HELP:case MODE_RESULTS:
+        if(ui_contains(ui_play_rect(),x,y)) return 0;
+        if(ui_contains(ui_benchmark_rect(),x,y)) return 1;
+        if(ui_contains(ui_back_rect(),x,y)) return 2;
+        break;
+    case MODE_MESSAGE:if(ui_contains(ui_message_rect(),x,y)) return 0;break;
+    default:break;
+    }
+    return -1;
+}
+static void handle_menu_event(key_event_t e)
+{
+    if(app.mode==MODE_INVENTORY) {
+        if(e.type==KEYEV_DOWN) {
+            if(menu_command(e.key)==UI_NONE) return;
+            if(inventory_key(&play_game,&app.inventory,e.key)) enter_play();else app.page_dirty=true;
+        } else if(e.type==KEYEV_TOUCH_DOWN || e.type==KEYEV_TOUCH_DRAG || e.type==KEYEV_TOUCH_UP) {
+            InventoryUI *ui=&app.inventory;
+            unsigned cursor=ui->cursor;int source=ui->source;
+            bool half=ui->source_half,drag=ui->dragging,armor=ui->armor;
+            uint32_t revision=play_game.revision;Notice notice=play_game.notice;
+            UITouch event=e.type==KEYEV_TOUCH_DOWN?UI_TOUCH_DOWN:
+                e.type==KEYEV_TOUCH_DRAG?UI_TOUCH_DRAG:UI_TOUCH_UP;
+            if(ui_inventory_touch(&play_game,ui,event,e.x,e.y,keydown(KEY_DIV))) enter_play();
+            else if(cursor!=ui->cursor || source!=ui->source || half!=ui->source_half ||
+                    drag!=ui->dragging || armor!=ui->armor || revision!=play_game.revision ||
+                    notice!=play_game.notice) app.page_dirty=true;
+        }
+        return;
+    }
+    if(e.type==KEYEV_DOWN) {app.touching=false;handle_page(e.key);return;}
+    if(e.type==KEYEV_TOUCH_DOWN) {
+        app.touch_target=page_hit(e.x,e.y);app.touch_mode=app.mode;
+        app.touching=app.touch_target>=0;return;
+    }
+    if(e.type!=KEYEV_TOUCH_UP) return;
+    bool activate=app.touching && app.touch_mode==app.mode && app.touch_target==page_hit(e.x,e.y);
+    app.touching=false;if(!activate) return;
+    if(app.mode==MODE_START || app.mode==MODE_PAUSE || app.mode==MODE_SAVE || app.mode==MODE_LOAD) {
+        app.cursor=(unsigned)app.touch_target;handle_page(KEY_EXE);
+    } else if(app.mode==MODE_CONFIRM) {app.yes=app.touch_target==1;handle_page(KEY_EXE);}
+    else if(app.mode==MODE_HELP || app.mode==MODE_RESULTS)
+        handle_page(app.touch_target==0?KEY_EXE:app.touch_target==1?KEY_0:KEY_CLEAR);
+    else handle_page(KEY_EXE);
 }
 static void draw_page(void)
 {
@@ -179,7 +237,7 @@ static void draw_page(void)
     case MODE_INVENTORY:render_inventory(&play_game,&app.inventory);break;
     case MODE_SAVE:case MODE_LOAD:render_slots(app.mode==MODE_SAVE,app.saves,app.cursor);break;
     case MODE_CONFIRM:render_confirm(app.confirm==CONFIRM_SAVE?"Slot ueberschreiben?":
-        app.confirm==CONFIRM_LOAD?"Aktuelles Spiel verwerfen?":"Ohne Speichern beenden?",app.yes);break;
+        "Aktuelles Spiel verwerfen?",app.yes);break;
     case MODE_MESSAGE:render_message(app.message);break;
     case MODE_RESULTS:render_results(results);break;
     default:break;
@@ -229,8 +287,7 @@ int main(void)
     while(app.running) {
         if(app.mode!=MODE_PLAY && app.mode!=MODE_BENCH) {
             if(app.page_dirty) draw_page();
-            key_event_t e=getkey_opt(GETKEY_NONE,NULL);
-            if(e.type==KEYEV_DOWN) handle_page(e.key);
+            handle_menu_event(waitevent(NULL));
             continue;
         }
         if(app.resume) {

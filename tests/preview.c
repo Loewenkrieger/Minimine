@@ -38,6 +38,17 @@ int main(void)
     InventoryUI ui={.cursor=4,.source=0};
     render_inventory(&game,&ui);
     host_write_ppm("build/native/inventory.ppm");
+    game.slots[0]=(ItemStack){.item=ITEM_DIRT,.count=33};
+    ui.source=-1;
+    ui_inventory_touch(&game,&ui,UI_TOUCH_DOWN,50,100,true);
+    ui_inventory_touch(&game,&ui,UI_TOUCH_UP,50,100,true);
+    render_inventory(&game,&ui);host_write_ppm("build/native/touch-half-selected.ppm");
+    ui_inventory_touch(&game,&ui,UI_TOUCH_DOWN,50,100,true);
+    ui_inventory_touch(&game,&ui,UI_TOUCH_DRAG,50,155,true);
+    render_inventory(&game,&ui);host_write_ppm("build/native/touch-drag.ppm");
+    ui_inventory_touch(&game,&ui,UI_TOUCH_UP,50,155,true);
+    render_inventory(&game,&ui);host_write_ppm("build/native/touch-half-dropped.ppm");
+    game_init(&game,WORLD_SEED);
     for(unsigned i=0;i<4;++i)
         game.crafting[i]=(ItemStack){.item=ITEM_PLANKS,.count=1};
     ui=(InventoryUI){.cursor=CRAFT_RESULT,.source=-1,.craft_width=2};

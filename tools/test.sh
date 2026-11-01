@@ -8,7 +8,7 @@ sanitizers=(-fsanitize=address,undefined -fno-omit-frame-pointer)
 core=(src/game.c src/items.c src/inventory.c src/inventory_ui.c src/survival.c src/validate.c src/storage.c)
 view=(src/perf.c src/render.c tests/host/display.c)
 suites=("$@")
-if ((${#suites[@]} == 0)); then suites=(core crafting survival storage loop); fi
+if ((${#suites[@]} == 0)); then suites=(core crafting survival storage touch loop); fi
 for suite in "${suites[@]}"; do
     extra=()
     case "$suite" in

@@ -28,7 +28,21 @@ key_event_t pollevent(void)
     return e;
 }
 key_event_t waitevent(volatile int *timeout)
-{(void)timeout;assert(!"unexpected wait");return (key_event_t){0};}
+{
+    static bool pending;static key_event_t release;
+    if(pending) {pending=false;return release;}
+    key_event_t e=getkey_opt(GETKEY_NONE,timeout);UIRect r={0};bool touch=false;
+    if((app.mode==MODE_START || app.mode==MODE_PAUSE) && e.key==KEY_EXE)
+        {r=ui_menu_rect(app.cursor);touch=true;}
+    else if((app.mode==MODE_HELP || app.mode==MODE_RESULTS) && e.key==KEY_EXE)
+        {r=ui_play_rect();touch=true;}
+    else if(app.mode==MODE_INVENTORY && e.key==KEY_SHIFT) {r=ui_armor_rect();touch=true;}
+    else if(app.mode==MODE_INVENTORY && (e.key==KEY_KBD || e.key==KEY_CLEAR))
+        {r=ui_close_rect();touch=true;}
+    if(!touch) return e;
+    e=(key_event_t){.type=KEYEV_TOUCH_DOWN,.x=(unsigned short)(r.x+r.w/2),.y=(unsigned short)(r.y+r.h/2)};
+    release=e;release.type=KEYEV_TOUCH_UP;pending=true;return e;
+}
 static void presented(void)
 {
     ++presentations;counter-=20000;assert(presentations<700);
@@ -85,7 +99,7 @@ key_event_t getkey_opt(int options,volatile int *timeout)
     } else {
         assert(stage==11);
         if(app.mode==MODE_PAUSE) code=page_keys++<4?KEY_DOWN:KEY_EXE;
-        else {assert(app.mode==MODE_CONFIRM);code=app.yes?KEY_EXE:KEY_RIGHT;}
+        else assert(!"exit must not require confirmation");
     }
     held[code]=true;
     if(stage==1 || stage==8 || stage==10) key(KEYEV_UP,code);
@@ -139,9 +153,55 @@ static void menus_and_saves(void)
     memset(held,0,sizeof(held));next_event=event_count=0;
     puts("PASS: pause/start load, overwrite/discard confirmations, cancel and saving baseline");
 }
+static void touch_event(unsigned type,UIRect r)
+{
+    handle_menu_event((key_event_t){.type=type,
+        .x=(unsigned short)(r.x+r.w/2),.y=(unsigned short)(r.y+r.h/2)});
+}
+static void tap_menu(UIRect r)
+{touch_event(KEYEV_TOUCH_DOWN,r);touch_event(KEYEV_TOUCH_UP,r);}
+static void touch_menus(void)
+{
+    app=(App){.mode=MODE_START,.running=true};
+    touch_event(KEYEV_TOUCH_DOWN,ui_menu_rect(0));assert(!app.has_game);
+    touch_event(KEYEV_TOUCH_UP,ui_menu_rect(0));assert(app.mode==MODE_PLAY && app.has_game);
+    page(MODE_INVENTORY);app.inventory=(InventoryUI){.source=-1,.craft_width=2};
+    held[KEY_DIV]=true;handle_menu_event((key_event_t){.type=KEYEV_DOWN,.key=KEY_DIV});
+    tap_menu((UIRect){16,85,92,30});assert(app.inventory.source_half);
+    held[KEY_DIV]=false;tap_menu((UIRect){16,140,92,30});
+    assert(play_game.slots[0].count==16 && play_game.slots[3].count==16);
+    assert(!play_game.player.sneaking && !play_game.ticks);
+    tap_menu(ui_armor_rect());assert(app.inventory.armor);
+    tap_menu(ui_close_rect());assert(app.mode==MODE_PLAY);
+    page(MODE_PAUSE);
+    touch_event(KEYEV_TOUCH_DOWN,ui_menu_rect(1));touch_event(KEYEV_TOUCH_UP,ui_menu_rect(4));
+    assert(app.mode==MODE_PAUSE && app.running); /* No slide-to-quit. */
+    tap_menu(ui_menu_rect(1));assert(app.mode==MODE_SAVE);
+    tap_menu(ui_save_rect(0));assert(app.mode==MODE_CONFIRM && !app.yes);
+    touch_event(KEYEV_TOUCH_UP,ui_confirm_rect(true));assert(app.mode==MODE_CONFIRM); /* No fallthrough. */
+    tap_menu(ui_confirm_rect(false));assert(app.mode==MODE_SAVE);
+    tap_menu(ui_save_rect(0));tap_menu(ui_confirm_rect(true));assert(app.mode==MODE_MESSAGE && !dirty());
+    touch_event(KEYEV_TOUCH_UP,ui_message_rect());assert(app.mode==MODE_MESSAGE);
+    tap_menu(ui_message_rect());assert(app.mode==MODE_PAUSE);
+    game_step(&play_game,(GameInput){0});uint32_t ticks=play_game.ticks;
+    tap_menu(ui_menu_rect(2));tap_menu(ui_save_rect(0));assert(app.mode==MODE_CONFIRM);
+    tap_menu(ui_confirm_rect(false));assert(app.mode==MODE_LOAD && play_game.ticks==ticks);
+    tap_menu(ui_save_rect(0));tap_menu(ui_confirm_rect(true));assert(app.mode==MODE_PLAY && !dirty());
+    page(MODE_PAUSE);tap_menu(ui_menu_rect(3));assert(app.mode==MODE_HELP);
+    tap_menu(ui_back_rect());assert(app.mode==MODE_PAUSE);
+    tap_menu(ui_menu_rect(3));tap_menu(ui_benchmark_rect());assert(app.mode==MODE_BENCH);
+    page(MODE_RESULTS);tap_menu(ui_back_rect());assert(app.mode==MODE_PAUSE);
+    play_game.revision++;assert(dirty());
+    touch_event(KEYEV_TOUCH_DOWN,ui_menu_rect(4));assert(app.running && app.mode==MODE_PAUSE);
+    touch_event(KEYEV_TOUCH_UP,ui_menu_rect(4));assert(!app.running && app.mode==MODE_PAUSE);
+    /* Keyboard quitting is equally direct. */
+    app.running=true;app.cursor=4;handle_page(KEY_EXE);assert(!app.running && app.mode==MODE_PAUSE);
+    memset(held,0,sizeof(held));
+    puts("PASS: touch menus, real divide modifier, save/load yes/no, release guards and immediate dirty-game exit");
+}
 int main(void)
 {
-    controller();menus_and_saves();host_present_hook=presented;
+    controller();menus_and_saves();touch_menus();host_present_hook=presented;
     assert(minimine_main()==0 && quit && stage==11 && bench_frames==540);
     puts("PASS: real loop, catch-up edges, paused time, held-action suppression, workbench, 540-frame benchmark and exit");return 0;
 }

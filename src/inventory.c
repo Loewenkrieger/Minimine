@@ -88,18 +88,22 @@ bool game_can_return_crafting(const Game *g)
         if(g->crafting[i].count && !game_insert_stack(returned,g->crafting[i])) return false;
     return true;
 }
-bool game_transfer(Game *g,SlotRef from,SlotRef to,bool one)
+static bool transfer(Game *g,SlotRef from,SlotRef to,bool one,bool half)
 {
     ItemStack *a=ref_ptr(g,from),*b=ref_ptr(g,to);
     if(!a || !b || a==b || !a->count || !game_stack_valid(a)) return false;
     ItemStack old_a=*a,old_b=*b;
-    if(one) {
+    if(one || half) {
+        unsigned count=one?1u:((unsigned)a->count+1)/2;
         if(b->count) {
             if(a->item!=b->item || game_stack_limit(a->item)==1 ||
                b->count>=game_stack_limit(b->item)) return false;
-            ++b->count;
-        } else {*b=*a;b->count=1;}
-        consume(a);
+            unsigned room=game_stack_limit(b->item)-b->count;
+            if(count>room) count=room;
+            b->count=(uint16_t)(b->count+count);
+        } else {*b=*a;b->count=(uint16_t)count;}
+        a->count=(uint16_t)(a->count-count);
+        if(!a->count) *a=(ItemStack){0};
     } else if(b->count && a->item==b->item && game_stack_limit(a->item)>1) {
         unsigned cap=game_stack_limit(b->item);
         if(b->count>=cap) return false;
@@ -123,6 +127,10 @@ bool game_transfer(Game *g,SlotRef from,SlotRef to,bool one)
         {g->notice=NOTICE_NONE;g->notice_ticks=0;}
     return true;
 }
+bool game_transfer(Game *g,SlotRef from,SlotRef to,bool one)
+{return transfer(g,from,to,one,false);}
+bool game_transfer_half(Game *g,SlotRef from,SlotRef to)
+{return transfer(g,from,to,false,true);}
 static SlotRef legacy_ref(unsigned n)
 {
     return n<TOTAL_SLOTS?(SlotRef){SLOT_INVENTORY,n,0}:

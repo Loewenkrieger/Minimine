@@ -1,10 +1,13 @@
 #ifndef MINIMINE_INVENTORY_UI_H
 #define MINIMINE_INVENTORY_UI_H
 #include "game.h"
-enum { UI_RESULT=24, UI_ARMOR=25, UI_FURNACE=29, UI_MAX_SLOTS=25 };
+enum { UI_RESULT=24, UI_ARMOR=25, UI_FURNACE=29, UI_MAX_SLOTS=25,
+    UI_ARMOR_BUTTON=32,UI_CLOSE_BUTTON=33 };
 typedef struct {
     unsigned cursor; int source; unsigned craft_width;
     bool armor; unsigned furnace,return_cursor; /* furnace is index+1; zero means crafting. */
+    bool touching,dragging,touch_half,source_half;
+    int touch_slot,touch_x,touch_y;
 } InventoryUI;
 typedef struct {
     unsigned id; SlotRef ref; int x,y,w,h; bool result;
@@ -15,4 +18,8 @@ typedef enum {
 } UICommand;
 unsigned ui_slots(const InventoryUI *ui,UISlot out[UI_MAX_SLOTS]);
 bool ui_inventory_key(Game *game,InventoryUI *ui,UICommand command);
+typedef enum {UI_TOUCH_DOWN,UI_TOUCH_DRAG,UI_TOUCH_UP} UITouch;
+int ui_inventory_hit(const InventoryUI *ui,int x,int y);
+void ui_inventory_cancel_touch(InventoryUI *ui);
+bool ui_inventory_touch(Game *game,InventoryUI *ui,UITouch event,int x,int y,bool half);
 #endif

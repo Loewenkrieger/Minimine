@@ -16,7 +16,7 @@ enum {
     BENCH_PHASE_FRAMES=BENCH_WARMUP+BENCH_SAMPLES
 };
 #define WORLD_SEED UINT32_C(0x43503430)
-#define SANDBOX_VERSION "0.4.0"
+#define SANDBOX_VERSION "0.4.1"
 
 typedef enum {
     TILE_AIR, TILE_GRASS, TILE_DIRT, TILE_STONE, TILE_WOOD,
@@ -123,6 +123,7 @@ bool game_add_item(Game *game,Item item);
 bool game_can_return_crafting(const Game *game);
 const ItemStack *game_ref_stack(const Game *game,SlotRef ref);
 bool game_transfer(Game *game,SlotRef from,SlotRef to,bool one);
+bool game_transfer_half(Game *game,SlotRef from,SlotRef to);
 bool game_inventory_transfer(Game *game,unsigned from,unsigned to);
 bool game_inventory_transfer_one(Game *game,unsigned from,unsigned to);
 const ItemStack *game_stack_at(const Game *game,unsigned slot);

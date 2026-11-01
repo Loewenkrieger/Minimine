@@ -1,15 +1,23 @@
-# Minimine 0.4.0 - Anleitung
+# Minimine 0.4.1 - Anleitung
 
 ## Start und Spielstaende
 
-Nur [CasioSandbox.hh3](../releases/0.4.0/CasioSandbox.hh3) auf den ClassPad II
+Nur [CasioSandbox.hh3](../releases/0.4.1/CasioSandbox.hh3) auf den ClassPad II
 fx-CP400 kopieren und mit Hollyhock 3 starten. Das Startmenue bietet neues Spiel,
 Laden, Hilfe, Benchmark und Beenden. Aeltere Versionen bleiben unter releases.
 
 CLEAR pausiert das Spiel. Dort gibt es Fortsetzen, Speichern, Laden, Hilfe und
-Beenden. Speichern und Laden bieten jeweils drei Slots. Vor Ueberschreiben oder
-Verwerfen ungespeicherter Aenderungen erscheint eine Bestaetigung; Nein ist
-vorausgewaehlt. Pfeile waehlen, EXE bestaetigt, CLEAR bricht ab.
+Beenden. Alle Eintraege und Schaltflaechen koennen direkt angetippt werden.
+Alternativ waehlen Pfeile, EXE bestaetigt und CLEAR kehrt zurueck.
+
+Beenden schliesst sofort, auch bei ungespeicherten Aenderungen. Es gibt keine
+Rueckfrage und kein automatisches Speichern. Zum schnellen Beenden CLEAR druecken
+und Beenden antippen.
+
+Speichern und Laden bieten jeweils drei Slots. Vor Ueberschreiben eines Slots
+oder Verwerfen des laufenden Spiels beim Laden erscheint weiterhin eine
+Bestaetigung. Nein ist vorausgewaehlt; Ja/Nein koennen angetippt werden.
+Das Dateiformat bleibt zu Version 0.4.0 kompatibel.
 
 **Manuell speichern, bevor das Spiel beendet oder der Rechner ausgeschaltet wird.**
 Beim ersten Speichern entsteht `/Minimine`. Je Slot werden zwei wechselnde
@@ -56,6 +64,29 @@ Fuesse in dieselbe Blockreihe fallen. Nach einer Menuepause EXE und DEL zuerst
 loslassen; erst danach werden diese Aktionen wieder freigegeben.
 
 ## Inventar, Ruestung und Crafting
+
+### Touchbedienung
+
+- Einen belegten Slot beruehren und zum Ziel ziehen, dort loslassen. Erst beim
+  Loslassen wird verschoben; der Zielslot wird beim Ziehen hervorgehoben.
+- Alternativ zuerst die Quelle und danach das Ziel antippen. Ein erneutes
+  Antippen derselben Quelle hebt die Markierung auf.
+- Fuer einen halben Stapel die Taste **DIV (geteilt durch)** beim Touchvorgang
+  gedrueckt halten. Beim Tippen reicht dies beim Quellen- oder Zieltippen.
+  Ungerade Mengen werden aufgerundet: 33 gibt 17 ab, 16 bleiben zurueck.
+  Ein einzelnes Item wird vollstaendig bewegt, Haltbarkeit bleibt erhalten.
+- Ganze Stapel duerfen leere Ziele belegen, gleiche Stapel bis 64 ergaenzen oder
+  andere Stapel tauschen. Halbe Stapel gehen nur in leere oder passende Ziele.
+  Reicht deren Platz nicht, wird nur der passende Anteil verschoben.
+- Loslassen ausserhalb eines Slots bricht eine Ziehbewegung ohne Transfer ab.
+  Unpassende Ruestung, ungueltiger Brennstoff und eingehende Transfers auf
+  Ergebnisplaetze werden abgewiesen.
+- Im Craftingfeld das Ergebnis antippen, um einmal herzustellen. Eine gezogene
+  Rezeptvorschau erzeugt keine Items. Der Ofenausgang laesst sich normal entnehmen.
+- Die Schaltflaechen unten wechseln zur Ruestung/zurueck oder schliessen das
+  Inventar. SHIFT bleibt unveraendert fuer den Ruestungswechsel.
+
+### Tasten und Stapel
 
 Drei Hotbarplaetze und zwoelf Inventarplaetze stehen zur Verfuegung. Die Hotbar
 zeigt Namen und Anzahl. Start: je 32 Erde, Stein und Holzbretter. Materialien
