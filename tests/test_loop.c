@@ -126,6 +126,8 @@ static void controller(void)
     p=read_input();assert(p.sneak==2);
     memset(held,0,sizeof(held));held[KEY_LEFT]=held[KEY_9]=true;
     GameInput input=held_input();assert(input.move==-1 && input.aim_x==1 && input.aim_y==-1);
+    memset(held,0,sizeof(held));held[KEY_2]=held[KEY_EXE]=true;
+    input=held_input();assert(!input.move && !input.aim_x && input.aim_y==1 && input.use_held);
     memset(held,0,sizeof(held));
     puts("PASS: real key mappings, single transfers, quickmove, armor view and jump/Sneak edges");
 }

@@ -1,8 +1,8 @@
-# Minimine 0.4.1 - Anleitung
+# Minimine 0.4.2 - Anleitung
 
 ## Start und Spielstaende
 
-Nur [CasioSandbox.hh3](../releases/0.4.1/CasioSandbox.hh3) auf den ClassPad II
+Nur [CasioSandbox.hh3](../releases/0.4.2/CasioSandbox.hh3) auf den ClassPad II
 fx-CP400 kopieren und mit Hollyhock 3 starten. Das Startmenue bietet neues Spiel,
 Laden, Hilfe, Benchmark und Beenden. Aeltere Versionen bleiben unter releases.
 
@@ -17,7 +17,7 @@ und Beenden antippen.
 Speichern und Laden bieten jeweils drei Slots. Vor Ueberschreiben eines Slots
 oder Verwerfen des laufenden Spiels beim Laden erscheint weiterhin eine
 Bestaetigung. Nein ist vorausgewaehlt; Ja/Nein koennen angetippt werden.
-Das Dateiformat bleibt zu Version 0.4.0 kompatibel.
+Das Dateiformat bleibt zu Version 0.4.0 und 0.4.1 kompatibel.
 
 **Manuell speichern, bevor das Spiel beendet oder der Rechner ausgeschaltet wird.**
 Beim ersten Speichern entsteht `/Minimine`. Je Slot werden zwei wechselnde
@@ -59,8 +59,13 @@ wieder nach vorn; im Stand bleibt die letzte Richtung erhalten.
 | 4 | 6 | Augen |
 | 7 | 9 | Eine Blockreihe ueber dem Kopf |
 
-2 zielt direkt unter die Fuesse, 8 ueber den Kopf. Beim Ducken koennen Augen und
-Fuesse in dieselbe Blockreihe fallen. Nach einer Menuepause EXE und DEL zuerst
+2 zielt auf die erste vollstaendige Blockreihe unter den Fuessen, auch waehrend
+eines Sprungs. Zum Hochbauen einen Block in der Hotbar auswaehlen, mit 2 nach
+unten zielen, mit Hoch oder SHIFT springen und mit EXE unter sich platzieren.
+EXE kann dabei gehalten werden. Die Figur darf den neuen Block nicht ueberlappen.
+
+8 zielt ueber den Kopf. Beim Ducken koennen Augen und Fuesse in dieselbe
+Blockreihe fallen. Nach einer Menuepause EXE und DEL zuerst
 loslassen; erst danach werden diese Aktionen wieder freigegeben.
 
 ## Inventar, Ruestung und Crafting

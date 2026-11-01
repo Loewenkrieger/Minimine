@@ -1,6 +1,23 @@
-# Pruefstand - Minimine 0.4.1, 1. November 2026
+# Pruefstand - Minimine 0.4.2, 1. November 2026
 
-## Neu in 0.4.1
+## Neu in 0.4.2
+
+- Regressionstest schlaegt vor der Korrektur fehl: Bei nicht blockbuendiger
+  Fusshoehe lag das Ziel beim Zielen mit 2 in einer vom Koerper belegten Reihe.
+- Direkt nach unten wird jetzt in Q8 auf die erste vollstaendige Blockreihe
+  unter den Fuessen aufgerundet. Die seitlichen Fusshoehenziele bleiben erhalten.
+- Alle 4.097 Subpixelpositionen entlang einer Blockhoehe mit normaler und
+  geduckter Figur geprueft: 8.194 Positionen ohne Koerperueberlappung des Ziels.
+- Drei aufeinanderfolgende Hochbauspruenge mit kurzem und gehaltenem EXE,
+  stehend/geduckt bei 10/15/30/60/120 simulierten Bildraten. Vollstaendige
+  Endzustaende stimmen je Variante ueberein, Materialverbrauch entspricht den
+  gesetzten Bloecken und die Figur landet jeweils hoeher und ausserhalb von Bloecken.
+- Belegter Boden, leere Hotbar und Platzierungen innerhalb des Koerpers bleiben
+  gesperrt. Die echte Eingabebelegung fuer gehaltenes 2 + EXE ist geprueft.
+- Vollstaendiger bisheriger Testlauf inklusive Speicher-, Touch-, Langzeit- und
+  Benchmarktests bestanden. Vorschauen von Platzierung und Landung erzeugt.
+
+## Touchbedienung seit 0.4.1
 
 - Ganze Stapel per Quelle/Ziel antippen oder ziehen; Transfer erst beim Loslassen.
 - DIV + Touch bewegt die aufgerundete Haelfte. Mengen 1, 17, 32, 33 und 64,
@@ -84,18 +101,18 @@
 - Vollstaendiger SuperH-Bau mit GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91
   einschliesslich der echten ClassPad-Dateischnittstelle.
 - ELF32 big endian SuperH EXEC, Maschinenflags 0x6, Einstiegspunkt
-  0x8c05ef9c im ausfuehrbaren Ladesegment. Zwei gepruefte RAM-Ladesegmente.
+  0x8c05efa4 im ausfuehrbaren Ladesegment. Zwei gepruefte RAM-Ladesegmente.
   Hollyhock-Metadaten Name
-  Minimine, Version 0.4.1; keine dynamischen oder ungueltigen Ladesegmente.
+  Minimine, Version 0.4.2; keine dynamischen oder ungueltigen Ladesegmente.
 
 ## Auslieferung und Speicher
 
-[CasioSandbox.hh3](../releases/0.4.1/CasioSandbox.hh3), **71.780 Byte**.
+[CasioSandbox.hh3](../releases/0.4.2/CasioSandbox.hh3), **71.780 Byte**.
 
 SHA-256:
 
 ```text
-7e875a2469f4d1920d9d16f2747c0270137eb8df3b017a8e8bb49f2fcfb4247c
+2cf9787db7bd6f7c9c2de76334bcd04d54c652af6fc09a84ad5567db6d83b070
 ```
 
 | Bereich | Groesse |
@@ -117,9 +134,9 @@ Speicheranforderungen im Projektcode. Speichern verwendet einen 512-Byte-Puffer
 und den vorhandenen Benchmarkzustand als Ladepruefzustand. Stack, System-VRAM
 und OS-Heap sind nicht vollstaendig in der Hauptladebelegung enthalten.
 
-[Buildbericht](../releases/0.4.1/build-info.json),
-[ELF-Bericht](../releases/0.4.1/elf-info.txt) und
-[Abschnittsgroessen](../releases/0.4.1/section-sizes.txt) sind beigelegt.
+[Buildbericht](../releases/0.4.2/build-info.json),
+[ELF-Bericht](../releases/0.4.2/elf-info.txt) und
+[Abschnittsgroessen](../releases/0.4.2/section-sizes.txt) sind beigelegt.
 Quellpruefsummen werden mit dem ausgelieferten Stand abgeglichen.
 Nicht initialisierte .bss-Daten belegen RAM, werden in dieser ELF-Datei aber
 nicht als Nullbytes gespeichert; die Dateigroesse ist daher kleiner als bei 0.4.0.
@@ -127,7 +144,7 @@ Ungestrippte ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
 
 ## Echte Hardware noch offen
 
-Version 0.4.1 wurde noch nicht auf dem CP400 gestartet. Touch-Kalibrierung und
+Version 0.4.2 wurde noch nicht auf dem CP400 gestartet. Touch-Kalibrierung und
 Bedienung mit gehaltenem DIV, Dateizugriffe ueber Fugue, Haltbarkeit der
 Sicherungen bei Stromunterbrechung, Tastenmatrix,
 Darstellung und Performance muessen dort noch geprueft werden:

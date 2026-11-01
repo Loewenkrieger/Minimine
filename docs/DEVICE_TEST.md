@@ -1,4 +1,4 @@
-# Geraetetest fuer Minimine 0.4.1
+# Geraetetest fuer Minimine 0.4.2
 
 Die PC-Tests und der Geraetebau stehen in [VERIFICATION.md](VERIFICATION.md).
 Diese Liste ist fuer den echten ClassPad II fx-CP400 mit Hollyhock 3 vorgesehen.
@@ -7,7 +7,7 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 | Angabe | Wert |
 | --- | --- |
 | Hollyhock-/OS-Version | |
-| Spielversion | 0.4.1; SHA-256 siehe VERIFICATION.md |
+| Spielversion | 0.4.2; SHA-256 siehe VERIFICATION.md |
 | Datum, Takt, Einstellungen | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
 
@@ -18,6 +18,9 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 - [ ] Links/rechts waehlt unmittelbar die benachbarte Spalte, auch an einer Wand.
 - [ ] 1/3 Fuss-, 4/6 Augenhoehe, 7/9 eine Reihe ueber dem Kopf; 2 unter den Fuessen,
       8 ueber dem Kopf. Auch an Blockgrenzen, im Lauf und geduckt pruefen.
+- [ ] Hochbauen: Block auswaehlen, 2 halten, Hoch/SHIFT und EXE. Mindestens drei
+      Spruenge nacheinander auf den neu gesetzten Bloecken landen; mit gehaltenem
+      und kurz gedruecktem EXE sowie Sneak wiederholen. Kein Block im Koerper.
 - [ ] Gehaltenes manuelles Zielen hat Vorrang. Nach Loslassen: im Lauf nach vorn,
       im Stand zuletzt gewaehlte Richtung.
 - [ ] Hoch und SHIFT: ein Sprung je Druck, keiner durch Halten nach der Landung.
@@ -105,7 +108,7 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 
 ## Speichern und Laden auf dem CP400
 
-- [ ] Vorhandene Spielstaende von 0.4.0 lassen sich unveraendert laden.
+- [ ] Vorhandene Spielstaende von 0.4.0 und 0.4.1 lassen sich unveraendert laden.
 
 - [ ] Erstes Speichern erzeugt `/Minimine` ohne vorbereitete Zusatzdateien.
 - [ ] Alle drei Slots schreiben und nach Beenden/Neustart zurueckladen.

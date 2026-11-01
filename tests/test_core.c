@@ -279,6 +279,54 @@ static void test_metrics(void)
     assert(summary.worst_us == PERF_CAPACITY + 10 && summary.mean_us == 85);
     puts("PASS: weighted FPS, mean, P95, phase timings and bounded history");
 }
+static void test_build_up(void)
+{
+    /* Every subpixel foot position must target the first complete row below it. */
+    for(int sneak=0;sneak<2;++sneak) {
+        arena(&a);a.player.sneaking=sneak!=0;a.aim_x=0;a.aim_y=1;
+        int h=game_player_height(&a.player),size=TILE_SIZE*FIXED_ONE;
+        for(int offset=0;offset<=size;++offset) {
+            int32_t feet=320*FIXED_ONE-offset;
+            a.player.y=feet-h*FIXED_ONE;int x,y;game_target(&a,&x,&y);
+            assert(x==10 && y*size>=feet && (y-1)*size<feet);
+        }
+    }
+    const unsigned rates[]={10,15,30,60,120};
+    for(unsigned sneak=0;sneak<2;++sneak) for(unsigned held=0;held<2;++held) {
+        Game expected={0};
+        for(unsigned r=0;r<sizeof(rates)/sizeof(rates[0]);++r) {
+            arena(&a);if(sneak) assert(game_toggle_sneak(&a));
+            int32_t previous_feet=320*FIXED_ONE;
+            unsigned acc=0,cycles=0,cycle_ticks=0,previous_count=a.slots[0].count;
+            unsigned frames=0;bool jump=true;
+            while(cycles<3) {
+                assert(++frames<rates[r]*4);acc+=SIM_HZ;
+                while(acc>=rates[r] && cycles<3) {
+                    game_step(&a,(GameInput){.aim_y=1,.jump=jump,
+                        .use_pressed=!held && cycle_ticks==2,.use_held=held!=0});
+                    jump=false;++cycle_ticks;acc-=rates[r];clear_body(&a);
+                    if(a.player.grounded && cycle_ticks>1) {
+                        int32_t feet=a.player.y+game_player_height(&a.player)*FIXED_ONE;
+                        assert(feet<previous_feet && a.slots[0].count<previous_count);
+                        previous_feet=feet;previous_count=a.slots[0].count;
+                        cycle_ticks=0;jump=true;++cycles;
+                    }
+                }
+            }
+            unsigned placed=0;
+            for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
+                placed+=a.tiles[y][x]==TILE_DIRT;
+            assert(placed+a.slots[0].count==32 && placed>=3);
+            assert(a.player.sneaking==(sneak!=0));
+            if(!r) expected=a;else assert(!memcmp(&a,&expected,sizeof(a)));
+        }
+    }
+    /* Occupied ground, empty hotbar and a target inside the body remain blocked. */
+    arena(&a);a.aim_x=0;a.aim_y=1;assert(!game_place(&a) && a.slots[0].count==32);
+    arena(&a);a.aim_x=a.aim_y=0;assert(!game_place(&a) && a.slots[0].count==32);
+    arena(&a);a.aim_x=0;a.aim_y=1;game_select_hotbar(&a,1);assert(!game_place(&a));
+    puts("PASS: 8,194 fractional targets, three successive pillar jumps, tap/held placement, Sneak and five frame rates");
+}
 
 
 
@@ -355,7 +403,7 @@ static void test_rendering(void)
 int main(void)
 {
     test_generation_physics_aim();test_sneak();test_inventory();test_mining();
-    test_tick_rates();test_long_run();test_metrics();test_rendering();
+    test_tick_rates();test_long_run();test_metrics();test_build_up();test_rendering();
     printf("All native checks passed. Game state: %zu bytes per world.\n",sizeof(Game));
     return 0;
 }

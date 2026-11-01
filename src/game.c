@@ -206,8 +206,12 @@ void game_target(const Game *g,int *x,int *y)
     else if(g->aim_x<0) *x=floor_div(p->x,size)-1;
     else *x=floor_div(p->x+PLAYER_W*FIXED_ONE/2,size);
     if(g->aim_y<0) *y=floor_div(p->y,size)-1;
-    else if(g->aim_y>0) *y=g->aim_x?
-        floor_div(p->y+h*FIXED_ONE-1,size):floor_div(p->y+h*FIXED_ONE,size);
+    else if(g->aim_y>0) {
+        int feet=p->y+h*FIXED_ONE;
+        /* Directly below: round up in Q8 so the complete tile clears the body.
+           Sideways at foot height still targets the last occupied body row. */
+        *y=g->aim_x?floor_div(feet-1,size):floor_div(feet+size-1,size);
+    }
     else *y=floor_div(p->y+(g->aim_manual?(p->sneaking?3:5):h/2)*FIXED_ONE,size);
 }
 

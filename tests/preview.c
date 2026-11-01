@@ -12,6 +12,12 @@ int main(void)
     game_init(&game, WORLD_SEED);
     render_game(&game, &info);
     host_write_ppm("build/native/play.ppm");
+    for(unsigned i=0;i<3;++i)
+        game_step(&game,(GameInput){.aim_y=1,.jump=i==0,.use_held=true});
+    render_game(&game,&info);host_write_ppm("build/native/pillar-place.ppm");
+    for(unsigned i=0;i<80;++i) game_step(&game,(GameInput){.aim_y=1});
+    render_game(&game,&info);host_write_ppm("build/native/pillar-landed.ppm");
+    game_init(&game,WORLD_SEED);
     game.health=1350;game.hunger=11;
     for(unsigned i=0;i<4;++i) {
         MobKind k=(MobKind)i;unsigned h=game_mob_height(k);

@@ -3,7 +3,7 @@
 Ein kleines 2D-Blockspiel fuer den Casio ClassPad II fx-CP400 mit Hollyhock 3.
 Mit Crafting, Oefen, Tieren, Zombies, Kampf und drei Spielstaenden.
 
-[Version 0.4.1 herunterladen](releases/0.4.1/CasioSandbox.hh3).
+[Version 0.4.2 herunterladen](releases/0.4.2/CasioSandbox.hh3).
 Nur die `.hh3` auf den CP400 kopieren und im Launcher starten.
 Beim Speichern legt das Spiel den Ordner `/Minimine` selbst an.
 
@@ -24,6 +24,8 @@ Beim Speichern legt das Spiel den Ordner `/Minimine` selbst an.
 | 5 im Inventar | Einzelnes Item aus markierter Quelle verschieben |
 | CLEAR | Pause, Speichern, Laden, Hilfe, Beenden |
 | 0 | Benchmark |
+
+Hochbauen: mit **2** nach unten zielen, springen und mit **EXE** unter sich bauen.
 
 Materialien: maximal 64 je Slot. Werkzeuge und Ruestung: einzeln, mit Haltbarkeit.
 Speichern erfolgt manuell. Beenden schliesst sofort ohne Rueckfrage und ohne

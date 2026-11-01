@@ -70,3 +70,11 @@ Eine Messung von 0.4.0 auf dem echten Geraet steht weiterhin aus.
 Touchbedienung und halbe Stapel betreffen nur pausierte Menues. Der alte
 Vergleichsbenchmark bleibt unveraendert und ist weiterhin gegen 0.1.0 geprueft.
 Messungen auf dem CP400 stehen noch aus.
+
+
+## Version 0.4.2
+
+Zielen unter die Fuesse wurde fuer das Hochbauen korrigiert. Die alte
+Benchmarkroute verwendet dieses Ziel nicht und bleibt unveraendert.
+Die 540 Schritte werden weiterhin direkt gegen 0.1.0 geprueft.
+Messungen auf dem CP400 stehen noch aus.
