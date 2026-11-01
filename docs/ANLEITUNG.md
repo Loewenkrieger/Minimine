@@ -1,8 +1,8 @@
-# Minimine 0.4.2 - Anleitung
+# Minimine 0.5.0 - Anleitung
 
 ## Start und Spielstaende
 
-Nur [CasioSandbox.hh3](../releases/0.4.2/CasioSandbox.hh3) auf den ClassPad II
+Nur [CasioSandbox.hh3](../releases/0.5.0/CasioSandbox.hh3) auf den ClassPad II
 fx-CP400 kopieren und mit Hollyhock 3 starten. Das Startmenue bietet neues Spiel,
 Laden, Hilfe, Benchmark und Beenden. Aeltere Versionen bleiben unter releases.
 
@@ -17,7 +17,14 @@ und Beenden antippen.
 Speichern und Laden bieten jeweils drei Slots. Vor Ueberschreiben eines Slots
 oder Verwerfen des laufenden Spiels beim Laden erscheint weiterhin eine
 Bestaetigung. Nein ist vorausgewaehlt; Ja/Nein koennen angetippt werden.
-Das Dateiformat bleibt zu Version 0.4.0 und 0.4.1 kompatibel.
+Spielstaende von 0.4.0 bis 0.4.2 bleiben ladbar. Ihre Welt wird nicht umgebaut:
+Neue Ruinen, Basaltschicht und Bosskammer erfordern ein neues Spiel.
+In alten Welten bleiben die bisherigen Lichtverhaeltnisse erhalten; neue
+herstellbare Bauteile und Ausruestung sind dort ebenfalls benutzbar.
+
+0.5.0 schreibt Speicherformat 2. Nach erneutem Speichern kann eine alte
+Spielversion die neue Datei nicht lesen; vorhandene Format-1-Dateien werden
+zunaechst als die bisherige A/B-Kopie erhalten.
 
 **Manuell speichern, bevor das Spiel beendet oder der Rechner ausgeschaltet wird.**
 Beim ersten Speichern entsteht `/Minimine`. Je Slot werden zwei wechselnde
@@ -44,7 +51,7 @@ waehrend das Spiel ausgeschaltet ist, arbeiten Oefen nicht weiter.
 | Keyboard | Inventar mit 2x2-Craftingfeld oeffnen / schliessen |
 | DEL halten | Anvisierten Block abbauen |
 | EXE druecken / halten | Schlagen, essen oder bauen |
-| EXE neu druecken | Anvisierte Werkbank / Ofen oeffnen |
+| EXE neu druecken | Werkbank / Ofen / Kiste oeffnen, Tuer / Bett / Siegel benutzen |
 | 0 | Benchmark |
 | CLEAR | Pausenmenue; im Inventar schliessen |
 
@@ -107,7 +114,7 @@ passen bis 64 in einen Slot; Spitzhacken, Schwerter und Ruestung einzeln.
   Cursor und aktiver Hotbarplatz bleiben unveraendert; die Quellmarkierung wird
   aufgehoben. Das funktioniert auch fuer passende Crafting-, Ofen- und
   Ruestungsplaetze. Ergebnisplaetze erlauben keine eingehenden Transfers.
-- SHIFT zeigt Helm, Brustpanzer, Hose und Stiefel; erneut SHIFT kehrt zurueck.
+- SHIFT zeigt Helm, Brustpanzer, Hose, Stiefel und zwei Zubehoerplaetze; erneut SHIFT kehrt zurueck.
   Zutaten bleiben liegen, die Quellmarkierung wird aufgehoben.
 - EXE auf dem Craftingergebnis stellt das Rezept einmal her. Vorschau verbraucht
   nichts. Keyboard/CLEAR schliesst und gibt uebrige Zutaten zurueck.
@@ -200,7 +207,7 @@ Schwerter verlieren nur bei Treffern Haltbarkeit; der letzte Treffer wirkt noch 
 Oberirdisch leben Schweine (6 Leben), Kuehe (10), Huehner (4) und Zombies (12).
 In Hoehlen entstehen Zombies. Tiere fliehen nach Treffern zwei Sekunden lang.
 Zombies verfolgen die Figur und koennen einzelne Blockhindernisse ueberspringen.
-Es gibt maximal acht Tiere und acht Zombies, alle fuenf Spielsekunden hoechstens
+Es gibt maximal acht Tiere und acht feindliche Mobs, alle fuenf Spielsekunden hoechstens
 einen Spawn ausserhalb des Bildes. Zwoelf Bloecke um den Startpunkt sind vor
 Zombiespawns geschuetzt. Mobs weiter als 32 Bloecke entfernt verschwinden.
 
@@ -254,3 +261,114 @@ Bauen: `tools/build.ps1`. Tests: `tools/test.ps1` oder `bash tools/test.sh`.
 Einzelne Tests: z.B. `bash tools/test.sh survival storage`.
 Siehe [TOOLCHAIN.md](TOOLCHAIN.md), [VERIFICATION.md](VERIFICATION.md),
 [DEVICE_TEST.md](DEVICE_TEST.md) und [BENCHMARK.md](BENCHMARK.md).
+
+
+## Expedition und Steinwaechter
+
+Ein neuer Durchlauf fuehrt vom Lager ueber Eisenwerkzeuge und drei Relikte zur
+versiegelten Kammer. Im CLEAR-Menue stehen der Reliktzaehler und das naechste Ziel.
+Die bekannte Startausruestung mit je 32 Erde, Stein und Brettern bleibt erhalten.
+
+### Licht und Minenraeume
+
+Ein Stueck Kohle ueber einem Stock ergibt vier Fackeln, auch im 2x2-Feld.
+In neuen Welten ist die direkte Umgebung ohne Fackel zwei Bloecke weit hell.
+Eine ausgewaehlte Fackel erweitert den sichtbaren Bereich auf vier Bloecke.
+Platzierte Fackeln reichen sechs Bloecke weit, davon drei hell und drei gedaemmt.
+Sie brennen dauerhaft, sind nicht massiv und lassen sich mit DEL wieder aufnehmen.
+Die Beleuchtung verwendet drei Stufen und einfache blockweise Entfernungen.
+
+In der Reichweite platzierter Fackeln entstehen keine neuen feindlichen Mobs.
+Bereits vorhandene Gegner koennen hineinlaufen. Die urspruengliche Schutzzone
+um den Start bleibt unabhaengig vom Bett bestehen.
+
+Versorgungskammern enthalten Nahrung, Kohle und Baumaterial. In der verlassenen
+Werkstatt stehen Werkbank und Ofen; ihre Truhe enthaelt auch eine beschaedigte
+Spitzhacke. Drei groessere Ruinen enthalten jeweils ein einzigartiges Relikt:
+Mine, Tiefe und Basalt. Der Bergmannsanhaenger liegt in der ersten Reliktruhe.
+Alle Inhalte werden bei der Welterstellung festgelegt und mitgespeichert.
+
+### Basis und weitere Rezepte
+
+| Ergebnis | Rezept an der Werkbank |
+| --- | --- |
+| Kiste | Acht Bretter als Ring, Mitte leer |
+| Tuer | Sechs Bretter als 2x3-Rechteck |
+| Bett | Drei Stoecke oben, darunter zwei Reihen mit je drei Brettern |
+| Eisenspitzhacke | Drei Eisenbarren oben, darunter zwei Stoecke mittig |
+| Stiefel der Eile | `I.I / I.I / C.C` |
+| Sprungamulett | `.C. / CIC / .C.`; erst nach dem Sieg ueber den Steinwaechter |
+
+I = Eisenbarren, C = Leuchtkristall, Punkt = leer.
+
+Eine Kiste hat zwoelf Plaetze. EXE oeffnet sie; Tasten, Touch, Quickselect und
+halbe Stapel mit DIV funktionieren wie im Inventar. Zum Abbau muessen Kiste
+und der gesamte Inhalt ins Spielerinventar passen; sonst bleibt alles bestehen.
+
+Eine Tuer belegt zwei Bloecke uebereinander und benoetigt Boden darunter.
+EXE oeffnet oder schliesst sie. Figuren im Durchgang verhindern das Schliessen.
+Zombies koennen geschlossene Tueren nicht oeffnen.
+
+Ein Bett belegt zwei Bloecke nebeneinander auf festem Boden. EXE setzt es als
+persoenlichen Rueckkehrpunkt. Ist dort beim Tod kein Platz oder wurde das Bett
+abgebaut, wird eine freie Position am urspruenglichen Start gesucht.
+Das Bett heilt nicht und aendert die Spielzeit nicht.
+
+Die Welt bietet insgesamt Platz fuer 16 Kisten, 64 Fackeln und 32 Oefen,
+einschliesslich vorhandener Minenobjekte. Eine weitere Platzierung verbraucht
+kein Item. Gefundene Kisten, Fackeln und Oefen lassen sich wiederverwenden.
+
+### Basalt, Kristalle und Zubehoer
+
+Ab der tiefen Basaltschicht findet man Basalt und Kristallerz. Beide benoetigen
+eine Eisenspitzhacke und bleiben bei schwaecherem Werkzeug bestehen.
+Die Eisenspitzhacke haelt 256 Nutzungen. Abbauzeiten: Stein/Kohle/Ofen 0,25 s,
+Eisenerz 0,5 s, Basalt 1,25 s, Kristallerz 1 s. Kristallerz liefert einen Leuchtkristall.
+Die geschuetzte aeussere Wand der Bosskammer bleibt unabbaubar.
+
+Die Ausruestungsansicht hat vier Ruestungs- und zwei Zubehoerplaetze.
+Zubehoer wird einzeln getragen; dasselbe Stueck kann nicht doppelt ausgeruestet werden.
+
+| Zubehoer | Wirkung |
+| --- | --- |
+| Bergmannsanhaenger | Jeder fuenfte erfolgreiche Abbau mit Spitzhacke kostet keine Nutzung |
+| Stiefel der Eile | 15 Prozent hoeheres Lauftempo, auch bei weiterhin halbiertem Sneaktempo |
+| Sprungamulett | Ein weiterer Sprung pro Luftphase; Landen gibt ihn wieder frei |
+
+Alle Relikte sind ohne Sprungamulett erreichbar. Eine versteckte Truhe in der
+Tiefe enthaelt weitere Kristalle und Stiefel der Eile.
+
+### Fledermaus und Kampf
+
+Treffer lassen Gegner kurz aufleuchten und stossen normale Gegner zurueck.
+Zombies bereiten einen Nahkampfangriff kurz sichtbar mit einem Ausrufezeichen vor.
+Ausweichen kann den Treffer verhindern; zwischen Angriffen bleibt ihre Pause bestehen.
+
+Hoehlenfledermaeuse haben vier Lebenspunkte. Sie warten unter einer Decke,
+kuendigen den Angriff an und fliegen geradlinig auf die erfasste Spielerposition.
+Danach erholen sie sich und suchen wieder eine Position weiter oben.
+Ein Treffer verursacht einen Lebenspunkt Schaden. Fackeln helfen, sie rechtzeitig zu sehen.
+
+### Relikte und Bosskammer
+
+Alle drei Relikte ins Spielerinventar nehmen und das Siegel an der Kammer im
+Osten der Basaltschicht mit EXE benutzen. Die Relikte werden einmalig eingesetzt;
+der Zugang bleibt anschliessend dauerhaft offen. Drei Relikte in einer Kiste
+reichen zum Oeffnen nicht aus, der Zaehler zeigt aber weiterhin die gefundenen.
+
+Beim Betreten beginnt der Kampf gegen den Steinwaechter mit 100 Lebenspunkten.
+In der Kammer entstehen waehrend des Kampfes keine weiteren Gegner.
+Er kuendigt Ansturm und Bodenschlag sichtbar an; nach jedem Angriff folgt eine
+Erholungspause. Ueber den Ansturm und die Bodenwelle kann gesprungen werden.
+Unter halbem Leben werden Warnung und Erholung kuerzer. Treffer im Ansturm und
+Bodenwellen verursachen drei Schaden vor Ruestung, sonstiger Kontakt zwei.
+
+Verlassen der Kammer oder Tod beendet den Versuch. Der naechste beginnt wieder
+mit einem vollstaendig geheilten Waechter; der Zugang bleibt offen. Inventar und
+Ausruestung bleiben beim Tod wie bisher erhalten.
+
+Ein Sieg wird dauerhaft gespeichert. Die Belohnungstruhe enthaelt ein
+Sprungamulett; zusaetzlich wird dessen Rezept freigeschaltet. Ist die Truhe voll
+oder entfernt, bleibt die Belohnung vorgemerkt, bis am Belohnungsplatz eine
+Kiste mit freiem Slot bereitsteht oder wieder entstehen kann.
+Laufende Kampfphasen und eine noch ausstehende Belohnung werden mitgespeichert.

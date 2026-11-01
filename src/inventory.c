@@ -33,7 +33,7 @@ bool game_insert_stack(ItemStack slots[TOTAL_SLOTS],ItemStack in)
 bool game_add_stack(Game *g,ItemStack in)
 {
     if(!game_insert_stack(g->slots,in)) return false;
-    ++g->revision;return true;
+    game_find_relics(g);++g->revision;return true;
 }
 bool game_add_item(Game *g,Item item)
 {
@@ -44,6 +44,9 @@ static ItemStack *ref_ptr(Game *g,SlotRef r)
 {
     switch(r.kind) {
     case SLOT_INVENTORY:return r.index<TOTAL_SLOTS?&g->slots[r.index]:NULL;
+    case SLOT_ACCESSORY:return r.index<ACCESSORY_SLOTS?&g->accessories[r.index]:NULL;
+    case SLOT_CHEST:return r.container<CHEST_LIMIT && g->chests[r.container].active && r.index<CHEST_SLOTS?
+        &g->chests[r.container].slots[r.index]:NULL;
     case SLOT_CRAFT:return r.index<CRAFT_SLOTS?&g->crafting[r.index]:NULL;
     case SLOT_ARMOR:return r.index<ARMOR_SLOTS?&g->armor[r.index]:NULL;
     case SLOT_FURNACE:
@@ -56,6 +59,9 @@ const ItemStack *game_ref_stack(const Game *g,SlotRef r)
 {
     switch(r.kind) {
     case SLOT_INVENTORY:return r.index<TOTAL_SLOTS?&g->slots[r.index]:NULL;
+    case SLOT_ACCESSORY:return r.index<ACCESSORY_SLOTS?&g->accessories[r.index]:NULL;
+    case SLOT_CHEST:return r.container<CHEST_LIMIT && g->chests[r.container].active && r.index<CHEST_SLOTS?
+        &g->chests[r.container].slots[r.index]:NULL;
     case SLOT_CRAFT:return r.index<CRAFT_SLOTS?&g->crafting[r.index]:NULL;
     case SLOT_ARMOR:return r.index<ARMOR_SLOTS?&g->armor[r.index]:NULL;
     case SLOT_FURNACE:
@@ -73,6 +79,7 @@ static bool accepts(SlotRef r,ItemStack old,ItemStack in)
 {
     if(!game_stack_valid(&in)) return false;
     if(!in.count) return true;
+    if(r.kind==SLOT_ACCESSORY) return game_item_kind(in.item)==KIND_ACCESSORY;
     if(r.kind==SLOT_ARMOR) return game_armor_slot(in.item)==r.index;
     if(r.kind==SLOT_FURNACE) {
         if(r.index==0) return game_smelt_result(in.item)!=ITEM_NONE;
@@ -112,6 +119,8 @@ static bool transfer(Game *g,SlotRef from,SlotRef to,bool one,bool half)
         if(!a->count) *a=(ItemStack){0};
     } else {*b=old_a;*a=old_b;}
     bool fits=accepts(from,old_a,*a) && accepts(to,old_b,*b);
+    if(g->accessories[0].count && g->accessories[1].count &&
+       g->accessories[0].item==g->accessories[1].item) fits=false;
     bool returns=fits && game_can_return_crafting(g);
     if(!fits || !returns) {
         *a=old_a;*b=old_b;
@@ -122,7 +131,7 @@ static bool transfer(Game *g,SlotRef from,SlotRef to,bool one,bool half)
         Furnace *f=&g->furnaces[refs[i].container];
         if(olds[i].item!=f->slots[0].item) {f->progress=0;f->recipe=game_smelt_result(f->slots[0].item);}
     }
-    ++g->revision;
+    game_find_relics(g);++g->revision;
     if(g->notice==NOTICE_FULL || g->notice==NOTICE_WRONG_SLOT)
         {g->notice=NOTICE_NONE;g->notice_ticks=0;}
     return true;
@@ -153,6 +162,9 @@ unsigned game_item_total(const Game *g,Item item)
     for(unsigned i=0;i<ARMOR_SLOTS;++i) if(g->armor[i].item==item) count+=g->armor[i].count;
     for(unsigned i=0;i<FURNACE_LIMIT;++i) if(g->furnaces[i].active)
         for(unsigned s=0;s<3;++s) if(g->furnaces[i].slots[s].item==item) count+=g->furnaces[i].slots[s].count;
+    for(unsigned i=0;i<ACCESSORY_SLOTS;++i) if(g->accessories[i].item==item) count+=g->accessories[i].count;
+    for(unsigned i=0;i<CHEST_LIMIT;++i) if(g->chests[i].active)
+        for(unsigned j=0;j<CHEST_SLOTS;++j) if(g->chests[i].slots[j].item==item) count+=g->chests[i].slots[j].count;
     return count;
 }
 static ItemStack result(Item item,unsigned count)
@@ -190,7 +202,23 @@ ItemStack game_craft_preview(const Game *g,unsigned width)
         return result(ITEM_STICK,4);
     if(w==2 && h==2 && count==4 && pattern(g,width,first,2,2,"XXXX",ITEM_PLANKS))
         return result(ITEM_WORKBENCH,1);
+    if(w==1 && h==2 && count==2 && material==ITEM_COAL && g->crafting[first+width].item==ITEM_STICK)
+        return result(ITEM_TORCH,4);
     if(width!=3) return none;
+    if(w==2 && h==3 && count==6 && pattern(g,width,first,2,3,"XXXXXX",ITEM_PLANKS))
+        return result(ITEM_DOOR,1);
+    if(w==3 && h==3 && count==9 && pattern(g,width,first,3,1,"XXX",ITEM_STICK) &&
+       pattern(g,width,first+3,3,2,"XXXXXX",ITEM_PLANKS)) return result(ITEM_BED,1);
+    if(w==3 && h==3 && count==8 && pattern(g,width,first,3,3,"XXXX XXXX",ITEM_PLANKS))
+        return result(ITEM_CHEST,1);
+    if(w==3 && h==3 && count==6 && g->crafting[0].item==ITEM_IRON_INGOT &&
+       g->crafting[2].item==ITEM_IRON_INGOT && g->crafting[3].item==ITEM_IRON_INGOT &&
+       g->crafting[5].item==ITEM_IRON_INGOT && g->crafting[6].item==ITEM_CRYSTAL &&
+       g->crafting[8].item==ITEM_CRYSTAL) return result(ITEM_SPEED_BOOTS,1);
+    if(w==3 && h==3 && count==5 && g->boss.defeated &&
+       g->crafting[1].item==ITEM_CRYSTAL && g->crafting[3].item==ITEM_CRYSTAL &&
+       g->crafting[4].item==ITEM_IRON_INGOT && g->crafting[5].item==ITEM_CRYSTAL &&
+       g->crafting[7].item==ITEM_CRYSTAL) return result(ITEM_JUMP_AMULET,1);
     if(w==1 && h==3 && count==3 && g->crafting[first+width].item==material &&
        g->crafting[first+2*width].item==ITEM_STICK) {
         Item sword=material==ITEM_PLANKS?ITEM_WOOD_SWORD:
@@ -198,10 +226,10 @@ ItemStack game_craft_preview(const Game *g,unsigned width)
         if(sword) return result(sword,1);
     }
     if(w==3 && h==3 && count==5 &&
-       (material==ITEM_PLANKS || material==ITEM_STONE) &&
+       (material==ITEM_PLANKS || material==ITEM_STONE || material==ITEM_IRON_INGOT) &&
        g->crafting[1].item==material && g->crafting[2].item==material &&
        g->crafting[4].item==ITEM_STICK && g->crafting[7].item==ITEM_STICK)
-        return result(material==ITEM_PLANKS?ITEM_WOOD_PICKAXE:ITEM_STONE_PICKAXE,1);
+        return result(material==ITEM_PLANKS?ITEM_WOOD_PICKAXE:material==ITEM_STONE?ITEM_STONE_PICKAXE:ITEM_IRON_PICKAXE,1);
     if(w==3 && h==3 && count==8 && pattern(g,width,first,3,3,"XXXX XXXX",ITEM_STONE))
         return result(ITEM_FURNACE,1);
     if(w==3 && h==2 && count==5 && pattern(g,width,first,3,2,"XXXX X",ITEM_IRON_INGOT))

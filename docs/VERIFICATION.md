@@ -1,6 +1,44 @@
-# Pruefstand - Minimine 0.4.2, 1. November 2026
+# Pruefstand - Minimine 0.5.0, 1. November 2026
 
-## Neu in 0.4.2
+## Neu in 0.5.0
+
+- Neue Weltgenerierung mit Basaltschicht, Kristallerz, fuenf Minenraeumen,
+  drei eindeutigen Relikten, sieben persistenten Kisten und versiegelter Arena.
+  Gleicher Seed erzeugt gleiche Welten; mehrere Seeds vollstaendig validiert.
+- Kisten mit zwoelf Slots, ganze/halbe Touchtransfers, Quickselect und atomarer
+  Rueckgabe des gesamten Inhalts beim Abbau. Geteilte Relikte ueber Crafting
+  werden ebenfalls fuer den Fortschritt erfasst.
+- Paare aus Tuerhaelften und Bettteilen, Platzierung mit Bodenpruefung,
+  Kollisionsschutz beim Schliessen, Bett-Rueckkehrpunkt und blockierter Rueckweg.
+- Fackeln, Kiste, Tuer, Bett, Eisenspitzhacke, Stiefel der Eile und nach dem Sieg
+  freigeschaltetes Sprungamulett als Rezepte. Fackeln im 2x2-Feld herstellbar.
+- Eisenspitzhacke mit 256 Nutzungen und neuen Abbauzeiten; Basalt und Kristallerz
+  bleiben mit falschem Werkzeug bestehen. Kammersaeume sind geschuetzt.
+- Zwei typisierte Zubehoerplaetze, doppelte Ausruestung abgewiesen. Jeder fuenfte
+  Abbau ohne Werkzeugverschleiss, 15 Prozent Laufbonus mit Sneak und genau ein
+  weiterer Sprung pro Luftphase geprueft.
+- Drei Helligkeitsstufen, Radius von platzierten Fackeln sowie Verhinderung neuer
+  feindlicher Spawns im Licht. Handfackel und Naehelicht als getrennte Quellen.
+- Fledermaus mit Warten, Vorwarnung, geradem Flug und Erholung; Zombievorwarnung,
+  Trefferblitz und Rueckstoss. Gegner bleiben im begrenzten vorhandenen Pool.
+- Vollstaendiger Questablauf: drei Relikte aus Kisten, dauerhaftes Oeffnen des
+  Siegels, Bossstart, Vorwarnung/Ansturm/Bodenwelle, Ausweichen, Tod/Neustart,
+  17 erfolgreiche Eisenschwerttreffer bis zum Sieg und einmalige Belohnung.
+- Laufender Boss und Siegstatus erfolgreich gespeichert/zurueckgeladen.
+  Volle Belohnungskiste verliert nichts; Belohnung wird nach Freigabe zugestellt.
+- Gemeinsamer Maximalzustand mit 16 Kisten, 64 Fackeln, 32 Oefen, 16 Mobs und
+  64 Beutestapeln gespeichert, geladen und simuliert. Zusaetzlich 18.000 Schritte
+  in der neuen Welt mit wiederholter vollstaendiger Zustandspruefung.
+- Format 2 speichert Kisten, Fackeln, Bett, Zubehoer, Gegnerphasen, Relikte,
+  Bossphasen und vorgemerkte Belohnung. Neue Werte und Objektverknuepfungen
+  werden vor dem Austausch des laufenden Spiels geprueft.
+- Echte Format-1-Testdatei mit historischem 0.4.2-Kern erzeugt, geladen und ins
+  neue Format ueberfuehrt; vorherige A/B-Datei bleibt unveraendert. Alte Welten
+  werden nicht nachtraeglich umgebaut. Fixture ist synthetisch und liegt in tests/fixtures.
+- Vorschauen von dunkler Mine, Kiste, sechs Ausruestungsslots, Basis, Basalt,
+  sichtbarem Steinwaechter und Questfortschritt visuell geprueft.
+
+## Bisherige Funktionen einschliesslich Hochbaufix
 
 - Regressionstest schlaegt vor der Korrektur fehl: Bei nicht blockbuendiger
   Fusshoehe lag das Ziel beim Zielen mit 2 in einer vom Koerper belegten Reihe.
@@ -41,7 +79,7 @@
 ## Bestanden
 
 - Nativer GCC-Bau: strenge Warnungen als Fehler, AddressSanitizer und
-  UndefinedBehaviorSanitizer ohne Befund in allen sechs Testprogrammen.
+  UndefinedBehaviorSanitizer ohne Befund in allen sieben Testprogrammen.
 - Bestehende Physik, Kollisionen, Sneak, Kantenbremse, Spruenge und Kameragrenzen;
   20.000 gemischte Spielschritte.
 - Angrenzende Zielspalten bei 32 Positionen an Blockgrenzen, sechs seitliche
@@ -101,32 +139,33 @@
 - Vollstaendiger SuperH-Bau mit GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91
   einschliesslich der echten ClassPad-Dateischnittstelle.
 - ELF32 big endian SuperH EXEC, Maschinenflags 0x6, Einstiegspunkt
-  0x8c05efa4 im ausfuehrbaren Ladesegment. Zwei gepruefte RAM-Ladesegmente.
+  0x8c05efa4 im ausfuehrbaren Ladesegment. Ein geprueftes RAM-Ladesegment.
   Hollyhock-Metadaten Name
-  Minimine, Version 0.4.2; keine dynamischen oder ungueltigen Ladesegmente.
+  Minimine, Version 0.5.0; keine dynamischen oder ungueltigen Ladesegmente.
 
 ## Auslieferung und Speicher
 
-[CasioSandbox.hh3](../releases/0.4.2/CasioSandbox.hh3), **71.780 Byte**.
+[CasioSandbox.hh3](../releases/0.5.0/CasioSandbox.hh3), **175.924 Byte**.
 
 SHA-256:
 
 ```text
-2cf9787db7bd6f7c9c2de76334bcd04d54c652af6fc09a84ad5567db6d83b070
+508d642d8334f690313ec2ecdcdee63da331a26c8718b8d23ec81c406d0ae2c0
 ```
 
 | Bereich | Groesse |
 | --- | ---: |
-| Ein Spielzustand | 29.444 Byte |
-| Spiel + Benchmark/Ladezustand | 58.888 Byte |
-| RGB565-Tileatlas | 8.704 Byte |
-| Tilemasken | 544 Byte |
+| Ein Spielzustand | 32.196 Byte |
+| Spiel + Benchmark/Ladezustand | 64.392 Byte |
+| RGB565-Tileatlas | 11.264 Byte |
+| Tilemasken | 704 Byte |
 | Mobgrafiken, vier Typen mit zwei Bildern | 6.144 Byte |
 | Mobmasken | 384 Byte |
 | Hintergrundkontur | 1.280 Byte |
-| Grafikpuffer gesamt | **17.056 Byte**, unter 20 KiB |
-| Hauptladebereich belegt | 152.944 von 337.920 Byte |
-| Hauptladebereich frei | 184.976 Byte |
+| Lichtfeld fuer sichtbare Bloecke | 594 Byte |
+| Grafikpuffer gesamt | **20.370 Byte**, unter 20 KiB |
+| Hauptladebereich belegt | 175.168 von 337.920 Byte |
+| Hauptladebereich frei | 162.752 Byte |
 
 Die Groessen der Spielzustaende und Grafikpuffer wurden auch aus den Symbolen
 im fertigen Geraete-ELF gelesen. Kein weiterer Vollbildpuffer; keine laufenden
@@ -134,17 +173,16 @@ Speicheranforderungen im Projektcode. Speichern verwendet einen 512-Byte-Puffer
 und den vorhandenen Benchmarkzustand als Ladepruefzustand. Stack, System-VRAM
 und OS-Heap sind nicht vollstaendig in der Hauptladebelegung enthalten.
 
-[Buildbericht](../releases/0.4.2/build-info.json),
-[ELF-Bericht](../releases/0.4.2/elf-info.txt) und
-[Abschnittsgroessen](../releases/0.4.2/section-sizes.txt) sind beigelegt.
+[Buildbericht](../releases/0.5.0/build-info.json),
+[ELF-Bericht](../releases/0.5.0/elf-info.txt) und
+[Abschnittsgroessen](../releases/0.5.0/section-sizes.txt) sind beigelegt.
 Quellpruefsummen werden mit dem ausgelieferten Stand abgeglichen.
-Nicht initialisierte .bss-Daten belegen RAM, werden in dieser ELF-Datei aber
-nicht als Nullbytes gespeichert; die Dateigroesse ist daher kleiner als bei 0.4.0.
 Ungestrippte ELF-Datei und Linkerkarte entstehen lokal unter build-cp.
 
 ## Echte Hardware noch offen
 
-Version 0.4.2 wurde noch nicht auf dem CP400 gestartet. Touch-Kalibrierung und
+Version 0.5.0 wurde noch nicht auf dem CP400 gestartet. Beleuchtungsleistung,
+Gegner-/Bossbalancing, Touch-Kalibrierung und
 Bedienung mit gehaltenem DIV, Dateizugriffe ueber Fugue, Haltbarkeit der
 Sicherungen bei Stromunterbrechung, Tastenmatrix,
 Darstellung und Performance muessen dort noch geprueft werden:

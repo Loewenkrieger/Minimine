@@ -38,7 +38,20 @@ static const ItemDef defs[ITEM_COUNT]={
     [ITEM_RAW_BEEF]=FOOD("Rohes Rindfleisch","Rind","roh",3,ITEM_COOKED_BEEF),
     [ITEM_COOKED_BEEF]=FOOD("Gebratenes Rindfleisch","Rind","gebraten",8,ITEM_NONE),
     [ITEM_RAW_CHICKEN]=FOOD("Rohes Huehnerfleisch","Huhn","roh",2,ITEM_COOKED_CHICKEN),
-    [ITEM_COOKED_CHICKEN]=FOOD("Gebratenes Huehnerfleisch","Huhn","gebraten",6,ITEM_NONE)
+    [ITEM_COOKED_CHICKEN]=FOOD("Gebratenes Huehnerfleisch","Huhn","gebraten",6,ITEM_NONE),
+    [ITEM_TORCH]=BLOCK("Fackel","Fackel","",TILE_TORCH),
+    [ITEM_CHEST]=BLOCK("Kiste","Kiste","",TILE_CHEST),
+    [ITEM_DOOR]=BLOCK("Tuer","Tuer","",TILE_DOOR_BOTTOM),
+    [ITEM_BED]=BLOCK("Bett","Bett","",TILE_BED_LEFT),
+    [ITEM_IRON_PICKAXE]=TOOL("Eisenspitzhacke","Eisen-","spitzhacke",KIND_PICKAXE,256,0),
+    [ITEM_BASALT]=BLOCK("Basalt","Basalt","",TILE_BASALT),
+    [ITEM_CRYSTAL]={.name="Leuchtkristall",.first="Leucht-",.second="kristall"},
+    [ITEM_MINER_CHARM]={.name="Bergmannsanhaenger",.first="Bergmanns-",.second="anhaenger",.kind=KIND_ACCESSORY},
+    [ITEM_SPEED_BOOTS]={.name="Stiefel der Eile",.first="Stiefel",.second="der Eile",.kind=KIND_ACCESSORY},
+    [ITEM_JUMP_AMULET]={.name="Sprungamulett",.first="Sprung-",.second="amulett",.kind=KIND_ACCESSORY},
+    [ITEM_RELIC_A]={.name="Relikt der Mine",.first="Relikt",.second="Mine",.kind=KIND_RELIC},
+    [ITEM_RELIC_B]={.name="Relikt der Tiefe",.first="Relikt",.second="Tiefe",.kind=KIND_RELIC},
+    [ITEM_RELIC_C]={.name="Relikt des Basalts",.first="Relikt",.second="Basalt",.kind=KIND_RELIC}
 };
 static const ItemDef *def(Item item)
 { return &defs[(unsigned)item<ITEM_COUNT?item:ITEM_NONE]; }
@@ -49,7 +62,8 @@ Tile game_item_tile(Item item) {return def(item)->tile;}
 ItemKind game_item_kind(Item item) {return def(item)->kind;}
 unsigned game_tool_durability(Item item) {return def(item)->durability;}
 unsigned game_stack_limit(Item item)
-{return item<=ITEM_NONE || item>=ITEM_COUNT?0:def(item)->durability?1:64;}
+{return item<=ITEM_NONE || item>=ITEM_COUNT?0:
+    def(item)->durability || def(item)->kind==KIND_ACCESSORY || def(item)->kind==KIND_RELIC?1:64;}
 unsigned game_armor_slot(Item item)
 {return def(item)->kind==KIND_ARMOR?def(item)->armor_slot:ARMOR_SLOTS;}
 unsigned game_armor_points(Item item) {return def(item)->armor;}
@@ -68,6 +82,16 @@ const char *game_notice_text(Notice n)
 {
     static const char *const text[]={"","Inventar voll: Platz schaffen","Kein Platz",
         "Gegenstand zerbrochen","Spitzhacke benoetigt","Zu viele Oefen",
-        "Passt nicht in diesen Slot","Zurueck am Startpunkt"};
+        "Passt nicht in diesen Slot","Zurueck am Rueckkehrpunkt",
+        "Eisenspitzhacke benoetigt","Zu viele Kisten / Fackeln","Bett als Rueckkehrpunkt gesetzt",
+        "Drei Relikte im Inventar benoetigt","Die Kammer ist offen","Steinwaechter besiegt!",
+        "Belohnung: Platz in der Kiste schaffen","Relikt gefunden! Ziel im CLEAR-Menue"};
     return (unsigned)n<sizeof(text)/sizeof(text[0])?text[n]:"";
+}
+unsigned game_pick_tier(Item item)
+{return item==ITEM_WOOD_PICKAXE?1:item==ITEM_STONE_PICKAXE?2:item==ITEM_IRON_PICKAXE?3:0;}
+bool game_has_accessory(const Game *g,Item item)
+{
+    for(unsigned i=0;i<ACCESSORY_SLOTS;++i) if(g->accessories[i].count && g->accessories[i].item==item) return true;
+    return false;
 }

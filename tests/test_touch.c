@@ -11,7 +11,7 @@ static ItemStack stack(Item item,unsigned count)
 {return (ItemStack){item,(uint16_t)count,(uint16_t)game_tool_durability(item)};}
 static void reset(void)
 {
-    game_init(&g,WORLD_SEED);memset(g.slots,0,sizeof(g.slots));
+    game_init_classic(&g,WORLD_SEED);memset(g.slots,0,sizeof(g.slots));
     ui=(InventoryUI){.source=-1,.craft_width=2};
 }
 static UIRect bounds(unsigned id)
@@ -110,6 +110,14 @@ static void crafting_equipment_furnace(void)
     before=g;drag(UI_FURNACE+2,0,true);
     assert(!memcmp(g.slots,before.slots,sizeof(g.slots)) && f->slots[2].count==16 && g.notice==NOTICE_FULL);
     assert(game_can_return_crafting(&g));
+    reset();g.chests[0]=(Chest){.active=true};g.chests[0].slots[0]=stack(ITEM_COAL,33);
+    ui.chest=1;drag(UI_CHEST,3,true);
+    assert(g.chests[0].slots[0].count==16 && g.slots[3].count==17 && ui.cursor==3);
+    drag(3,UI_CHEST+1,false);assert(!g.slots[3].count && g.chests[0].slots[1].count==17);
+    g.slots[1]=stack(ITEM_SPEED_BOOTS,1);tap(UI_ARMOR_BUTTON,false);
+    drag(1,UI_ACCESSORY,true);assert(g.accessories[0].item==ITEM_SPEED_BOOTS);
+    tap(UI_ARMOR_BUTTON,false);assert(ui.chest==1 && !ui.armor);
+    assert(tap(UI_CLOSE_BUTTON,false) && g.chests[0].slots[1].count==17);
     puts("PASS: tap crafting, no dragged preview duplication, worn equipment, furnace halves and reserved ingredient capacity");
 }
 static void conservation(void)
@@ -119,7 +127,7 @@ static void conservation(void)
         reset();ui.craft_width=3;
         for(unsigned i=0;i<TOTAL_SLOTS;++i) {
             Item item=(Item)(1+(i+round*7)%(ITEM_COUNT-1));
-            g.slots[i]=stack(item,game_tool_durability(item)?1:33);
+            g.slots[i]=stack(item,game_stack_limit(item)==1?1:33);
             if(g.slots[i].durability) g.slots[i].durability/=2;
         }
         unsigned counts[ITEM_COUNT]={0},durability[ITEM_COUNT]={0};

@@ -10,9 +10,14 @@ unsigned ui_slots(const InventoryUI *ui,UISlot out[UI_MAX_SLOTS])
         out[n++]=(UISlot){i,{SLOT_INVENTORY,i,0},16+98*col,row?140+(row-1)*34:85,92,30,false};
     }
     if(ui->armor) {
-        for(unsigned i=0;i<ARMOR_SLOTS;++i)
-            out[n++]=(UISlot){UI_ARMOR+i,{SLOT_ARMOR,i,0},
-                16+(int)(i%2)*145,312+(int)(i/2)*55,135,40,false};
+        for(unsigned i=0;i<ARMOR_SLOTS+ACCESSORY_SLOTS;++i)
+            out[n++]=(UISlot){i<ARMOR_SLOTS?UI_ARMOR+i:UI_ACCESSORY+i-ARMOR_SLOTS,
+                {i<ARMOR_SLOTS?SLOT_ARMOR:SLOT_ACCESSORY,i<ARMOR_SLOTS?i:i-ARMOR_SLOTS,0},
+                16+(int)(i%3)*98,312+(int)(i/3)*55,92,40,false};
+    } else if(ui->chest) {
+        for(unsigned i=0;i<CHEST_SLOTS;++i)
+            out[n++]=(UISlot){UI_CHEST+i,{SLOT_CHEST,i,ui->chest-1},
+                16+(int)(i%4)*73,309+(int)(i/4)*36,68,32,false};
     } else if(ui->furnace) {
         out[n++]=(UISlot){UI_FURNACE,{SLOT_FURNACE,0,ui->furnace-1},16,311,80,34,false};
         out[n++]=(UISlot){UI_FURNACE+1,{SLOT_FURNACE,1,ui->furnace-1},16,374,80,34,false};
@@ -101,7 +106,7 @@ bool ui_inventory_touch(Game *g,InventoryUI *ui,UITouch event,int x,int y,bool h
         ui_inventory_cancel_touch(ui);
         ui->touching=hit>=0;ui->touch_slot=hit;ui->touch_x=x;ui->touch_y=y;
         ui->touch_half=half;
-        if(hit>=0 && hit<UI_ARMOR_BUTTON) ui->cursor=(unsigned)hit;
+        if(hit>=0 && hit!=UI_ARMOR_BUTTON && hit!=UI_CLOSE_BUTTON) ui->cursor=(unsigned)hit;
         return false;
     }
     if(!ui->touching) return false;

@@ -232,7 +232,7 @@ static void draw_page(void)
 {
     switch(app.mode) {
     case MODE_START:render_menu(false,app.cursor);break;
-    case MODE_PAUSE:render_menu(true,app.cursor);break;
+    case MODE_PAUSE:render_menu(true,app.cursor);render_progress(&play_game);break;
     case MODE_HELP:render_help();break;
     case MODE_INVENTORY:render_inventory(&play_game,&app.inventory);break;
     case MODE_SAVE:case MODE_LOAD:render_slots(app.mode==MODE_SAVE,app.saves,app.cursor);break;
@@ -330,8 +330,10 @@ int main(void)
                 if(event!=INTERACT_NONE) {
                     int x,y;game_target(g,&x,&y);
                     int furnace=event==INTERACT_FURNACE?game_furnace_at(g,x,y):-1;
+                    int chest=event==INTERACT_CHEST?game_chest_at(g,x,y):-1;
                     app.inventory=(InventoryUI){.cursor=g->selected,.source=-1,
-                        .craft_width=3,.furnace=furnace>=0?(unsigned)furnace+1:0};
+                        .craft_width=3,.furnace=furnace>=0?(unsigned)furnace+1:0,
+                        .chest=chest>=0?(unsigned)chest+1:0};
                     page(MODE_INVENTORY);accumulator=0;break;
                 }
             }

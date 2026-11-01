@@ -78,3 +78,12 @@ Zielen unter die Fuesse wurde fuer das Hochbauen korrigiert. Die alte
 Benchmarkroute verwendet dieses Ziel nicht und bleibt unveraendert.
 Die 540 Schritte werden weiterhin direkt gegen 0.1.0 geprueft.
 Messungen auf dem CP400 stehen noch aus.
+
+
+## Version 0.5.0
+
+Ruinen, Beleuchtung, Zubehoer und Boss sind im alten Vergleichsbenchmark
+ausgeschaltet. Die urspruengliche Welt und alle 540 Kamera-/Spielerschritte
+bleiben gegen 0.1.0 geprueft. Neue Inhalte werden separat mit einem Durchlauf
+bis zum Boss und den maximalen Objektpools getestet. Der Grafikcache liegt
+mit blockweisem Licht bei 20.370 Byte. Echte CP400-FPS stehen noch aus.

@@ -1,4 +1,4 @@
-# Geraetetest fuer Minimine 0.4.2
+# Geraetetest fuer Minimine 0.5.0
 
 Die PC-Tests und der Geraetebau stehen in [VERIFICATION.md](VERIFICATION.md).
 Diese Liste ist fuer den echten ClassPad II fx-CP400 mit Hollyhock 3 vorgesehen.
@@ -7,7 +7,7 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 | Angabe | Wert |
 | --- | --- |
 | Hollyhock-/OS-Version | |
-| Spielversion | 0.4.2; SHA-256 siehe VERIFICATION.md |
+| Spielversion | 0.5.0; SHA-256 siehe VERIFICATION.md |
 | Datum, Takt, Einstellungen | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
 
@@ -147,3 +147,41 @@ Ausgangswerte stehen in [BENCHMARK.md](BENCHMARK.md).
 | 3 | Tiefengestein | | | | | | | |
 
 Beobachtungen:
+
+
+## Expedition, Basisbau und Boss (0.5.0)
+
+- [ ] Neues Spiel: Ruinen, Basalt und Kristallerz sind vorhanden; alte Welten
+      laden unveraendert und behalten ihre bisherige Darstellung.
+- [ ] Vier Fackeln aus Kohle und Stock herstellen. Handlicht, platzierte Fackel,
+      drei Helligkeitsstufen und Lichtgrenzen bei Kamerabewegung pruefen.
+- [ ] Platzierte Fackeln verhindern neue feindliche Spawns, vorhandene Mobs
+      bleiben aktiv. Fackeln verbrennen nicht und lassen sich wieder aufnehmen.
+- [ ] Versorgungskammer, Werkstatt und drei Reliktruinen erkunden. Truheninhalte
+      bleiben nach Entnahme und nach Speichern/Laden erhalten.
+- [ ] Kiste herstellen, platzieren, per EXE oeffnen. Zwoelf Plaetze, ganze/halbe
+      Touchtransfers, 5, Quickselect und Schliessen pruefen.
+- [ ] Volle Kiste abbauen: nur bei Platz fuer Kiste und gesamten Inhalt, keine Verluste.
+- [ ] Tuer belegt zwei Felder; oeffnen/schliessen per EXE. Spieler oder Mob im
+      Durchgang verhindert Schliessen; beide Haelften lassen sich gemeinsam abbauen.
+- [ ] Bett belegt zwei Felder. EXE setzt Rueckkehrpunkt; Tod, blockiertes Bett und
+      Bettabbau pruefen. Inventar, Ruestung und Zubehoer bleiben erhalten.
+- [ ] Eisenspitzhacke herstellen; Basalt/Kristallerz nur damit abbauen.
+- [ ] Ruestungsansicht mit sechs Slots: nur passendes Zubehoer, kein doppeltes
+      Anlegen desselben Stuecks; Touch, DIV und Quickselect erhalten Mengen.
+- [ ] Bergmannsanhaenger: jeder fuenfte Hackenabbau ohne Verschleiss. Stiefel:
+      schneller laufen und Sneak. Amulett: genau ein weiterer Luftsprung.
+- [ ] Zombies: erkennbare Angriffsvorbereitung, Trefferblitz, Rueckstoss.
+      Fledermaus: Warten, Warnung, gerader Angriff und Erholung.
+- [ ] Alle drei Relikte sammeln; Zaehler und Hinweis im CLEAR-Menue stimmen.
+      Siegel verlangt Relikte im Inventar und oeffnet nach EXE dauerhaft.
+- [ ] Waechter beim Betreten sichtbar und beleuchtet. Warnung, Ansturm,
+      Bodenschlag, Sprung zum Ausweichen und Erholung pruefen.
+- [ ] Verlassen/Tod setzt nur den Kampf zurueck; Zugang bleibt offen.
+- [ ] Sieg gibt einmalig Amulett in der Belohnungstruhe und schaltet Rezept frei.
+      Volle/entfernte Truhe: Belohnung bleibt vorgemerkt.
+- [ ] Alle neuen Zustaende speichern/laden: Lichtquellen, Kisten, Tuerhaelften,
+      Bett, Zubehoer, Relikte, laufender Bosskampf, Sieg und ausstehende Belohnung.
+- [ ] Vorhandene 0.4.2-Spielstaende laden und anschliessend als Format 2 speichern.
+- [ ] Unter vielen Lichtquellen, Mobs und Oefen FPS und Simulationsverlust notieren.
+      Alten Vergleichsbenchmark separat ausfuehren; er verwendet keine neuen Systeme.

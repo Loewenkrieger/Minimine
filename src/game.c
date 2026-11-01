@@ -47,7 +47,8 @@ bool game_set_tile(Game *game, int x, int y, Tile tile)
 
 bool game_tile_solid(Tile tile)
 {
-    return tile != TILE_AIR && tile != TILE_TRUNK && tile != TILE_LEAVES;
+    return tile != TILE_AIR && tile != TILE_TRUNK && tile != TILE_LEAVES &&
+        tile!=TILE_TORCH && tile!=TILE_OPEN_BOTTOM && tile!=TILE_OPEN_TOP;
 }
 
 static void generate_world(Game *game)
@@ -110,7 +111,7 @@ void game_follow_camera(Game *game)
     game->camera_y = clamp(y, 0, WORLD_H * TILE_SIZE - VIEW_H);
 }
 
-static void init(Game *game, uint32_t seed, bool survival)
+static void init(Game *game, uint32_t seed, bool survival,bool ruins)
 {
     memset(game, 0, sizeof(*game));
     game->seed = seed;
@@ -130,11 +131,13 @@ static void init(Game *game, uint32_t seed, bool survival)
     game->aim_x = 1;
     for(unsigned i = 0; i < HOTBAR_SLOTS; ++i)
         game->slots[i] = (ItemStack){ .item = (Item)(i + 1), .count = 32 };
+    if(ruins) game_adventure_init(game);
     game_follow_camera(game);
 }
 
-void game_init(Game *game,uint32_t seed) {init(game,seed,true);}
-void game_init_benchmark(Game *game,uint32_t seed) {init(game,seed,false);}
+void game_init(Game *game,uint32_t seed) {init(game,seed,true,true);}
+void game_init_classic(Game *game,uint32_t seed) {init(game,seed,true,false);}
+void game_init_benchmark(Game *game,uint32_t seed) {init(game,seed,false,false);}
 
 bool game_rect_clear(const Game *game,int32_t x,int32_t y,int width,int height)
 {
@@ -229,7 +232,8 @@ static Item dropped_item(Tile tile, Item pickaxe)
     case TILE_GRASS: case TILE_DIRT: return ITEM_DIRT;
     case TILE_STONE: return pickaxe?ITEM_STONE:ITEM_NONE;
     case TILE_COAL: return pickaxe?ITEM_COAL:ITEM_NONE;
-    case TILE_ORE: return pickaxe==ITEM_STONE_PICKAXE?ITEM_RAW_IRON:ITEM_NONE;
+    case TILE_ORE: return game_pick_tier(pickaxe)>=2?ITEM_RAW_IRON:ITEM_NONE;
+    case TILE_BASALT:return ITEM_BASALT;case TILE_CRYSTAL:return ITEM_CRYSTAL;
     case TILE_FURNACE: return ITEM_FURNACE;
     case TILE_WOOD: return ITEM_PLANKS;
     case TILE_TRUNK: case TILE_LOG: return ITEM_LOG;
@@ -246,6 +250,10 @@ unsigned game_mining_ticks(Tile tile)
     case TILE_STONE: case TILE_COAL: case TILE_FURNACE: return 60;
     case TILE_ORE: return 120;
     case TILE_LEAVES: return 9;
+    case TILE_TORCH:return 3;
+    case TILE_CHEST:case TILE_DOOR_BOTTOM:case TILE_DOOR_TOP:case TILE_OPEN_BOTTOM:case TILE_OPEN_TOP:
+    case TILE_BED_LEFT:case TILE_BED_RIGHT:return 36;
+    case TILE_BASALT:return 75;case TILE_CRYSTAL:return 60;
     default: return 0;
     }
 }
@@ -255,6 +263,14 @@ void game_cancel_mining(Game *game)
     game->mining = (Mining){0};
 }
 
+static void wear_pickaxe(Game *g)
+{
+    ++g->mined_blocks;
+    if(game_has_accessory(g,ITEM_MINER_CHARM) && g->mined_blocks%5==0) return;
+    ItemStack *used=&g->slots[g->selected];
+    if(!--used->durability) {*used=(ItemStack){0};g->notice=NOTICE_TOOL_BROKEN;g->notice_ticks=60;}
+}
+
 static void mining_step(Game *game)
 {
     int x, y;
@@ -262,8 +278,14 @@ static void mining_step(Game *game)
     Tile tile = game_tile(game, x, y);
     const ItemStack *pickaxe = active_pickaxe(game);
     unsigned required = game_mining_ticks(tile);
-    if(pickaxe && pickaxe->item == ITEM_STONE_PICKAXE &&
-       (tile==TILE_STONE || tile==TILE_COAL || tile==TILE_ORE || tile==TILE_FURNACE)) required /= 2;
+    unsigned tier=pickaxe?game_pick_tier(pickaxe->item):0;
+    if(game_protected_tile(game,x,y) || tile==TILE_SEAL) {game_cancel_mining(game);return;}
+    if((tile==TILE_BASALT || tile==TILE_CRYSTAL) && tier<3) {
+        game_cancel_mining(game);game->notice=NOTICE_IRON_PICKAXE;game->notice_ticks=60;return;
+    }
+    if(tier>=2 &&
+       (tile==TILE_STONE || tile==TILE_COAL || tile==TILE_ORE || tile==TILE_FURNACE)) required /= tier==3?4u:2u;
+    if(tier==3 && tile==TILE_ORE) required=30;
     Item drop=dropped_item(tile,pickaxe?pickaxe->item:ITEM_NONE);
     int furnace=tile==TILE_FURNACE?game_furnace_at(game,x,y):-1;
     if(tile==TILE_FURNACE && (!pickaxe || furnace<0)) {
@@ -294,6 +316,10 @@ static void mining_step(Game *game)
             .tool_slot = game->selected, .tool = tool, .tool_durability = durability,
             .active = true };
     if(++mining->elapsed < required) return;
+    if(tile>=TILE_TORCH && tile<=TILE_BED_RIGHT) {
+        if(game_adventure_break(game,x,y) && pickaxe) wear_pickaxe(game);
+        game_cancel_mining(game);return;
+    }
     if(drop == ITEM_NONE || game_add_item(game, drop)) {
         if(furnace>=0) {
             Furnace *f=&game->furnaces[furnace];
@@ -301,14 +327,7 @@ static void mining_step(Game *game)
             *f=(Furnace){0};
         }
         game_set_tile(game, x, y, TILE_AIR);
-        if(pickaxe) {
-            ItemStack *used = &game->slots[game->selected];
-            if(!--used->durability) {
-                *used = (ItemStack){0};
-                game->notice = NOTICE_TOOL_BROKEN;
-                game->notice_ticks = SIM_HZ;
-            }
-        }
+        if(pickaxe) wear_pickaxe(game);
     }
     game_cancel_mining(game);
 }
@@ -319,7 +338,8 @@ GameInteraction game_interaction(const Game *game)
     game_target(game, &x, &y);
     Tile t=game_tile(game,x,y);
     return t==TILE_WORKBENCH?INTERACT_WORKBENCH:
-        t==TILE_FURNACE && game_furnace_at(game,x,y)>=0?INTERACT_FURNACE:INTERACT_NONE;
+        t==TILE_FURNACE && game_furnace_at(game,x,y)>=0?INTERACT_FURNACE:
+        t==TILE_CHEST && game_chest_at(game,x,y)>=0?INTERACT_CHEST:INTERACT_NONE;
 }
 
 bool game_place(Game *game)
@@ -330,7 +350,7 @@ bool game_place(Game *game)
     if(!game_stack_valid(stack) || tile == TILE_AIR) return false;
     int x, y;
     game_target(game, &x, &y);
-    if(game_tile(game, x, y) != TILE_AIR) return false;
+    if(game_tile(game, x, y) != TILE_AIR || game_protected_tile(game,x,y)) return false;
     const Player *p = &game->player;
     int32_t bx = x * TILE_SIZE * FIXED_ONE;
     int32_t by = y * TILE_SIZE * FIXED_ONE;
@@ -347,13 +367,18 @@ bool game_place(Game *game)
         for(int i=0;i<FURNACE_LIMIT;++i) if(!game->furnaces[i].active) {furnace=i;break;}
         if(furnace<0) {game->notice=NOTICE_FURNACE_LIMIT;game->notice_ticks=SIM_HZ;return false;}
     }
-    if(!game_set_tile(game,x,y,tile)) return false;
+    if(tile>=TILE_TORCH && tile<=TILE_BED_RIGHT) {
+        if(!game_adventure_place(game,tile,x,y)) return false;
+    } else if(!game_set_tile(game,x,y,tile)) return false;
     if(furnace>=0) game->furnaces[furnace]=(Furnace){.active=true,.x=x,.y=y};
     ++game->revision;
     if(!--stack->count) *stack=(ItemStack){0};
     return true;
 }
 
+
+static bool special_interaction(Game *g)
+{int x,y;game_target(g,&x,&y);return game_adventure_interact(g,x,y);}
 
 GameInteraction game_step(Game *game, GameInput input)
 {
@@ -366,6 +391,7 @@ GameInteraction game_step(Game *game, GameInput input)
     unsigned respawns=game->respawns;
     if(input.toggle_sneak) game_toggle_sneak(game);
     int limit = p->sneaking ? 240 : 480;
+    if(game_has_accessory(game,ITEM_SPEED_BOOTS)) limit=limit*115/100;
     int acceleration = p->sneaking ? 40 : 80;
     int friction = p->sneaking ? 50 : 100;
     int move = clamp(input.move, -1, 1);
@@ -382,13 +408,15 @@ GameInteraction game_step(Game *game, GameInput input)
         game->aim_x = clamp(input.aim_x, -1, 1);
         game->aim_y = clamp(input.aim_y, -1, 1);
     }
-    if(input.jump && p->grounded) {
+    if(input.jump && (p->grounded || (game_has_accessory(game,ITEM_JUMP_AMULET) && !game->double_jump_used))) {
+        if(!p->grounded) game->double_jump_used=true;
         p->vy = -1536;
         p->grounded = false;
         game_exert(game);
     }
     p->vy = clamp(p->vy + 64, -1536, 2048);
     game_move_actor(game,p,PLAYER_W,game_player_height(p));
+    if(p->grounded) game->double_jump_used=false;
     if(game->place_cooldown) --game->place_cooldown;
     if(input.mine) mining_step(game);
     else {
@@ -397,6 +425,7 @@ GameInteraction game_step(Game *game, GameInput input)
         Item active=game->selected<HOTBAR_SLOTS?game->slots[game->selected].item:ITEM_NONE;
         bool fighter=active==ITEM_NONE || game_item_kind(active)==KIND_SWORD;
         if(use && game->survival && fighter && game_attack(game,true)) { /* Attack owns this use. */ }
+        else if(input.use_pressed && special_interaction(game)) { }
         else if(input.use_pressed && game_interaction(game)!=INTERACT_NONE)
             interaction=game_interaction(game);
         else if(use && game->survival && game_item_kind(active)==KIND_FOOD) game_eat(game);

@@ -7,11 +7,11 @@ static int sign(int x) {return (x>0)-(x<0);}
 static uint32_t random_next(Game *g)
 {g->rng^=g->rng<<13;g->rng^=g->rng>>17;g->rng^=g->rng<<5;return g->rng;}
 unsigned game_mob_width(MobKind k)
-{static const unsigned v[]={14,16,10,10};return (unsigned)k<MOB_COUNT?v[k]:0;}
+{static const unsigned v[]={14,16,10,10,10,16};return (unsigned)k<MOB_COUNT?v[k]:0;}
 unsigned game_mob_height(MobKind k)
-{static const unsigned v[]={12,14,10,22};return (unsigned)k<MOB_COUNT?v[k]:0;}
+{static const unsigned v[]={12,14,10,22,8,24};return (unsigned)k<MOB_COUNT?v[k]:0;}
 unsigned game_mob_health(MobKind k)
-{static const unsigned v[]={600,1000,400,1200};return (unsigned)k<MOB_COUNT?v[k]:0;}
+{static const unsigned v[]={600,1000,400,1200,400,10000};return (unsigned)k<MOB_COUNT?v[k]:0;}
 static Item loot(MobKind k)
 {return k==MOB_PIG?ITEM_RAW_PORK:k==MOB_COW?ITEM_RAW_BEEF:k==MOB_CHICKEN?ITEM_RAW_CHICKEN:ITEM_NONE;}
 static bool overlaps(int32_t x,int32_t y,int w,int h,int32_t bx,int32_t by,int bw,int bh)
@@ -34,7 +34,15 @@ void game_exert(Game *g)
 static void respawn(Game *g)
 {
     Player *p=&g->player;int origin=g->spawn_x/FIXED_ONE/TILE_SIZE;
+    game_boss_reset(g);g->double_jump_used=false;
     bool found=false;
+    if(g->bed_spawn && game_tile(g,g->bed_x,g->bed_y)==TILE_BED_LEFT &&
+       game_tile(g,g->bed_x+1,g->bed_y)==TILE_BED_RIGHT) {
+        int32_t x=(g->bed_x*16+3)*FIXED_ONE,y=(g->bed_y*16-PLAYER_H)*FIXED_ONE;
+        if(game_rect_clear(g,x,y,PLAYER_W,PLAYER_H)) {
+            *p=(Player){.x=x,.y=y,.facing=1,.grounded=true};found=true;
+        }
+    }
     for(int d=0;d<WORLD_W && !found;++d) for(int side=0;side<2 && !found;++side) {
         int col=origin+(side?-d:d);if(col<0 || col>=WORLD_W) continue;
         int32_t x=(col*TILE_SIZE+3)*FIXED_ONE;
@@ -121,11 +129,19 @@ bool game_attack(Game *g,bool require_target)
     if(at>=0) {
         Mob *m=&g->mobs[at];unsigned damage=(item==ITEM_NONE?1:game_sword_damage(item))*100;
         if(damage>=m->health) {
-            Item drop=loot(m->kind);
+            bool boss=m->kind==MOB_WARDEN;
+            Item drop=boss?ITEM_NONE:loot(m->kind);
+            if(boss) game_boss_defeated(g);
             if(drop) game_drop(g,(ItemStack){.item=drop,.count=1},
                 m->body.x,m->body.y+((int)game_mob_height(m->kind)-6)*FIXED_ONE);
             *m=(Mob){0};
-        } else {m->health=(uint16_t)(m->health-damage);m->flee_ticks=120;}
+        } else {
+            m->health=(uint16_t)(m->health-damage);m->hurt_ticks=12;
+            if(m->kind!=MOB_WARDEN) {
+                m->flee_ticks=120;m->body.vx=(g->aim_x?g->aim_x:g->player.facing)*768;
+                if(m->kind==MOB_ZOMBIE) {m->state=0;m->state_ticks=0;}
+            }
+        }
         if(item!=ITEM_NONE && !--held->durability) {
             *held=(ItemStack){0};g->notice=NOTICE_TOOL_BROKEN;g->notice_ticks=60;
         }
@@ -144,14 +160,18 @@ bool game_eat(Game *g)
 }
 bool game_spawn_mob(Game *g,MobKind kind,int32_t x,int32_t y)
 {
-    if((unsigned)kind>=MOB_COUNT) return false;
+    if((unsigned)kind>=MOB_COUNT || kind==MOB_WARDEN) return false;
     unsigned w=game_mob_width(kind),h=game_mob_height(kind),count=0;
     if(!game_rect_clear(g,x,y,(int)w,(int)h)) return false;
     int tx=(x+(int)w*FIXED_ONE/2)/FIXED_ONE/TILE_SIZE;
     int ground=(y+(int)h*FIXED_ONE)/FIXED_ONE/TILE_SIZE;
-    if(!game_tile_solid(game_tile(g,tx,ground))) return false;
-    if(kind!=MOB_ZOMBIE && ground>g->surface[tx]+1) return false;
-    if(kind==MOB_ZOMBIE) {
+    if(kind==MOB_BAT) {
+        int ceiling=y/FIXED_ONE/TILE_SIZE-1;
+        if(!game_tile_solid(game_tile(g,tx,ceiling)) || ground<=g->surface[tx]+2) return false;
+    } else if(!game_tile_solid(game_tile(g,tx,ground))) return false;
+    if(!game_hostile(kind) && ground>g->surface[tx]+1) return false;
+    if(game_hostile(kind)) {
+        if(game_artificial_light(g,tx,y/FIXED_ONE/TILE_SIZE)) return false;
         int dx=(x-g->spawn_x)/FIXED_ONE,dy=(y-g->spawn_y)/FIXED_ONE;
         if(dx*dx+dy*dy<=192*192) return false;
     }
@@ -159,7 +179,7 @@ bool game_spawn_mob(Game *g,MobKind kind,int32_t x,int32_t y)
         return false;
     for(unsigned i=0;i<MOB_LIMIT;++i) if(g->mobs[i].active) {
         const Mob *m=&g->mobs[i];
-        count+=(kind==MOB_ZOMBIE)==(m->kind==MOB_ZOMBIE);
+        count+=game_hostile(kind)==game_hostile(m->kind);
         if(overlaps(x,y,(int)w,(int)h,m->body.x,m->body.y,
             (int)game_mob_width(m->kind),(int)game_mob_height(m->kind))) return false;
     }
@@ -173,29 +193,69 @@ bool game_spawn_mob(Game *g,MobKind kind,int32_t x,int32_t y)
 }
 static void try_spawn(Game *g)
 {
-    MobKind kind=(MobKind)(random_next(g)%MOB_COUNT);
+    bool cave=g->player.y/FIXED_ONE/16>g->surface[g->player.x/FIXED_ONE/16]+3;
+    MobKind kind=cave?(random_next(g)&1?MOB_BAT:MOB_ZOMBIE):(MobKind)(random_next(g)%4);
     int px=g->player.x/FIXED_ONE/TILE_SIZE,py=g->player.y/FIXED_ONE/TILE_SIZE;
     for(unsigned attempt=0;attempt<16;++attempt) {
         int col=px+(int)(random_next(g)%49)-24;
         if(col<1 || col>=WORLD_W-1) continue;
         int row=py+(int)(random_next(g)%25)-12;
         if(row<2 || row>=WORLD_H-2 || !game_tile_solid(game_tile(g,col,row))) continue;
-        int x=col*16+1,y=row*16-(int)game_mob_height(kind);
+        int x=col*16+1,y=kind==MOB_BAT?(row+1)*16:row*16-(int)game_mob_height(kind);
         if(x+(int)game_mob_width(kind)>g->camera_x && x<g->camera_x+SCREEN_W &&
            y+(int)game_mob_height(kind)>g->camera_y && y<g->camera_y+VIEW_H) continue;
         if(game_spawn_mob(g,kind,x*FIXED_ONE,y*FIXED_ONE)) break;
+    }
+}
+static void bat_step(Game *g,Mob *m)
+{
+    Player *p=&m->body;
+    if(m->state==0) {
+        p->vx=0;p->vy=-128;
+        if(!game_rect_clear(g,p->x,p->y+p->vy,10,8)) p->vy=0;
+        if(++m->state_ticks>=60) {m->state=1;m->state_ticks=24;p->vy=0;}
+    } else if(m->state==1) {
+        p->vx=p->vy=0;
+        if(m->state_ticks) --m->state_ticks;
+        if(!m->state_ticks) {
+            int dx=(g->player.x-p->x)/FIXED_ONE,dy=(g->player.y-p->y)/FIXED_ONE;
+            int length=absolute(dx)>absolute(dy)?absolute(dx):absolute(dy);if(!length) length=1;
+            p->vx=dx*512/length;p->vy=dy*512/length;m->state=2;m->state_ticks=45;
+        }
+    } else if(m->state==2) {
+        if(m->state_ticks) --m->state_ticks;
+        if(!m->state_ticks || (!p->vx && !p->vy)) {m->state=3;m->state_ticks=45;}
+    } else {
+        p->vx=0;p->vy=-64;
+        if(m->state_ticks) --m->state_ticks;
+        if(!m->state_ticks) m->state=0;
+    }
+    if(p->vx) p->facing=p->vx>0?1:-1;
+    game_move_actor(g,p,10,8);
+    if(!m->attack_ticks && !g->hurt_ticks && overlaps(p->x,p->y,10,8,
+       g->player.x,g->player.y,PLAYER_W,game_player_height(&g->player))) {
+        game_damage_player(g,100,true);m->attack_ticks=60;
     }
 }
 static void mobs_step(Game *g)
 {
     for(unsigned i=0;i<MOB_LIMIT;++i) {
         Mob *m=&g->mobs[i];if(!m->active) continue;
+        if(m->kind==MOB_WARDEN) continue;
         Player *p=&m->body;
         int dx=(g->player.x-p->x)/FIXED_ONE,dy=(g->player.y-p->y)/FIXED_ONE;
         if(dx*dx+dy*dy>512*512) {*m=(Mob){0};continue;}
         if(m->attack_ticks) --m->attack_ticks;
+        if(m->hurt_ticks) --m->hurt_ticks;
         if(m->flee_ticks) --m->flee_ticks;
         if(m->ai_ticks) --m->ai_ticks;
+        if(m->hurt_ticks>6) {
+            p->vx=p->vx*3/4;
+            if(m->kind==MOB_BAT) p->vy=p->vy*3/4;else p->vy+=64;
+            if(p->vy>2048) p->vy=2048;
+            game_move_actor(g,p,(int)game_mob_width(m->kind),(int)game_mob_height(m->kind));continue;
+        }
+        if(m->kind==MOB_BAT) {bat_step(g,m);continue;}
         int direction=p->facing;
         if(m->kind==MOB_ZOMBIE && absolute(dx)<=256) direction=absolute(dx)<2?0:sign(dx);
         else if(m->flee_ticks) direction=-sign(dx);
@@ -204,6 +264,7 @@ static void mobs_step(Game *g)
         }
         if(direction) p->facing=direction;
         p->vx=direction*(m->kind==MOB_ZOMBIE?256:m->flee_ticks?320:96);
+        if(m->kind==MOB_ZOMBIE && m->state==1) p->vx=0;
         int w=(int)game_mob_width(m->kind),h=(int)game_mob_height(m->kind);
         if(p->grounded && p->vx) {
             bool blocked=!game_rect_clear(g,p->x+p->vx,p->y,w,h);
@@ -220,9 +281,18 @@ static void mobs_step(Game *g)
         }
         p->vy+=64;if(p->vy>2048) p->vy=2048;
         game_move_actor(g,p,w,h);
-        if(m->kind==MOB_ZOMBIE && !m->attack_ticks &&
-           overlaps(p->x,p->y,w,h,g->player.x,g->player.y,PLAYER_W,game_player_height(&g->player))) {
-            if(!g->hurt_ticks) {game_damage_player(g,200,true);m->attack_ticks=60;}
+        if(m->kind==MOB_ZOMBIE) {
+            bool near=overlaps(p->x-3*FIXED_ONE,p->y,w+6,h,g->player.x,g->player.y,
+                PLAYER_W,game_player_height(&g->player));
+            if(m->state==1) {
+                if(m->state_ticks) --m->state_ticks;
+                if(!m->state_ticks) {
+                    if(near && visible_line(g,p->x/FIXED_ONE+w/2,p->y/FIXED_ONE+h/2,
+                        g->player.x/FIXED_ONE+5,g->player.y/FIXED_ONE+game_player_height(&g->player)/2))
+                            game_damage_player(g,200,true);
+                    m->attack_ticks=60;m->state=0;
+                }
+            } else if(near && !m->attack_ticks) {m->state=1;m->state_ticks=18;p->vx=0;}
         }
     }
 }
@@ -245,9 +315,9 @@ static void drops_step(Game *g)
 void game_survival_step(Game *g)
 {
     if(!g->survival) return;
-    mobs_step(g);drops_step(g);
+    mobs_step(g);drops_step(g);game_boss_step(g);
     if(g->spawn_ticks) --g->spawn_ticks;
-    if(!g->spawn_ticks) {g->spawn_ticks=300;try_spawn(g);}
+    if(!g->spawn_ticks) {g->spawn_ticks=300;if(!g->boss.active) try_spawn(g);}
     if(++g->hunger_ticks>=3600) {g->hunger_ticks=0;if(g->hunger) --g->hunger;}
     if(g->hunger>=18 && g->health<HEALTH_MAX) {
         if(++g->regen_ticks>=240) {

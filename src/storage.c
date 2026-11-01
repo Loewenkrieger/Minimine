@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-enum { HEADER_SIZE=32, FORMAT_VERSION=1, MAX_PAYLOAD=65536 };
+enum { HEADER_SIZE=32, FORMAT_VERSION=2, MAX_PAYLOAD=65536 };
 static int posix_open(void *c,const char *p,bool w)
 {(void)c;return open(p,w?O_WRONLY|O_CREAT|O_TRUNC:O_RDONLY,0666);}
 static int posix_read(void *c,int fd,void *p,unsigned n)
@@ -36,7 +36,7 @@ static void put32(uint8_t *p,uint32_t v)
 {p[0]=(uint8_t)(v>>24);p[1]=(uint8_t)(v>>16);p[2]=(uint8_t)(v>>8);p[3]=(uint8_t)v;}
 typedef struct {
     const SaveStore *store;int fd;bool reading,measure,failed;
-    uint32_t crc,total,limit;unsigned used,pos;uint8_t buffer[512];
+    uint32_t crc,total,limit;unsigned used,pos,version;uint8_t buffer[512];
 } Codec;
 static void flush(Codec *c)
 {
@@ -137,6 +137,23 @@ static void visit(Codec *c,Game *g)
         U(f->burn_ticks);U(f->burn_total);U(f->progress);
         uint8_t r=byte(c,(uint8_t)f->recipe);if(c->reading) f->recipe=(Item)r;
     }
+    if(c->version<2) return;
+    for(unsigned i=0;i<MOB_LIMIT;++i) if(g->mobs[i].active) {
+        U(g->mobs[i].state);U(g->mobs[i].state_ticks);U(g->mobs[i].hurt_ticks);
+    }
+    for(unsigned i=0;i<ACCESSORY_SLOTS;++i) stack(c,&g->accessories[i]);
+    for(unsigned i=0;i<CHEST_LIMIT;++i) {
+        Chest *ch=&g->chests[i];B(ch->active);if(!ch->active) continue;
+        I(ch->x);I(ch->y);for(unsigned j=0;j<CHEST_SLOTS;++j) stack(c,&ch->slots[j]);
+    }
+    for(unsigned i=0;i<TORCH_LIMIT;++i) {
+        Torch *t=&g->torches[i];B(t->active);if(t->active) {I(t->x);I(t->y);}
+    }
+    B(g->ruins);B(g->bed_spawn);B(g->double_jump_used);I(g->bed_x);I(g->bed_y);
+    U(g->relics_found);U(g->mined_blocks);
+    Boss *b=&g->boss;B(b->gate_open);B(b->active);B(b->defeated);B(b->reward_pending);
+    U(b->phase);U(b->timer);U(b->pattern);U(b->shock_ticks);I(b->direction);I(b->shock_x);
+
 }
 static bool path_for(const SaveStore *s,unsigned slot,unsigned copy,char path[128])
 {
@@ -162,10 +179,10 @@ static SaveResult candidate(const SaveStore *s,unsigned slot,unsigned copy,Game 
     uint8_t h[HEADER_SIZE];SaveResult result=SAVE_INVALID;
     if(!read_exact(s,fd,h,sizeof(h))) goto done;
     if(memcmp(h,"MINIMINE",8) || h[10]!=0 || h[11]!=HEADER_SIZE || get32(h+28)!=0) goto done;
-    if(h[8]!=0 || h[9]!=FORMAT_VERSION) {result=SAVE_INCOMPATIBLE;goto done;}
+    if(h[8]!=0 || (h[9]!=1 && h[9]!=FORMAT_VERSION)) {result=SAVE_INCOMPATIBLE;goto done;}
     uint32_t length=get32(h+12);if(!length || length>MAX_PAYLOAD) goto done;
     memset(g,0,sizeof(*g));g->survival=true;
-    Codec c={.store=s,.fd=fd,.reading=true,.limit=length,.crc=header_crc(h)};
+    Codec c={.store=s,.fd=fd,.reading=true,.version=h[9],.limit=length,.crc=header_crc(h)};
     visit(&c,g);
     if(c.failed || c.total!=length || (c.crc^UINT32_MAX)!=get32(h+24)) goto done;
     uint8_t extra;int trailing=io->read(io->context,fd,&extra,1);
@@ -211,17 +228,17 @@ SaveResult save_slot_write(const SaveStore *s,unsigned slot,const Game *g,Game *
     char path[128];if(!path_for(s,slot,copy,path)) return SAVE_IO_ERROR;
     const SaveIO *io=ops(s);
     if(io->mkdir(io->context,s->root)<0) return SAVE_IO_ERROR;
-    Codec c={.store=s,.measure=true};
+    Codec c={.store=s,.measure=true,.version=FORMAT_VERSION};
     /* Encoding never writes through g when reading=false. */
     visit(&c,(Game *)g);uint32_t length=c.total;
     if(length>MAX_PAYLOAD) return SAVE_INVALID;
     uint8_t header[HEADER_SIZE]={0};memcpy(header,"MINIMINE",8);
     header[9]=FORMAT_VERSION;header[11]=HEADER_SIZE;put32(header+12,length);
     put32(header+16,(uint32_t)(generation>>32));put32(header+20,(uint32_t)generation);
-    c=(Codec){.store=s,.measure=true,.crc=header_crc(header)};
+    c=(Codec){.store=s,.measure=true,.version=FORMAT_VERSION,.crc=header_crc(header)};
     visit(&c,(Game *)g);put32(header+24,c.crc^UINT32_MAX);
     int fd=io->open(io->context,path,true);if(fd<0) return SAVE_IO_ERROR;
-    c=(Codec){.store=s,.fd=fd};
+    c=(Codec){.store=s,.fd=fd,.version=FORMAT_VERSION};
     for(unsigned i=0;i<HEADER_SIZE;++i) byte(&c,header[i]);
     visit(&c,(Game *)g);flush(&c);
     bool failed=c.failed;if(io->close(io->context,fd)<0) failed=true;

@@ -60,13 +60,13 @@ static int mmkdir(void *context,const char *path)
 {(void)path;return ((Memory *)context)->fail_mkdir?-1:0;}
 static SaveIO io={&mem,mopen,mread,mwrite,mclose,mmkdir};
 static SaveStore store={"/Minimine",&io};
-static void reset(void) {memset(&mem,0,sizeof(mem));game_init(&g,WORLD_SEED);}
+static void reset(void) {memset(&mem,0,sizeof(mem));game_init_classic(&g,WORLD_SEED);}
 static void balanced(void) {assert(mem.opens==mem.closes);for(unsigned i=0;i<4;++i) assert(!mem.handles[i].active);}
 static ItemStack stack(Item i,unsigned n)
 {return (ItemStack){i,(uint16_t)n,(uint16_t)game_tool_durability(i)};}
 static void complex_state(void)
 {
-    game_init(&g,WORLD_SEED);
+    game_init_classic(&g,WORLD_SEED);
     memset(g.tiles,0,sizeof(g.tiles));
     for(int x=0;x<WORLD_W;++x) {g.tiles[20][x]=TILE_STONE;g.surface[x]=20;}
     g.player=(Player){.x=160*FIXED_ONE,.y=306*FIXED_ONE,.vx=-240,.vy=0,.facing=-1,.sneaking=true,.grounded=true};
@@ -210,12 +210,28 @@ static void posix_files(void)
     for(unsigned slot=1;slot<=3;++slot) for(unsigned copy=0;copy<2;++copy) {
         char path[80];snprintf(path,sizeof(path),"%s/slot%u%c.sav",disk.root,slot,copy?'b':'a');unlink(path);
     }
-    game_init(&g,WORLD_SEED);
+    game_init_classic(&g,WORLD_SEED);
     for(unsigned slot=1;slot<=3;++slot) {
         g.ticks=slot;assert(save_slot_write(&disk,slot,&g,&scratch)==SAVE_OK);
         assert(save_slot_load(&disk,slot,&loaded,&info)==SAVE_OK && loaded.ticks==slot);
     }
     puts("PASS: actual host mkdir/open/write/close/read for all three slots");
 }
+static void legacy(void)
+{
+    reset();File *f=&mem.files[0];
+    FILE *fixture=fopen("tests/fixtures/save-v1.bin","rb");assert(fixture);
+    f->size=(unsigned)fread(f->data,1,CAPACITY,fixture);assert(fclose(fixture)==0);
+    f->exists=true;assert(f->size>32 && f->data[9]==1);File original_file=*f;
+    SaveInfo info;assert(save_slot_load(&store,1,&loaded,&info)==SAVE_OK);
+    assert(!loaded.ruins && loaded.player.sneaking && loaded.health==1234 && loaded.hunger==13);
+    assert(loaded.ticks==98765 && loaded.slots[0].durability==7 && loaded.armor[0].durability==9);
+    assert(game_validate(&loaded));g=loaded;
+    assert(save_slot_write(&store,1,&g,&scratch)==SAVE_OK && mem.files[1].data[9]==2);
+    assert(!memcmp(f,&original_file,sizeof(*f)));
+    assert(save_slot_load(&store,1,&loaded,&info)==SAVE_OK && info.generation==2);
+    assert(!loaded.ruins && loaded.slots[0].durability==7 && loaded.armor[0].durability==9 && loaded.ticks==98765);
+    balanced();puts("PASS: real 0.4.2 format-1 fixture loads and migrates to format 2 without changing its backup");
+}
 int main(void)
-{roundtrips();backups();corruption();failures();posix_files();puts("All save checks passed.");return 0;}
+{roundtrips();backups();corruption();failures();posix_files();legacy();puts("All save checks passed.");return 0;}

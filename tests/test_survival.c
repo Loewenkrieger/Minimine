@@ -9,7 +9,7 @@ static ItemStack stack(Item item,unsigned n)
 {return (ItemStack){item,(uint16_t)n,(uint16_t)game_tool_durability(item)};}
 static void arena(void)
 {
-    game_init(&g,WORLD_SEED);
+    game_init_classic(&g,WORLD_SEED);
     memset(g.tiles,0,sizeof(g.tiles));memset(g.slots,0,sizeof(g.slots));
     for(int x=0;x<WORLD_W;++x) {g.tiles[20][x]=TILE_STONE;g.surface[x]=20;}
     g.player=(Player){.x=160*FIXED_ONE,.y=(320-PLAYER_H)*FIXED_ONE,.facing=1,.grounded=true};
@@ -60,10 +60,10 @@ static void transfers(void)
     /* Every displayed slot must be reachable through the four arrows. */
     for(unsigned mode=0;mode<4;++mode) {
         ui=(InventoryUI){.source=-1,.craft_width=mode==1?3:2,.armor=mode==2,.furnace=mode==3?1:0};
-        UISlot slots[UI_MAX_SLOTS];unsigned n=ui_slots(&ui,slots);bool seen[32]={0};seen[0]=true;
+        UISlot slots[UI_MAX_SLOTS];unsigned n=ui_slots(&ui,slots);bool seen[UI_ID_COUNT]={0};seen[0]=true;
         for(unsigned pass=0;pass<n;++pass) for(unsigned i=0;i<n;++i) if(seen[slots[i].id])
             for(unsigned d=UI_LEFT;d<=UI_DOWN;++d) {
-                ui.cursor=slots[i].id;ui_inventory_key(&g,&ui,(UICommand)d);assert(ui.cursor<32);seen[ui.cursor]=true;
+                ui.cursor=slots[i].id;ui_inventory_key(&g,&ui,(UICommand)d);assert(ui.cursor<UI_ID_COUNT);seen[ui.cursor]=true;
             }
         for(unsigned i=0;i<n;++i) assert(seen[slots[i].id]);
     }
@@ -104,7 +104,7 @@ static void mining(void)
         assert(game_item_total(&g,ITEM_RAW_IRON)==(unsigned)(tile==TILE_ORE && t==3));
         assert(game_item_total(&g,ITEM_COAL)==(unsigned)(tile==TILE_COAL && t>=2));
     }
-    game_init(&g,WORLD_SEED);game_init_benchmark(&before,WORLD_SEED);
+    game_init_classic(&g,WORLD_SEED);game_init_benchmark(&before,WORLD_SEED);
     unsigned coal=0,stone=0;
     for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x) {
         coal+=g.tiles[y][x]==TILE_COAL;stone+=g.tiles[y][x]==TILE_STONE;

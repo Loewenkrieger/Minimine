@@ -11,17 +11,21 @@ enum {
     HOTBAR_SLOTS=3, BAG_SLOTS=12, TOTAL_SLOTS=15,
     CRAFT_SLOTS=9, CRAFT_FIRST=15, CRAFT_RESULT=24, ARMOR_SLOTS=4,
     MOB_LIMIT=16, DROP_LIMIT=64, FURNACE_LIMIT=32,
+    CHEST_LIMIT=16, CHEST_SLOTS=12, TORCH_LIMIT=64, ACCESSORY_SLOTS=2,
+    ARENA_LEFT=228,ARENA_RIGHT=250,ARENA_TOP=74,ARENA_FLOOR=86,GATE_TOP=82,
     HEALTH_MAX=2000, HUNGER_MAX=20,
     BENCH_PHASES=3, BENCH_WARMUP=30, BENCH_SAMPLES=150,
     BENCH_PHASE_FRAMES=BENCH_WARMUP+BENCH_SAMPLES
 };
 #define WORLD_SEED UINT32_C(0x43503430)
-#define SANDBOX_VERSION "0.4.2"
+#define SANDBOX_VERSION "0.5.0"
 
 typedef enum {
     TILE_AIR, TILE_GRASS, TILE_DIRT, TILE_STONE, TILE_WOOD,
     TILE_TRUNK, TILE_LEAVES, TILE_ORE, TILE_BEDROCK, TILE_LOG, TILE_WORKBENCH,
-    TILE_COAL, TILE_FURNACE, TILE_COUNT
+    TILE_COAL, TILE_FURNACE, TILE_TORCH,TILE_CHEST,TILE_DOOR_BOTTOM,TILE_DOOR_TOP,
+    TILE_OPEN_BOTTOM,TILE_OPEN_TOP,TILE_BED_LEFT,TILE_BED_RIGHT,
+    TILE_BASALT,TILE_CRYSTAL,TILE_SEAL,TILE_COUNT
 } Tile;
 #define TILE_IRON_ORE TILE_ORE
 
@@ -32,18 +36,24 @@ typedef enum {
     ITEM_WOOD_SWORD, ITEM_STONE_SWORD, ITEM_IRON_SWORD,
     ITEM_IRON_HELMET, ITEM_IRON_CHEST, ITEM_IRON_LEGS, ITEM_IRON_BOOTS,
     ITEM_RAW_PORK, ITEM_COOKED_PORK, ITEM_RAW_BEEF, ITEM_COOKED_BEEF,
-    ITEM_RAW_CHICKEN, ITEM_COOKED_CHICKEN, ITEM_COUNT
+    ITEM_RAW_CHICKEN, ITEM_COOKED_CHICKEN, ITEM_TORCH,ITEM_CHEST,ITEM_DOOR,ITEM_BED,
+    ITEM_IRON_PICKAXE,ITEM_BASALT,ITEM_CRYSTAL,ITEM_MINER_CHARM,ITEM_SPEED_BOOTS,
+    ITEM_JUMP_AMULET,ITEM_RELIC_A,ITEM_RELIC_B,ITEM_RELIC_C,ITEM_COUNT
 } Item;
-typedef enum { KIND_MATERIAL, KIND_BLOCK, KIND_PICKAXE, KIND_SWORD, KIND_ARMOR, KIND_FOOD } ItemKind;
+typedef enum { KIND_MATERIAL, KIND_BLOCK, KIND_PICKAXE, KIND_SWORD, KIND_ARMOR, KIND_FOOD,
+    KIND_ACCESSORY,KIND_RELIC } ItemKind;
 typedef struct { Item item; uint16_t count, durability; } ItemStack;
 typedef enum {
     NOTICE_NONE, NOTICE_FULL, NOTICE_NO_SPACE, NOTICE_TOOL_BROKEN,
-    NOTICE_PICKAXE, NOTICE_FURNACE_LIMIT, NOTICE_WRONG_SLOT, NOTICE_RESPAWN
+    NOTICE_PICKAXE, NOTICE_FURNACE_LIMIT, NOTICE_WRONG_SLOT, NOTICE_RESPAWN,
+    NOTICE_IRON_PICKAXE,NOTICE_CONTAINER_LIMIT,NOTICE_BED_SET,NOTICE_RELICS,
+    NOTICE_GATE_OPEN,NOTICE_BOSS_WIN,NOTICE_REWARD_FULL,NOTICE_RELIC_FOUND
 } Notice;
-typedef enum { INTERACT_NONE, INTERACT_WORKBENCH, INTERACT_FURNACE } GameInteraction;
-typedef enum { SLOT_INVENTORY, SLOT_CRAFT, SLOT_ARMOR, SLOT_FURNACE, SLOT_INVALID } SlotKind;
+typedef enum { INTERACT_NONE, INTERACT_WORKBENCH, INTERACT_FURNACE,INTERACT_CHEST } GameInteraction;
+typedef enum { SLOT_INVENTORY, SLOT_CRAFT, SLOT_ARMOR, SLOT_FURNACE, SLOT_INVALID,
+    SLOT_ACCESSORY,SLOT_CHEST } SlotKind;
 typedef struct { SlotKind kind; unsigned index, container; } SlotRef;
-typedef enum { MOB_PIG, MOB_COW, MOB_CHICKEN, MOB_ZOMBIE, MOB_COUNT } MobKind;
+typedef enum { MOB_PIG, MOB_COW, MOB_CHICKEN, MOB_ZOMBIE,MOB_BAT,MOB_WARDEN,MOB_COUNT } MobKind;
 
 typedef struct {
     int x,y; Tile tile; unsigned elapsed,required,tool_slot;
@@ -56,6 +66,7 @@ typedef struct {
 typedef struct {
     bool active; MobKind kind; Player body;
     uint16_t health; unsigned ai_ticks,flee_ticks,attack_ticks;
+    unsigned state,state_ticks,hurt_ticks;
 } Mob;
 typedef struct {
     bool active; ItemStack stack; int32_t x,y,vy; unsigned ttl;
@@ -64,6 +75,12 @@ typedef struct {
     bool active; int x,y; ItemStack slots[3]; /* input, fuel, output */
     unsigned burn_ticks,burn_total,progress; Item recipe;
 } Furnace;
+typedef struct {bool active;int x,y;ItemStack slots[CHEST_SLOTS];} Chest;
+typedef struct {bool active;int x,y;} Torch;
+typedef struct {
+    bool gate_open,active,defeated,reward_pending;
+    unsigned phase,timer,pattern,shock_ticks;int direction;int32_t shock_x;
+} Boss;
 typedef struct {
     int move,aim_x,aim_y;
     bool jump,toggle_sneak,mine,use_pressed,use_held;
@@ -82,10 +99,14 @@ typedef struct {
     unsigned regen_ticks,regen_cost,starve_ticks,spawn_ticks,respawns;
     int32_t spawn_x,spawn_y;
     Mob mobs[MOB_LIMIT]; Drop drops[DROP_LIMIT]; Furnace furnaces[FURNACE_LIMIT];
+    Chest chests[CHEST_LIMIT];Torch torches[TORCH_LIMIT];ItemStack accessories[ACCESSORY_SLOTS];
+    bool ruins,bed_spawn,double_jump_used;int bed_x,bed_y;
+    unsigned relics_found;uint32_t mined_blocks;Boss boss;
 } Game;
 
 void game_init(Game *game,uint32_t seed);
 void game_init_benchmark(Game *game,uint32_t seed);
+void game_init_classic(Game *game,uint32_t seed);
 GameInteraction game_step(Game *game,GameInput input);
 Tile game_tile(const Game *game,int x,int y);
 bool game_set_tile(Game *game,int x,int y,Tile tile);
@@ -146,4 +167,22 @@ unsigned game_mob_health(MobKind kind);
 bool game_spawn_mob(Game *game,MobKind kind,int32_t x,int32_t y);
 void game_drop(Game *game,ItemStack stack,int32_t x,int32_t y);
 bool game_validate(const Game *game);
+unsigned game_pick_tier(Item item);
+bool game_has_accessory(const Game *game,Item item);
+bool game_hostile(MobKind kind);
+void game_find_relics(Game *game);
+void game_adventure_init(Game *game);
+int game_chest_at(const Game *game,int x,int y);
+bool game_adventure_place(Game *game,Tile tile,int x,int y);
+bool game_adventure_break(Game *game,int x,int y);
+bool game_adventure_interact(Game *game,int x,int y);
+bool game_protected_tile(const Game *game,int x,int y);
+unsigned game_artificial_light(const Game *game,int x,int y);
+unsigned game_relic_count(const Game *game);
+const char *game_progress_text(const Game *game);
+void game_boss_step(Game *game);
+void game_boss_reset(Game *game);
+void game_boss_defeated(Game *game);
+bool game_deliver_reward(Game *game);
+bool game_in_arena(const Player *p);
 #endif

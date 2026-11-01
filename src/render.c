@@ -28,13 +28,14 @@ static void play_buttons(void)
     button(ui_back_rect(),"CLEAR: Menue",MUTED);
 }
 
-enum { TILE_GRAPHICS=TILE_COUNT+4 };
+enum { BASE_TILES=TILE_FURNACE+1,TILE_GRAPHICS=BASE_TILES+9,CACHED_MOBS=4 };
 static uint16_t atlas[TILE_GRAPHICS][TILE_SIZE*TILE_SIZE];
 static uint16_t masks[TILE_GRAPHICS][TILE_SIZE];
-static uint16_t mob_pixels[MOB_COUNT][2][16*24];
-static uint16_t mob_masks[MOB_COUNT][2][24];
+static uint16_t mob_pixels[CACHED_MOBS][2][16*24];
+static uint16_t mob_masks[CACHED_MOBS][2][24];
 static int hill_top[SCREEN_W];
-_Static_assert(sizeof(atlas)+sizeof(masks)+sizeof(hill_top)+sizeof(mob_pixels)+sizeof(mob_masks) <= 20*1024,
+static uint8_t block_light[27][22];
+_Static_assert(sizeof(atlas)+sizeof(masks)+sizeof(hill_top)+sizeof(mob_pixels)+sizeof(mob_masks)+sizeof(block_light) <= 20*1024,
     "Graphics cache exceeds 20 KiB");
 static bool atlas_ready, hud_valid;
 static RenderInfo old_info;
@@ -45,7 +46,13 @@ static unsigned old_health,old_hunger;
 static unsigned graphic(Tile tile,int variant)
 {
     if(variant && (tile==TILE_GRASS || tile==TILE_DIRT))
-        return (unsigned)TILE_COUNT+(tile==TILE_GRASS?0u:2u)+(unsigned)variant-1;
+        return (unsigned)BASE_TILES+(tile==TILE_GRASS?0u:2u)+(unsigned)variant-1;
+    if(tile==TILE_TORCH) return 0;
+    if(tile==TILE_CHEST) return BASE_TILES+4;
+    if(tile>=TILE_DOOR_BOTTOM && tile<=TILE_OPEN_TOP) return BASE_TILES+5;
+    if(tile==TILE_BED_LEFT || tile==TILE_BED_RIGHT) return BASE_TILES+6;
+    if(tile==TILE_BASALT || tile==TILE_SEAL) return BASE_TILES+7;
+    if(tile==TILE_CRYSTAL) return BASE_TILES+8;
     return (unsigned)tile;
 }
 
@@ -124,6 +131,24 @@ static void make_tile(Tile tile, int variant)
         paint(tile, variant, x + 3, y + 2, x + 11, y + 8, C_RGB(7, 21, 10));
         paint(tile, variant, x + 5, y + 3, x + 9, y + 4, C_RGB(11, 25, 12));
         break;
+    case TILE_TORCH:
+        paint(tile,variant,7,6,8,15,C_RGB(20,12,5));
+        paint(tile,variant,5,2,10,6,C_RGB(31,17,3));paint(tile,variant,7,0,8,4,C_RGB(31,30,12));break;
+    case TILE_CHEST:
+        paint(tile,variant,0,0,15,15,C_RGB(11,7,3));paint(tile,variant,1,1,14,14,C_RGB(23,15,6));
+        paint(tile,variant,1,6,14,7,C_RGB(9,6,3));paint(tile,variant,7,5,8,9,C_RGB(30,27,11));break;
+    case TILE_DOOR_BOTTOM:
+        paint(tile,variant,0,0,15,15,C_RGB(12,8,4));paint(tile,variant,2,1,13,14,C_RGB(22,15,8));
+        paint(tile,variant,4,3,10,7,C_RGB(8,13,15));paint(tile,variant,12,10,13,11,C_RGB(30,25,8));break;
+    case TILE_BED_LEFT:
+        paint(tile,variant,0,0,15,6,C_RGB(24,8,7));paint(tile,variant,0,0,5,3,C_RGB(28,27,22));
+        paint(tile,variant,0,7,15,9,C_RGB(18,11,5));paint(tile,variant,1,10,3,15,C_RGB(18,11,5));
+        paint(tile,variant,12,10,14,15,C_RGB(18,11,5));break;
+    case TILE_BASALT:case TILE_CRYSTAL:
+        paint(tile,variant,0,0,15,15,C_RGB(6,7,10));paint(tile,variant,1,1,14,1,C_RGB(12,12,16));
+        paint(tile,variant,4,7,11,8,C_RGB(3,4,6));
+        if(tile==TILE_CRYSTAL) {paint(tile,variant,4,4,6,11,C_RGB(17,29,29));
+            paint(tile,variant,9,7,12,12,C_RGB(11,23,30));}break;
     default: break;
     }
 }
@@ -176,17 +201,27 @@ static void world_tile(const Game *game,Tile tile,int x,int y,int variant)
     int left=x<0?0:x, right=x+16>SCREEN_W?SCREEN_W:x+16;
     int top=y<VIEW_TOP?VIEW_TOP:y;
     int bottom=y+16>VIEW_TOP+VIEW_H?VIEW_TOP+VIEW_H:y+16;
-    bool opaque=tile!=TILE_AIR && tile!=TILE_TRUNK && tile!=TILE_LEAVES;
+    bool opaque=tile!=TILE_AIR && tile!=TILE_TRUNK && tile!=TILE_LEAVES &&
+        tile!=TILE_TORCH && tile!=TILE_OPEN_BOTTOM && tile!=TILE_OPEN_TOP &&
+        tile!=TILE_BED_LEFT && tile!=TILE_BED_RIGHT;
     for(int py=top;py<bottom;++py) {
         uint16_t *dest=gint_vram+py*SCREEN_W+left;
         const uint16_t *src=atlas[graphic(tile,variant)]+(py-y)*16;
         if(opaque) memcpy(dest,src+left-x,(size_t)(right-left)*sizeof(*dest));
-        else if(tile == TILE_AIR) background_span(game, dest, left, right, py);
+        else if(tile == TILE_AIR || tile==TILE_OPEN_BOTTOM || tile==TILE_OPEN_TOP) {
+            background_span(game, dest, left, right, py);
+            if(tile!=TILE_AIR) for(int px=left;px<right;++px)
+                if(px-x<2) gint_vram[py*SCREEN_W+px]=C_RGB(20,13,7);
+        }
         else {
             uint16_t mask=masks[graphic(tile,variant)][py-y];
             for(int px=left;px<right;++px)
                 *dest++=mask&(1u<<(px-x))?src[px-x]:background_pixel(game,px,py);
         }
+    }
+    if(tile==TILE_SEAL) {
+        outline(x+3,y+2,10,12,C_RGB(25,16,29));
+        drect(x+6,y+5,x+9,y+10,C_RGB(30,26,13));
     }
 }
 static void icon(Tile tile,int x,int y)
@@ -200,6 +235,10 @@ static void item_icon(Item item,int x,int y)
     Tile tile=game_item_tile(item);
     if(tile!=TILE_AIR) {icon(tile,x,y);return;}
     ItemKind kind=game_item_kind(item);
+    if(kind==KIND_RELIC || kind==KIND_ACCESSORY || item==ITEM_CRYSTAL) {
+        int c=kind==KIND_RELIC?C_RGB(29,21,5):item==ITEM_CRYSTAL?C_RGB(12,29,30):C_RGB(22,15,29);
+        outline(x+3,y+2,10,11,c);drect(x+6,y+5,x+9,y+10,c);return;
+    }
     if(kind==KIND_FOOD) {
         int c=item==ITEM_RAW_PORK || item==ITEM_RAW_BEEF || item==ITEM_RAW_CHICKEN?
             C_RGB(28,12,12):C_RGB(18,9,4);
@@ -328,7 +367,7 @@ static void mob_paint(unsigned kind,unsigned frame,int x,int y,int w,int h,int c
 }
 static void prepare_mobs(void)
 {
-    for(unsigned kind=0;kind<MOB_COUNT;++kind) for(unsigned frame=0;frame<2;++frame) {
+    for(unsigned kind=0;kind<CACHED_MOBS;++kind) for(unsigned frame=0;frame<2;++frame) {
         int stride=(int)frame;
         if(kind==MOB_ZOMBIE) {
             mob_paint(kind,frame,1,0,8,7,C_RGB(10,20,8));
@@ -365,11 +404,23 @@ static void draw_mob(const Game *g,const Mob *m)
     int x=m->body.x/FIXED_ONE-g->camera_x,y=m->body.y/FIXED_ONE-g->camera_y+VIEW_TOP;
     if(x+w<=0 || x>=SCREEN_W || y+h<=VIEW_TOP || y>=VIEW_TOP+VIEW_H) return;
     unsigned frame=m->body.vx?(g->ticks/8)%2:0;
-    for(int py=0;py<h;++py) for(int px=0;px<w;++px) {
+    if(m->kind==MOB_BAT) {
+        int color=m->hurt_ticks?C_WHITE:C_RGB(16,8,23),wing=(g->ticks/5)%2?0:3;
+        drect(x+3,y+2,x+6,y+7,color);drect(x,y+wing,x+2,y+wing+3,color);
+        drect(x+7,y+wing,x+9,y+wing+3,color);dpixel(x+5,y+3,C_RED);
+    } else if(m->kind==MOB_WARDEN) {
+        int color=m->hurt_ticks?C_WHITE:C_RGB(17,18,21);
+        drect(x+2,y,x+13,y+7,color);drect(x+1,y+8,x+14,y+18,color);
+        drect(x+2,y+19,x+6,y+23,color);drect(x+9,y+19,x+13,y+23,color);
+        int arm=g->boss.phase==0 || g->boss.phase==3?y-4:y+10;
+        drect(x-2,arm,x+1,arm+9,color);drect(x+14,arm,x+17,arm+9,color);
+        drect(x+4,y+3,x+5,y+4,C_RGB(30,20,4));drect(x+10,y+3,x+11,y+4,C_RGB(30,20,4));
+    } else for(int py=0;py<h;++py) for(int px=0;px<w;++px) {
         int source=m->body.facing>0?px:w-1-px;
         if(mob_masks[m->kind][frame][py]&(1u<<source))
-            dpixel(x+px,y+py,mob_pixels[m->kind][frame][py*16+source]);
+            dpixel(x+px,y+py,m->hurt_ticks && m->hurt_ticks%4<2?C_WHITE:mob_pixels[m->kind][frame][py*16+source]);
     }
+    if((m->kind==MOB_ZOMBIE || m->kind==MOB_BAT) && m->state==1) dtext(x,y-12,C_RGB(31,24,4),"!");
     if(m->health<game_mob_health(m->kind)) {
         int barw=w<14?14:w,bx=x,by=y-5;
         if(bx<0) bx=0;
@@ -398,6 +449,39 @@ static void player_equipment(const Game *g)
 }
 
 
+static void light_source(int sx,int sy,int radius,int inner,int first_x,int first_y)
+{
+    int ox=sx-first_x,oy=sy-first_y;
+    for(int y=oy-radius;y<=oy+radius;++y) for(int x=ox-radius;x<=ox+radius;++x) {
+        if(x<0 || x>=22 || y<0 || y>=27) continue;
+        int dx=x-ox,dy=y-oy;if(dx<0) dx=-dx;if(dy<0) dy=-dy;
+        int d=dx+dy;uint8_t level=(uint8_t)(d<=inner?2:d<=radius?1:0);
+        if(level>block_light[y][x]) block_light[y][x]=level;
+    }
+}
+static void shade_world(const Game *g)
+{
+    int first_x=g->camera_x/16,first_y=g->camera_y/16;
+    for(int y=0;y<27;++y) for(int x=0;x<22;++x) {
+        int tx=first_x+x;
+        block_light[y][x]=(uint8_t)(tx<WORLD_W && first_y+y<=g->surface[tx]?2:0);
+    }
+    int px=(g->player.x/FIXED_ONE+5)/16;
+    int py=(g->player.y/FIXED_ONE+game_player_height(&g->player)/2)/16;
+    bool held=g->slots[g->selected].item==ITEM_TORCH && g->slots[g->selected].count;
+    light_source(px,py,held?4:2,2,first_x,first_y);
+    for(unsigned i=0;i<TORCH_LIMIT;++i) if(g->torches[i].active)
+        light_source(g->torches[i].x,g->torches[i].y,6,3,first_x,first_y);
+    for(int y=VIEW_TOP;y<VIEW_TOP+VIEW_H;++y) {
+        int ty=(y-VIEW_TOP+g->camera_y)/16-first_y;
+        for(int x=0;x<SCREEN_W;++x) {
+            unsigned light=block_light[ty][(x+g->camera_x)/16-first_x];
+            if(light==2) continue;
+            uint16_t *pixel=&gint_vram[y*SCREEN_W+x];
+            *pixel=light?(uint16_t)((*pixel>>1)&0x7bef):(uint16_t)((*pixel>>2)&0x39e7);
+        }
+    }
+}
 void render_world(const Game *game, const RenderInfo *info)
 {
     prepare_atlas();
@@ -428,6 +512,14 @@ void render_world(const Game *game, const RenderInfo *info)
     }
     player_draw(game);
     if(!info->benchmark && game->survival) player_equipment(game);
+    if(!info->benchmark && game->survival && game->ruins) shade_world(game);
+    if(!info->benchmark && game->boss.shock_ticks) {
+        int distance=(int)(24-game->boss.shock_ticks)*3;
+        int cx=game->boss.shock_x/FIXED_ONE-game->camera_x;
+        int y=ARENA_FLOOR*16-game->camera_y+VIEW_TOP-3;
+        drect(cx-distance-3,y,cx-distance+3,y+2,C_RGB(31,23,6));
+        drect(cx+distance-3,y,cx+distance+3,y+2,C_RGB(31,23,6));
+    }
     if(!info->benchmark) {
         int tx, ty;
         game_target(game, &tx, &ty);
@@ -449,6 +541,9 @@ void render_world(const Game *game, const RenderInfo *info)
     }
     if(!info->benchmark && game->notice_ticks)
         dtext(8,VIEW_TOP+8,C_WHITE,game_notice_text(game->notice));
+    if(!info->benchmark && game->boss.active) for(unsigned i=0;i<MOB_LIMIT;++i)
+        if(game->mobs[i].active && game->mobs[i].kind==MOB_WARDEN)
+            dprint(8,VIEW_TOP+44,C_WHITE,"Steinwaechter: %u/100",(unsigned)game->mobs[i].health/100);
     if(!info->benchmark && info->dropped_ticks)
         dprint(8,VIEW_TOP+26,C_RED,"Simulationsverlust: %u Ticks",(unsigned)info->dropped_ticks);
     dwindow_set(previous);
@@ -500,14 +595,15 @@ void render_inventory(const Game *game,const InventoryUI *ui)
 {
     prepare_atlas();
     unsigned width=ui->craft_width==3?3:2;
-    const char *title=ui->armor?"RUESTUNG / PAUSE":ui->furnace?"OFEN / PAUSE":
+    const char *title=ui->armor?"AUSRUESTUNG / PAUSE":ui->chest?"KISTE / PAUSE":ui->furnace?"OFEN / PAUSE":
         width==3?"WERKBANK / PAUSE":"INVENTAR / PAUSE";
     page_title(title,"Touch / Pfeile   EXE: Quelle/Ziel");
     dtext(16,70,ACCENT,"Hotbar");dtext(16,122,ACCENT,"Inventar");
     if(ui->armor) {
-        dtext(16,287,ACCENT,"Eisenruestung");
-        dtext(16,299,MUTED,"Helm");dtext(161,299,MUTED,"Brustpanzer");
-        dtext(16,354,MUTED,"Hose");dtext(161,354,MUTED,"Stiefel");
+        dtext(16,287,ACCENT,"Ruestung und Zubehoer");
+        static const char *const labels[]={"Helm","Brust","Hose","Stiefel","Zubehoer 1","Zubehoer 2"};
+        for(unsigned i=0;i<6;++i) dtext(16+(int)(i%3)*98,299+(int)(i/3)*55,MUTED,labels[i]);
+    } else if(ui->chest) {dtext(16,287,ACCENT,"Kiste / 12 Plaetze");
     } else if(ui->furnace) {
         dtext(16,287,ACCENT,"Ofen");dtext(16,298,MUTED,"Eingang");
         dtext(16,360,MUTED,"Brennstoff");dtext(218,324,MUTED,"Ausgang");
@@ -536,6 +632,11 @@ void render_inventory(const Game *game,const InventoryUI *ui)
         if(game_tool_durability(selected->item))
             dprint(16,449,MUTED,"Haltbarkeit: %u/%u",(unsigned)selected->durability,
                 game_tool_durability(selected->item));
+        else if(game_item_kind(selected->item)==KIND_ACCESSORY)
+            dtext(16,449,MUTED,selected->item==ITEM_MINER_CHARM?"Jeder 5. Abbau ohne Verschleiss":
+                selected->item==ITEM_SPEED_BOOTS?"+15% Lauftempo":"Ein zusaetzlicher Sprung in der Luft");
+        else if(game_item_kind(selected->item)==KIND_RELIC)
+            dtext(16,449,MUTED,"Zur versiegelten Kammer bringen");
     }
     if(game->notice==NOTICE_FULL || game->notice==NOTICE_WRONG_SLOT)
         dtext(16,449,C_WHITE,game_notice_text(game->notice));
@@ -645,4 +746,10 @@ void render_message(const char *message)
 {
     page_title("MINIMINE","Spielstand");dtext(16,116,C_WHITE,message);
     button(ui_message_rect(),"EXE / CLEAR: Weiter",ACCENT);
+}
+
+void render_progress(const Game *g)
+{
+    dprint(16,377,ACCENT,"Relikte: %u/3",game_relic_count(g));
+    dtext(16,397,MUTED,game_progress_text(g));
 }
