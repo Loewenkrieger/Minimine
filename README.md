@@ -26,10 +26,6 @@ Beim Speichern legt das Spiel den Ordner `/Minimine` selbst an.
 | CLEAR | Pause, Speichern, Laden, Hilfe, Beenden |
 | 0 | Benchmark |
 
-**Fuer Ruinen, Basaltschicht und Boss ein neues Spiel starten.** Alte Spielstaende
-bleiben ladbar; ihre Welt wird nicht umgebaut. Fackeln, Kisten, Tueren, Betten
-und Eisenspitzhacken sind dort ebenfalls verfuegbar.
-
 Hochbauen: mit **2** nach unten zielen, springen und mit **EXE** unter sich bauen.
 
 Materialien: maximal 64 je Slot. Werkzeuge und Ruestung: einzeln, mit Haltbarkeit.
