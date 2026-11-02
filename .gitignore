@@ -1,8 +1,12 @@
 /build*/
 /.cache/
+/MinimineBench/
+/MinimineBench-v*/
+__pycache__/
 *.hh3
 *.elf
 *.map
 *.sav
 !releases/**/*.hh3
+!benchmarks/**/*.hh3
 !releases/0.1.0/CasioSandbox.map

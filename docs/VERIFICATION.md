@@ -1,4 +1,109 @@
-# Pruefstand - Minimine 0.5.0, 1. November 2026
+# Pruefstand - Minimine 0.5.3
+
+## Zeilenlicht nach CP400-Messung aktiviert
+
+- Bench 1.2.0 ist vollstaendig ausgewertet: 15 Bloecke und 900 Messbilder,
+  korrekter Quellstand, gleiche Bild-/Zustandshashes und nachgerechnete Zeiten.
+  Zeilenlicht erreicht 11,48 statt 9,71 FPS im Lichttest sowie 11,31 statt
+  9,59 FPS mit Mobs und Licht. Gewinn gegen 0.5.2: 18,2 beziehungsweise
+  17,9 Prozent. [Messwerte und Original-Logs](../benchmarks/1.2.0/DEVICE_RESULTS.md).
+- Die beiden gemessenen Funktionen fuer zusammenhaengende Bildzeilen und
+  Pixelpaare sind unveraendert ins Spiel uebernommen. Der alte Pfad ist nur
+  im Benchmarkbuild verfuegbar; dessen Aufteilung in drei Varianten bleibt erhalten.
+- Die genaue 0.5.2-Rendererquelle und die vier Original-Logs sind bytegetreu
+  archiviert. Alle bisherigen Spiel- und Benchmark-HH3-Dateien sind unveraendert.
+- Alle acht Spieltestsuiten mit ASan/UBSan bestanden: Inventar, Crafting,
+  Survival, Speicherfehler, Touch, Langzeitpruefungen, Boss und echter Programmeinstieg.
+- 2.056 pixelgleiche Renderer-Vergleiche mit neuem Standard und altem Licht
+  gegen die 0.5.0-Referenz. Mobtypen, Richtungen, Animation, Trefferzustaende,
+  Blockarten, Lichtstufen, Kameraoffsets, Ausschnittsgrenzen und unveraenderter
+  Spielzustand geprueft. Historische Welt und alle 540 Benchmarkschritte stimmen.
+- Benchmarktests: 16 Varianten, fuenf Szenen, drei Momentaufnahmen, native/2x
+  Bildpunkte und vollstaendige Ausgabe. Kurzlauf mit 15 Bloecken/900 Stichproben,
+  Abbrueche und Schreibfehler weiterhin erfolgreich getestet.
+- Spielkern und Speicherformat unveraendert. Game **32.196 Bytes**, Grafikcache
+  **20.370 Bytes**, kein weiterer Vollbildpuffer und keine laufenden Speicheranforderungen.
+- HH3: ELF32 Big Endian SuperH EXEC, Metadatenname Minimine, Version 0.5.3.
+  Datei **176.436 Bytes**, RAM-Ladebereich **175.680 / 337.920 Bytes**.
+  SHA-256 `bd0de67429f21f9916b14c077416c1bb980615cae6e55257c23a4009221bff56`.
+  [Artefakt und Berichte](../releases/0.5.3).
+
+Der gemessene Zeilenlichtpfad ist auf dem CP400 schneller. Die neue Spiel-HH3
+selbst ist noch nicht am Geraet geprueft. Fuer den mit rund 9 FPS gemeldeten
+Spielstand ist ein direkter Vergleich an derselben Position vorgesehen:
+[Geraeteprotokoll](DEVICE_TEST.md). Kein bestimmter Spiel-FPS-Wert wird zugesagt.
+
+Die folgenden Abschnitte dokumentieren die vorherigen Versionen.
+
+## Korrektur nach dem CP400-Lauf von Bench 1.1.0
+
+- Der Geraetelauf zeigt bei 0.5.1 rund 6,7 Prozent mehr FPS an der Oberflaeche,
+  aber rund 9,1 beziehungsweise 6,1 Prozent weniger FPS in den Lichttests.
+  Die alternative CPU-Vollbildausgabe brachte keinen messbaren Vorteil.
+  [Auswertung und Rohdaten](../benchmarks/1.1.0/DEVICE_RESULTS.md).
+- 0.5.2 stellt deshalb die alte zeilen-/pixelweise Beleuchtung aus 0.5.0 wieder
+  her. Die Atlas-Auswahl und Mob-Blits von 0.5.1 bleiben erhalten. Spielkern,
+  Inventar und Speicherformat bleiben gleich.
+- Ein neuer Lichtansatz durchlaeuft zusammenhaengende Bildzeilen und verarbeitet
+  Pixelpaare pro Blockabschnitt. Er ist ausschliesslich im Benchmark 1.2.0
+  enthalten und im Produktionsbuild nicht einkompiliert.
+- 2.056 pixelgleiche Vergleiche beider Lichtpfade gegen 0.5.0, einschliesslich
+  aller Mobtypen, Richtungen, Laufbilder, Trefferzustaende, Blockarten,
+  Lichtstufen, Kameraoffsets und Raender. Darstellung veraendert keine Spielwerte.
+- Alle acht Spieltestsuiten mit ASan/UBSan bestanden. Inventar-/Touchtransfers,
+  Speicherfehler, 540 historische Benchmarkschritte, Langzeit-, Survival-,
+  Boss- und Programmeinstiegstests bleiben erfolgreich.
+- Grafikpuffer weiterhin **20.370 Bytes**, Spielzustand **32.196 Bytes**;
+  kein weiterer Vollbildpuffer, keine laufenden Speicheranforderungen.
+- HH3: ELF32 Big Endian SuperH EXEC, Name Minimine, Version 0.5.2.
+  Datei **176.276 Bytes**, RAM-Ladebereich **175.392 / 337.920 Bytes**.
+  SHA-256 `2d6df461ff81aa2d703ec0e39386a9e8e903bb40a37b4515aa9360fc4db2bc20`.
+  [Artefakt und Berichte](../releases/0.5.2).
+- Bench 1.2.0: **238.276 Bytes**, RAM **236.752 / 337.920 Bytes**, ILRAM **592 Bytes**.
+  Standard: drei Varianten, fuenf Szenen, eine Wiederholung, 15 Bloecke und
+  900 Messbilder. Alle 16 optionalen Varianten, ganze Bildausgabe, Kurzablauf,
+  Abbrueche und Logfehler getestet. Menuevorschau visuell kontrolliert.
+  [Pruefbericht](../benchmarks/1.2.0/VERIFICATION.md).
+
+Die neuen HH3-Dateien sind gebaut und geprueft; ihre echte Geschwindigkeit,
+Darstellung und Datei-I/O auf dem CP400 sind noch offen. Der Geraetetest soll
+auch den bekannten Spielstand bei gleicher Position vergleichen. Die Logs
+von 1.0.0 und 1.1.0 sowie die bisherigen HH3-Dateien bleiben unveraendert.
+
+Die folgenden Abschnitte dokumentieren die vorherigen Versionen.
+
+## Renderer-Optimierung in 0.5.1
+
+- Unveraenderter Spielkern und Speicherformat; Versionskennung 0.5.1.
+- Mobgrafiken: einmaliges Zuschneiden, direkte maskierte Schreibvorgaenge und
+  zusammenhaengende Kopien deckender Zeilen. Spiegelung und Trefferblitz bleiben
+  pixelgleich. Keine neuen Grafikpuffer.
+- Beleuchtung: helle Blockrechtecke auslassen, dunkle Abschnitte paarweise mit
+  ausgerichteten 32-Bit-Zugriffen abdunkeln. Exakt dieselben RGB565-Werte.
+- Atlas- und Maskenauswahl wird pro Block vor der Zeilenschleife berechnet.
+- 1.028 neue Bildvergleiche gegen den bytegetreu gesicherten 0.5.0-Renderer,
+  einschliesslich aller Mobtypen, Blickrichtungen, Laufbilder, Trefferzustaende,
+  abgeschnittener Raender, Lichtstufen und aller Kamera-Unterblockpositionen.
+- Vollstaendige bisherige Spieltests und neue Renderer-Pruefung mit ASan/UBSan.
+  Der Grafikcache bleibt bei 20.370 Bytes, ein Spielzustand bei 32.196 Bytes.
+- Datei **176.372 Bytes**, RAM-Ladebereich **175.616 / 337.920 Bytes**.
+  SHA-256 `c1e5788f9299d9f553b7b3c41f97c1b62d5030839c2491934e9292738dc660cb`.
+  Artefakt und Berichte: [releases/0.5.1](../releases/0.5.1).
+- Ausgabe im Spiel weiterhin ueber gint. Die alternative zusammenhaengende
+  CPU-Ausgabe wird in Minimine Bench 1.1.0 separat gegen beide Renderer getestet.
+- Der kurze Vergleich ist voreingestellt: vier Varianten, fuenf Szenen, eine
+  Wiederholung, 30 Aufwaerm- plus 60 verteilte Messbilder pro Block, 20 Bloecke.
+  Neue Gesamtfortschrittsanzeige; Dateinummer und Wiederholung sind getrennt.
+
+Die damalige Geraetemessung wurde mit Bench 1.1.0 nachgeholt und ist oben
+verlinkt. Der Ausgangslauf von Bench 1.0.0
+ist unter [benchmarks/1.0.0/device-run0001](../benchmarks/1.0.0/device-run0001)
+gesichert und in [DEVICE_RESULTS.md](../benchmarks/1.0.0/DEVICE_RESULTS.md)
+ausgewertet. Abhaengig von diesen Messungen wurde gezielt der bisherige
+Renderer optimiert. Der Beleuchtungsversuch wurde wegen des anschliessend
+gemessenen Rueckschritts in 0.5.2 zurueckgenommen.
+
+Die folgenden Abschnitte dokumentieren den bisherigen Pruefstand von 0.5.0.
 
 ## Neu in 0.5.0
 

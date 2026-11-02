@@ -1,5 +1,31 @@
 # Benchmark-Vergleich
 
+## Aktuell: Version 0.5.3 uebernimmt das Zeilenlicht aus Kurzvergleich 1.2.0
+
+Aus dem ersten Geraetelauf von Minimine Bench 1.0.0 sind alle 60 Erstlauf-Bloecke
+vollstaendig erhalten. Die Einzelmessungen, Zusammenfassungen und Pruefwerte
+stimmen ueberein. [Auswertung und Messdateien](../benchmarks/1.0.0/DEVICE_RESULTS.md).
+
+Der Kurzlauf von 1.1.0 ist ausgewertet: 0.5.1 war an der Oberflaeche rund
+6,7 Prozent schneller, in den beiden Lichttests aber rund 9,1 beziehungsweise
+6,1 Prozent langsamer. Die alternative Vollbild-CPU-Ausgabe brachte keinen
+messbaren Vorteil. [Messwerte und Rohdaten](../benchmarks/1.1.0/DEVICE_RESULTS.md).
+
+0.5.2 nahm deshalb die langsamere blockweise Beleuchtung zurueck und behielt
+die Block-/Moboptimierungen. Der vollstaendige Kurzlauf von 1.2.0 vergleicht
+Originalrenderer, diese Kombination und Zeilenlicht: 15 Bloecke, 900 Messbilder.
+Zeilenlicht erreicht 11,48 statt 9,71 FPS im Lichttest und 11,31 statt 9,59 FPS
+mit Mobs und Licht. Das sind 18,2 beziehungsweise 17,9 Prozent mehr FPS bei
+gleichen Bildpunkten und Zustandshashes. Die LCD-Ausgabe bleibt bei rund 21 ms.
+[Auswertung und Rohdaten](../benchmarks/1.2.0/DEVICE_RESULTS.md).
+
+0.5.3 uebernimmt diesen Lichtpfad ins Spiel. Die ersten drei Tests von 1.2.0
+haben die Beleuchtung ausgeschaltet und bleiben praktisch gleich schnell.
+Fuer den vom Benutzer mit rund 9 FPS gemeldeten Spielstand ist daher ein
+direkter Vergleich an derselben Position vorgesehen. Ein bestimmter FPS-Wert
+wird daraus nicht vorausgesagt. Der normale Spielbenchmark behaelt seine Welt
+und 540 Schritte. [Kurzvergleich](../bench/README.md).
+
 ## Ausgangswert: Version 0.1.0
 
 Ein Gerätelauf auf dem Casio ClassPad II fx-CP400 mit Hollyhock 3.

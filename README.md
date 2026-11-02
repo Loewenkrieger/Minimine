@@ -4,7 +4,7 @@ Ein kleines 2D-Blockspiel fuer den Casio ClassPad II fx-CP400 mit Hollyhock 3.
 Mit Crafting, Basisbau, dunklen Hoehlen, Schatztruhen und einem Steinwaechter.
 Baue ein Lager, fertige Eisenwerkzeuge und finde drei Relikte fuer seine Kammer.
 
-[Version 0.5.0 herunterladen](https://github.com/Loewenkrieger/Minimine/releases/tag/v0.5.0).
+[Version 0.5.3 herunterladen](releases/0.5.3/CasioSandbox.hh3).
 Nur die `.hh3` auf den CP400 kopieren und im Launcher starten.
 Beim Speichern legt das Spiel den Ordner `/Minimine` selbst an.
 
@@ -33,6 +33,10 @@ Speichern erfolgt manuell. Beenden schliesst sofort ohne Rueckfrage und ohne
 Speichern. Beim Tod bleiben Inventar und Ausruestung erhalten.
 
 Bauen: `tools/build.ps1`. Tests: `tools/test.ps1`.
+
+Renderer-Vergleiche mit CSV-Logs: [Minimine Bench](bench/README.md).
+0.5.3 verwendet die schnellere zeilenweise Beleuchtung aus dem Geraetevergleich.
+Darstellung und Spielstaende bleiben gleich.
 
 [Anleitung](docs/ANLEITUNG.md) Â· [Bauumgebung](docs/TOOLCHAIN.md) Â·
 [Benchmark](docs/BENCHMARK.md) Â· [Pruefstand](docs/VERIFICATION.md)

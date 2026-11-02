@@ -1,10 +1,16 @@
-# Minimine 0.5.0 - Anleitung
+# Minimine 0.5.3 - Anleitung
 
 ## Start und Spielstaende
 
-Nur [CasioSandbox.hh3](../releases/0.5.0/CasioSandbox.hh3) auf den ClassPad II
+Nur [CasioSandbox.hh3](../releases/0.5.3/CasioSandbox.hh3) auf den ClassPad II
 fx-CP400 kopieren und mit Hollyhock 3 starten. Das Startmenue bietet neues Spiel,
 Laden, Hilfe, Benchmark und Beenden. Aeltere Versionen bleiben unter releases.
+
+0.5.3 verwendet die schnellere zeilenweise Beleuchtung aus Minimine Bench 1.2.0.
+Die Darstellung bleibt gleich; Spielstaende von 0.5.0 bis 0.5.2 sind direkt
+weiter verwendbar. Im Vergleich waren beleuchtete Szenen rund 18 Prozent
+schneller als mit dem Lichtpfad von 0.5.2. Die FPS im eigenen Spielstand
+haengen von der jeweiligen Szene ab.
 
 CLEAR pausiert das Spiel. Dort gibt es Fortsetzen, Speichern, Laden, Hilfe und
 Beenden. Alle Eintraege und Schaltflaechen koennen direkt angetippt werden.

@@ -162,6 +162,8 @@ static void prepare_atlas(void)
     prepare_mobs();atlas_ready=true;
 }
 void render_invalidate(void) { hud_valid=false; }
+size_t render_graphics_bytes(void)
+{return sizeof(atlas)+sizeof(masks)+sizeof(hill_top)+sizeof(mob_pixels)+sizeof(mob_masks)+sizeof(block_light);}
 
 static void prepare_background(const Game *game)
 {
@@ -204,9 +206,12 @@ static void world_tile(const Game *game,Tile tile,int x,int y,int variant)
     bool opaque=tile!=TILE_AIR && tile!=TILE_TRUNK && tile!=TILE_LEAVES &&
         tile!=TILE_TORCH && tile!=TILE_OPEN_BOTTOM && tile!=TILE_OPEN_TOP &&
         tile!=TILE_BED_LEFT && tile!=TILE_BED_RIGHT;
+    unsigned image=graphic(tile,variant);
+    const uint16_t *pixels=atlas[image];
+    const uint16_t *alpha=masks[image];
     for(int py=top;py<bottom;++py) {
         uint16_t *dest=gint_vram+py*SCREEN_W+left;
-        const uint16_t *src=atlas[graphic(tile,variant)]+(py-y)*16;
+        const uint16_t *src=pixels+(py-y)*16;
         if(opaque) memcpy(dest,src+left-x,(size_t)(right-left)*sizeof(*dest));
         else if(tile == TILE_AIR || tile==TILE_OPEN_BOTTOM || tile==TILE_OPEN_TOP) {
             background_span(game, dest, left, right, py);
@@ -214,7 +219,7 @@ static void world_tile(const Game *game,Tile tile,int x,int y,int variant)
                 if(px-x<2) gint_vram[py*SCREEN_W+px]=C_RGB(20,13,7);
         }
         else {
-            uint16_t mask=masks[graphic(tile,variant)][py-y];
+            uint16_t mask=alpha[py-y];
             for(int px=left;px<right;++px)
                 *dest++=mask&(1u<<(px-x))?src[px-x]:background_pixel(game,px,py);
         }
@@ -415,10 +420,32 @@ static void draw_mob(const Game *g,const Mob *m)
         int arm=g->boss.phase==0 || g->boss.phase==3?y-4:y+10;
         drect(x-2,arm,x+1,arm+9,color);drect(x+14,arm,x+17,arm+9,color);
         drect(x+4,y+3,x+5,y+4,C_RGB(30,20,4));drect(x+10,y+3,x+11,y+4,C_RGB(30,20,4));
-    } else for(int py=0;py<h;++py) for(int px=0;px<w;++px) {
-        int source=m->body.facing>0?px:w-1-px;
-        if(mob_masks[m->kind][frame][py]&(1u<<source))
-            dpixel(x+px,y+py,m->hurt_ticks && m->hurt_ticks%4<2?C_WHITE:mob_pixels[m->kind][frame][py*16+source]);
+    } else {
+        int left=x<0?0:x,right=x+w>SCREEN_W?SCREEN_W:x+w;
+        int top=y<VIEW_TOP?VIEW_TOP:y,bottom=y+h>VIEW_TOP+VIEW_H?VIEW_TOP+VIEW_H:y+h;
+        unsigned count=(unsigned)(right-left),bits=(1u<<count)-1;
+        bool white=m->hurt_ticks && m->hurt_ticks%4<2;
+        bool forward=m->body.facing>0;
+        int offset=left-x;
+        /* Clip once per sprite. Most solid rows become one contiguous copy;
+           transparent and mirrored rows write directly without dpixel calls. */
+        for(int py=top;py<bottom;++py) {
+            const uint16_t *src=mob_pixels[m->kind][frame]+(py-y)*16;
+            unsigned mask=mob_masks[m->kind][frame][py-y];
+            uint16_t *dest=gint_vram+py*SCREEN_W+left;
+            if(forward) {
+                mask=(mask>>(unsigned)offset)&bits;src+=offset;
+                if(!mask) continue;
+                if(mask==bits && !white) {memcpy(dest,src,(size_t)count*2);continue;}
+                for(unsigned i=0;i<count;++i,mask>>=1)
+                    if(mask&1u) dest[i]=white?C_WHITE:src[i];
+            } else {
+                int source=w-1-offset;
+                mask<<=(unsigned)(15-source);
+                for(unsigned i=0;i<count;++i,mask<<=1)
+                    if(mask&0x8000u) dest[i]=white?C_WHITE:src[source-(int)i];
+            }
+        }
     }
     if((m->kind==MOB_ZOMBIE || m->kind==MOB_BAT) && m->state==1) dtext(x,y-12,C_RGB(31,24,4),"!");
     if(m->health<game_mob_health(m->kind)) {
@@ -459,6 +486,45 @@ static void light_source(int sx,int sy,int radius,int inner,int first_x,int firs
         if(level>block_light[y][x]) block_light[y][x]=level;
     }
 }
+#ifdef MINIMINE_BENCH_LIGHT
+static bool legacy_lighting;
+#endif
+/* Device-tested in Bench 1.2: keep framebuffer accesses in screen-row order. */
+static inline __attribute__((__always_inline__)) void shade_run(
+    uint16_t *pixel,unsigned count,unsigned shift,uint32_t mask)
+{
+    typedef uint32_t PixelPair __attribute__((__may_alias__));
+    if((uintptr_t)pixel&3u) {
+        *pixel=(uint16_t)((*pixel>>shift)&(uint16_t)mask);++pixel;--count;
+    }
+    PixelPair *pair=(PixelPair *)pixel;
+    while(count>=8) {
+        pair[0]=(pair[0]>>shift)&mask;pair[1]=(pair[1]>>shift)&mask;
+        pair[2]=(pair[2]>>shift)&mask;pair[3]=(pair[3]>>shift)&mask;
+        pair+=4;count-=8;
+    }
+    while(count>=2) {*pair=(*pair>>shift)&mask;++pair;count-=2;}
+    if(count) {
+        pixel=(uint16_t *)pair;
+        *pixel=(uint16_t)((*pixel>>shift)&(uint16_t)mask);
+    }
+}
+static void shade_scanlines(const Game *g,int first_y)
+{
+    int first_width=16-(g->camera_x&15);
+    uint16_t *pixel=gint_vram+VIEW_TOP*SCREEN_W;
+    for(int y=0;y<VIEW_H;++y) {
+        const uint8_t *light=block_light[(g->camera_y+y)/16-first_y];
+        int remaining=SCREEN_W,width=first_width;
+        while(remaining) {
+            if(width>remaining) width=remaining;
+            unsigned level=*light++;
+            if(level==1) shade_run(pixel,(unsigned)width,1,UINT32_C(0x7bef7bef));
+            else if(level==0) shade_run(pixel,(unsigned)width,2,UINT32_C(0x39e739e7));
+            pixel+=width;remaining-=width;width=16;
+        }
+    }
+}
 static void shade_world(const Game *g)
 {
     int first_x=g->camera_x/16,first_y=g->camera_y/16;
@@ -472,15 +538,22 @@ static void shade_world(const Game *g)
     light_source(px,py,held?4:2,2,first_x,first_y);
     for(unsigned i=0;i<TORCH_LIMIT;++i) if(g->torches[i].active)
         light_source(g->torches[i].x,g->torches[i].y,6,3,first_x,first_y);
-    for(int y=VIEW_TOP;y<VIEW_TOP+VIEW_H;++y) {
-        int ty=(y-VIEW_TOP+g->camera_y)/16-first_y;
-        for(int x=0;x<SCREEN_W;++x) {
-            unsigned light=block_light[ty][(x+g->camera_x)/16-first_x];
-            if(light==2) continue;
-            uint16_t *pixel=&gint_vram[y*SCREEN_W+x];
-            *pixel=light?(uint16_t)((*pixel>>1)&0x7bef):(uint16_t)((*pixel>>2)&0x39e7);
+#ifdef MINIMINE_BENCH_LIGHT
+    /* Preserve the 0.5.2 comparison path only in the benchmark build. */
+    if(legacy_lighting) {
+        for(int y=VIEW_TOP;y<VIEW_TOP+VIEW_H;++y) {
+            int ty=(y-VIEW_TOP+g->camera_y)/16-first_y;
+            for(int x=0;x<SCREEN_W;++x) {
+                unsigned light=block_light[ty][(x+g->camera_x)/16-first_x];
+                if(light==2) continue;
+                uint16_t *pixel=&gint_vram[y*SCREEN_W+x];
+                *pixel=light?(uint16_t)((*pixel>>1)&0x7bef):(uint16_t)((*pixel>>2)&0x39e7);
+            }
         }
+        return;
     }
+#endif
+    shade_scanlines(g,first_y);
 }
 void render_world(const Game *game, const RenderInfo *info)
 {
@@ -548,6 +621,15 @@ void render_world(const Game *game, const RenderInfo *info)
         dprint(8,VIEW_TOP+26,C_RED,"Simulationsverlust: %u Ticks",(unsigned)info->dropped_ticks);
     dwindow_set(previous);
 }
+
+#ifdef MINIMINE_BENCH_LIGHT
+void render_world_legacy_light(const Game *game,const RenderInfo *info)
+{
+    legacy_lighting=true;
+    render_world(game,info);
+    legacy_lighting=false;
+}
+#endif
 
 void render_game(const Game *game,const RenderInfo *info)
 {

@@ -1,0 +1,25 @@
+build-cp/casio_sandbox  :
+section             size         addr
+.note.hollyhock      180   2349148160
+.text              72960   2349148352
+.gint.blocks         288   2349221312
+.gint.drivers        432   2349221600
+.rodata            10412   2349222032
+.data                308   2349232444
+.data.4                0   2349232752
+.ilram                 0   3844079616
+.xyram                 0   3842039808
+.bss               90912   2349232752
+.gint.bss            112   2349323664
+.debug_info       217959            0
+.debug_abbrev      36623            0
+.debug_loclists    57814            0
+.debug_aranges      1760            0
+.debug_rnglists    11309            0
+.debug_line        89605            0
+.debug_str         28331            0
+.debug_frame       15244            0
+.debug_line_str     6224            0
+Total             640473
+
+

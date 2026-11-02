@@ -1,0 +1,105 @@
+{
+  "artifact": "MinimineBench.hh3",
+  "file_bytes": 207172,
+  "sha256": "34ab5a60150db8cf38251c471f17190be4539c62e2b0f22811be7324ec9a515a",
+  "format": "ELF32 big-endian SuperH EXEC",
+  "entry_point": "0x8c0601f8",
+  "machine_flags": "0x6",
+  "metadata": {
+    "VERSION": "1.0.0",
+    "AUTHOR": "Minimine project",
+    "DESCRIPTION": "Renderer comparison with CSV logs",
+    "NAME": "Minimine Bench"
+  },
+  "regions": {
+    "ram": {
+      "start": "0x8c052800",
+      "used_bytes": 205664,
+      "capacity_bytes": 337920,
+      "free_bytes": 132256
+    },
+    "eram": {
+      "start": "0x8cff0000",
+      "used_bytes": 0,
+      "capacity_bytes": 61184,
+      "free_bytes": 61184
+    },
+    "vbr": {
+      "start": "0x8cffef00",
+      "used_bytes": 0,
+      "capacity_bytes": 4352,
+      "free_bytes": 4352
+    },
+    "ilram": {
+      "start": "0xe5200000",
+      "used_bytes": 592,
+      "capacity_bytes": 4096,
+      "free_bytes": 3504
+    },
+    "xyram": {
+      "start": "0xe500e000",
+      "used_bytes": 0,
+      "capacity_bytes": 16384,
+      "free_bytes": 16384
+    }
+  },
+  "load_segments": [
+    {
+      "region": "ram",
+      "address": 2349148160,
+      "physical_address": 2349148160,
+      "memory_bytes": 205664,
+      "file_bytes": 205664,
+      "executable": true
+    },
+    {
+      "region": "ilram",
+      "address": 3844079616,
+      "physical_address": 3844079616,
+      "memory_bytes": 592,
+      "file_bytes": 592,
+      "executable": true
+    }
+  ],
+  "toolchain_image": "ghcr.io/therainbowphoenix/gint-docker@sha256:9f358bfc47ee95cfd8ee973aabdd641d995ca4bdd1324c92dc1bd87c78d8661e",
+  "source_sha256": {
+    "src/adventure.c": "422c426e72ae64065a804cf4f9c2347f316323d7522481cb8248f0014f0e772a",
+    "src/boss.c": "3ee7bc88ea061c8d64bf1e21579724b47a65debb05c09b5df0c936884d5a93b7",
+    "src/game.c": "c227c107c6f21d8740b8fe12fcc2d3472f94351a32599f7895281bd77e855fc0",
+    "src/game.h": "500ed98c5eac4a2fbdea2d50a32cc852320b506215d560eb6257977ddfe3b7cc",
+    "src/inventory.c": "67d44345668ac529b42eee0fe465e1d8253f7fe985d832de0a4e3cf06edc1e2b",
+    "src/inventory_ui.c": "c421c03d06a24754aa1b63b03c42bba34fb33f0efc12a87698822e1559bd6004",
+    "src/inventory_ui.h": "0d8cc1930d8a6a8dc6de1c1ae614301d316a7008cbecec918c52656a6d273062",
+    "src/items.c": "a34e5cdbec83d861c298fe83c5e3b9bedb7eb2097845c8aadac6709637331d4b",
+    "src/main.c": "de38b5a0dbe6d9e430ed3e148d926e190ae3af4b5f4245ce1d629f2e8febd7d2",
+    "src/perf.c": "a15b33fb5b0b1695fa71884941e67f90cac899608fa6cb2a5cba5bff5c481e76",
+    "src/perf.h": "a13d56511b9f543c95dfe252ea8da992c47f71020d808116c16989480b769c88",
+    "src/render.c": "3a103f4d480964582a63e9cebcc987d4d927c1880e29ca00a888925c7dc0cc10",
+    "src/render.h": "2ae4164f38bc8514bec76d31113295b06bac8463f565ee59aa6102bf17a32c14",
+    "src/storage.c": "7794ebc5a89a15d25b2497a86b667ced87e2e2e1225c232498531da13b006560",
+    "src/storage.h": "fecfdf7b28d92b53061c405030599b1a780b1760910e55e4b31ef70b7f852ed5",
+    "src/survival.c": "c95cdf05692568c25f8b8ed5bee2878e0fa4b841faf89cb5a80ec82ca5d1afda",
+    "src/ui_layout.h": "58dd7fc947b396e20ba07d5c00620ccd1710bce8125965c2376b0337c3a96600",
+    "src/validate.c": "092c283db646782db3406e691da91b784dde5e3c18723cbe9c403ad90b425273",
+    "CMakeLists.txt": "93718cff690d0918e0b4546deacf2df501f01263198e163ed5a509b1780708f9"
+  },
+  "hardware_tested": false,
+  "source_id": "c4a6453ddc9cd37938954f31832df6f94fa10e85ae4189b97f20bce946fc4520",
+  "azur_commit": "70e92c47f5d35c6d6b1a0dde73c8346966b8d7a6",
+  "runtime_buffers": {
+    "azur_heap_queue_bytes": 65536,
+    "azur_fragment_alias": {
+      "start": "0xe500e020",
+      "maximum_bytes": 10240
+    },
+    "xram_rows": {
+      "start": "0xe5007020",
+      "bytes": 5120
+    },
+    "yram_rows": {
+      "start": "0xe5017020",
+      "bytes": 5120
+    },
+    "note": "On-chip areas are shared sequentially; ELF region counts only describe load segments."
+  }
+}

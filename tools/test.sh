@@ -8,14 +8,16 @@ sanitizers=(-fsanitize=address,undefined -fno-omit-frame-pointer)
 core=(src/game.c src/items.c src/inventory.c src/inventory_ui.c src/adventure.c src/boss.c src/survival.c src/validate.c src/storage.c)
 view=(src/perf.c src/render.c tests/host/display.c)
 suites=("$@")
-if ((${#suites[@]} == 0)); then suites=(core crafting survival storage touch adventure loop); fi
+if ((${#suites[@]} == 0)); then suites=(core crafting survival storage touch adventure renderer loop); fi
 for suite in "${suites[@]}"; do
     extra=()
+    suite_flags=()
     case "$suite" in
         core) extra=("${view[@]}" tests/reference_world.c tests/reference_route.c);;
+        renderer) extra=("${view[@]}" tests/reference_render_050.c);suite_flags=(-DMINIMINE_BENCH_LIGHT);;
         loop) extra=("${view[@]}");;
     esac
-    "$compiler" "${flags[@]}" "${sanitizers[@]}" -Isrc -Itests/host \
+    "$compiler" "${flags[@]}" "${sanitizers[@]}" "${suite_flags[@]}" -Isrc -Itests/host \
         "${core[@]}" "${extra[@]}" "tests/test_$suite.c" -o "build/native/test_$suite"
     ASAN_OPTIONS=detect_leaks=1 "./build/native/test_$suite"
 done

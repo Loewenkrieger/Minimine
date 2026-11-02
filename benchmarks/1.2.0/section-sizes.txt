@@ -1,0 +1,25 @@
+build-cp/minimine_bench  :
+section             size         addr
+.note.hollyhock      164   2349148160
+.text              73136   2349148336
+.gint.blocks         320   2349221472
+.gint.drivers        480   2349221792
+.rodata            11448   2349222272
+.data                312   2349233720
+.data.4                0   2349234032
+.ilram               592   3844079616
+.xyram                 0   3842039808
+.bss              150752   2349234048
+.gint.bss            112   2349384800
+.debug_info       243367            0
+.debug_abbrev      39143            0
+.debug_loclists    64223            0
+.debug_aranges      2168            0
+.debug_rnglists    13535            0
+.debug_line        98672            0
+.debug_str         29732            0
+.debug_frame       19232            0
+.debug_line_str     6344            0
+Total             753732
+
+

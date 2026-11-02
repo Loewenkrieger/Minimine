@@ -20,7 +20,7 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def inspect(path):
+def inspect(path, expected_names=("Minimine", "Casio Sandbox")):
     data = path.read_bytes()
     require(len(data) >= 52, "Truncated ELF header")
     header = struct.unpack_from(">16sHHIIIIIHHHHHH", data)
@@ -92,7 +92,7 @@ def inspect(path):
             cursor = (desc_end + 3) & ~3
     for key in ("NAME", "DESCRIPTION", "AUTHOR", "VERSION"):
         require(metadata.get(key), "Missing Hollyhock metadata: " + key)
-    require(metadata["NAME"] in ("Minimine", "Casio Sandbox"), "Unexpected application name")
+    require(metadata["NAME"] in expected_names, "Unexpected application name")
 
     regions = {}
     for name, (start, capacity) in REGIONS.items():

@@ -1,4 +1,4 @@
-# Geraetetest fuer Minimine 0.5.0
+# Geraetetest fuer Minimine 0.5.3
 
 Die PC-Tests und der Geraetebau stehen in [VERIFICATION.md](VERIFICATION.md).
 Diese Liste ist fuer den echten ClassPad II fx-CP400 mit Hollyhock 3 vorgesehen.
@@ -7,9 +7,33 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 | Angabe | Wert |
 | --- | --- |
 | Hollyhock-/OS-Version | |
-| Spielversion | 0.5.0; SHA-256 siehe VERIFICATION.md |
+| Spielversion | 0.5.3; SHA-256 siehe releases/0.5.3/build-info.json |
 | Datum, Takt, Einstellungen | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
+
+## Schwerpunkt 0.5.3
+
+- [ ] Bestehenden 0.5.0-/0.5.1-/0.5.2-Spielstand laden; Welt und Mengen unveraendert.
+- [ ] Mobs nach links/rechts, beide Laufbilder und Trefferblinken vergleichen.
+- [ ] Teilweise sichtbare Mobs an allen vier Bildschirmraendern pruefen.
+- [ ] Helle, halbdunkle und dunkle Bereiche bei Kamerabewegung vergleichen.
+- [ ] Zeilenlicht zeigt dieselben Lichtstufen ohne Streifen oder Randfehler.
+- [ ] Bekannten Spielstand an derselben Position pruefen, FPS mit 0.5.2 vergleichen.
+- [ ] Oberflaeche, Hoehle mit Fackeln und Szene mit mehreren Mobs vergleichen.
+- [ ] Inventar/Pause oeffnen und schliessen; Licht und Anzeigen werden korrekt erneuert.
+
+Bench 1.2.0 wurde bereits vollstaendig auf dem CP400 ausgefuehrt und ausgewertet:
+[900 Messbilder und Ergebnisse](../benchmarks/1.2.0/DEVICE_RESULTS.md).
+Die rund 18 Prozent gelten fuer die beiden beleuchteten Tests. Fuer 0.5.2 hat
+der Benutzer im normalen Spiel rund 9 FPS gemeldet; ein direkter Vergleich des
+gleichen Spielstands mit 0.5.3 steht aus. Der Kurzbenchmark muss dafuer nicht
+erneut ausgefuehrt werden.
+
+| Position im selben Spielstand | FPS 0.5.2 | FPS 0.5.3 |
+| --- | ---: | ---: |
+| Oberflaeche | | |
+| Hoehle mit Fackeln | | |
+| Mobs und Beleuchtung | | |
 
 ## Start, Bewegung und Zielen
 

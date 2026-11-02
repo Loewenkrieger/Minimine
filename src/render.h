@@ -15,6 +15,9 @@ typedef struct {
 
 void render_invalidate(void);
 void render_world(const Game *game, const RenderInfo *info);
+#ifdef MINIMINE_BENCH_LIGHT
+void render_world_legacy_light(const Game *game,const RenderInfo *info);
+#endif
 void render_game(const Game *game, const RenderInfo *info);
 void render_inventory(const Game *game, const InventoryUI *ui);
 void render_help(void);
@@ -25,5 +28,6 @@ void render_progress(const Game *game);
 void render_slots(bool saving,const SaveInfo slots[3],unsigned cursor);
 void render_confirm(const char *question,bool yes);
 void render_message(const char *message);
+size_t render_graphics_bytes(void);
 
 #endif
