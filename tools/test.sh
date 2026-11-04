@@ -5,10 +5,10 @@ mkdir -p build/native
 compiler="${CC:-cc}"
 flags=(-std=c11 -Wall -Wextra -Werror -Wshadow -Wconversion -pedantic -g -O1)
 sanitizers=(-fsanitize=address,undefined -fno-omit-frame-pointer)
-core=(src/game.c src/items.c src/inventory.c src/inventory_ui.c src/adventure.c src/boss.c src/survival.c src/validate.c src/storage.c)
+core=(src/game.c src/items.c src/inventory.c src/inventory_ui.c src/adventure.c src/boss.c src/survival.c src/collision.c src/progression.c src/validate.c src/storage.c)
 view=(src/perf.c src/render.c tests/host/display.c)
 suites=("$@")
-if ((${#suites[@]} == 0)); then suites=(core crafting survival storage touch adventure renderer loop); fi
+if ((${#suites[@]} == 0)); then suites=(core crafting survival storage touch adventure update renderer loop); fi
 for suite in "${suites[@]}"; do
     extra=()
     suite_flags=()

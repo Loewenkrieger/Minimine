@@ -1,6 +1,21 @@
 # Benchmark-Vergleich
 
-## Aktuell: Version 0.5.3 uebernimmt das Zeilenlicht aus Kurzvergleich 1.2.0
+## Version 0.6.0
+
+Die urspruengliche Benchmarkwelt und alle 540 Spieler-/Kameraschritte bleiben
+unveraendert gegen 0.1.0 geprueft. Schwierigkeit, Mobs und Diamanten sind dort
+ausgeschaltet. Die alte zeilenweise Lichtoptimierung bleibt im Spiel aktiv.
+Die separaten Renderer-Vergleiche verwenden nur die bisherigen Blocktypen;
+Diamanterze werden in diesen Testwelten durch ihren Basaltuntergrund ersetzt.
+Die archivierten Bench-1.0/1.1/1.2-Dateien und Messlogs bleiben unveraendert.
+
+Neue Kollisions- und Schwierigkeitsregeln veraendern die Survival-Simulation.
+Zustandshashes neuer Survival-Laeufe sind deshalb nicht als identisch mit alten
+Laeufen zu erwarten. 6.000 zusaetzliche dichte Kampfschritte auf allen Stufen
+pruefen Ueberlappungsfreiheit und gueltige Zustaende. Neue CP400-FPS sind noch
+zu messen; die PC-Tests sind keine Geraetegeschwindigkeitsmessung.
+
+## Messgrundlage: Version 0.5.3 und Kurzvergleich 1.2.0
 
 Aus dem ersten Geraetelauf von Minimine Bench 1.0.0 sind alle 60 Erstlauf-Bloecke
 vollstaendig erhalten. Die Einzelmessungen, Zusammenfassungen und Pruefwerte

@@ -49,11 +49,11 @@ Tags `main` verändert den Projektbuild deshalb nicht automatisch.
 
 ## Ergebnis
 
-Die dokumentierte Werkzeugkette baut auch Version 0.5.3. Aktuelle Dateigroesse,
+Die dokumentierte Werkzeugkette baut auch Version 0.6.0. Aktuelle Dateigroesse,
 Pruefsumme und Speicherbelegung stehen in [VERIFICATION.md](VERIFICATION.md)
 und im erzeugten `build-cp/build-info.json`.
 
 Version 0.1.0 sowie Minimine Bench 1.0.0, 1.1.0 und 1.2.0 wurden auf dem
-CP400 gemessen. 0.5.3 uebernimmt das in 1.2.0 schnellere Zeilenlicht; die FPS
-dieser Spielversion im eigenen Spielstand sind noch zu pruefen.
+CP400 gemessen. 0.6.0 behaelt das in 1.2.0 schnellere Zeilenlicht;
+Bedienung und FPS der neuen Spielversion sind noch am Geraet zu pruefen.
 `tools/build-bench.ps1` baut den separaten Benchmark.

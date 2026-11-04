@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-enum { HEADER_SIZE=32, FORMAT_VERSION=2, MAX_PAYLOAD=65536 };
+enum { HEADER_SIZE=32, FORMAT_VERSION=3, MAX_PAYLOAD=65536 };
 static int posix_open(void *c,const char *p,bool w)
 {(void)c;return open(p,w?O_WRONLY|O_CREAT|O_TRUNC:O_RDONLY,0666);}
 static int posix_read(void *c,int fd,void *p,unsigned n)
@@ -96,6 +96,7 @@ static bool boolean(Codec *c,bool v)
 static void stack(Codec *c,ItemStack *s)
 {
     uint8_t item=byte(c,(uint8_t)s->item),count=byte(c,(uint8_t)s->count);
+    if(c->reading && c->version<3 && item>=ITEM_DIAMOND) c->failed=true;
     uint16_t durability=u16(c,s->durability);
     if(c->reading) *s=(ItemStack){(Item)item,count,durability};
 }
@@ -104,13 +105,16 @@ static void body(Codec *c,Player *p)
 static void visit(Codec *c,Game *g)
 {
     for(unsigned y=0;y<WORLD_H;++y) for(unsigned x=0;x<WORLD_W;++x) {
-        uint8_t n=byte(c,g->tiles[y][x]);if(c->reading) g->tiles[y][x]=n;
+        uint8_t n=byte(c,g->tiles[y][x]);
+        if(c->reading && c->version<3 && n>=TILE_DIAMOND_ORE) c->failed=true;
+        if(c->reading) g->tiles[y][x]=n;
     }
     for(unsigned x=0;x<WORLD_W;++x) {
         uint8_t n=byte(c,g->surface[x]);if(c->reading) g->surface[x]=n;
     }
     body(c,&g->player);
-    for(unsigned i=0;i<TOTAL_SLOTS;++i) stack(c,&g->slots[i]);
+    unsigned count=c->version<3?15u:TOTAL_SLOTS;
+    for(unsigned i=0;i<count;++i) stack(c,&g->slots[c->version<3 && i>=3?i+1:i]);
     for(unsigned i=0;i<CRAFT_SLOTS;++i) stack(c,&g->crafting[i]);
     for(unsigned i=0;i<ARMOR_SLOTS;++i) stack(c,&g->armor[i]);
     U(g->selected);I(g->aim_x);I(g->aim_y);B(g->aim_manual);
@@ -153,6 +157,11 @@ static void visit(Codec *c,Game *g)
     U(g->relics_found);U(g->mined_blocks);
     Boss *b=&g->boss;B(b->gate_open);B(b->active);B(b->defeated);B(b->reward_pending);
     U(b->phase);U(b->timer);U(b->pattern);U(b->shock_ticks);I(b->direction);I(b->shock_x);
+    if(c->version>=3) {
+        uint8_t difficulty=byte(c,(uint8_t)g->difficulty);
+        if(c->reading) g->difficulty=(Difficulty)difficulty;
+        B(g->diamonds_generated);
+    }
 
 }
 static bool path_for(const SaveStore *s,unsigned slot,unsigned copy,char path[128])
@@ -179,9 +188,9 @@ static SaveResult candidate(const SaveStore *s,unsigned slot,unsigned copy,Game 
     uint8_t h[HEADER_SIZE];SaveResult result=SAVE_INVALID;
     if(!read_exact(s,fd,h,sizeof(h))) goto done;
     if(memcmp(h,"MINIMINE",8) || h[10]!=0 || h[11]!=HEADER_SIZE || get32(h+28)!=0) goto done;
-    if(h[8]!=0 || (h[9]!=1 && h[9]!=FORMAT_VERSION)) {result=SAVE_INCOMPATIBLE;goto done;}
+    if(h[8]!=0 || h[9]<1 || h[9]>FORMAT_VERSION) {result=SAVE_INCOMPATIBLE;goto done;}
     uint32_t length=get32(h+12);if(!length || length>MAX_PAYLOAD) goto done;
-    memset(g,0,sizeof(*g));g->survival=true;
+    memset(g,0,sizeof(*g));g->survival=true;g->difficulty=DIFFICULTY_MEDIUM;
     Codec c={.store=s,.fd=fd,.reading=true,.version=h[9],.limit=length,.crc=header_crc(h)};
     visit(&c,g);
     if(c.failed || c.total!=length || (c.crc^UINT32_MAX)!=get32(h+24)) goto done;
@@ -214,7 +223,12 @@ SaveResult save_slot_load(const SaveStore *s,unsigned slot,Game *scratch,SaveInf
     SaveInfo chosen;SaveResult r=save_slot_info(s,slot,&chosen,scratch);
     if(r!=SAVE_OK) return r;
     r=candidate(s,slot,chosen.copy,scratch,info);
-    if(r==SAVE_OK) {info->recovered=chosen.recovered;game_cancel_mining(scratch);}
+    if(r==SAVE_OK) {
+        info->recovered=chosen.recovered;game_cancel_mining(scratch);
+        info->upgraded=!scratch->diamonds_generated;
+        game_populate_diamonds(scratch);
+        info->upgraded=game_repair_overlaps(scratch) || info->upgraded;
+    }
     return r;
 }
 SaveResult save_slot_write(const SaveStore *s,unsigned slot,const Game *g,Game *scratch)

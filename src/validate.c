@@ -10,6 +10,8 @@ static bool body_valid(const Game *g,const Player *p,int w,int h)
 }
 bool game_validate(const Game *g)
 {
+    if((unsigned)g->difficulty>=DIFFICULTY_COUNT) return false;
+    const DifficultyRules *rules=game_difficulty_rules(g->difficulty);
     if(!g->survival || g->selected>=HOTBAR_SLOTS || g->aim_x < -1 || g->aim_x>1 ||
        g->aim_y < -1 || g->aim_y>1 || (!g->aim_x && !g->aim_y) ||
        !g->health || g->health>HEALTH_MAX || g->hunger>HUNGER_MAX ||
@@ -19,8 +21,8 @@ bool game_validate(const Game *g)
        g->camera_x<0 || g->camera_x>WORLD_W*16-SCREEN_W ||
        g->camera_y<0 || g->camera_y>WORLD_H*16-VIEW_H ||
        g->hurt_ticks>300 || g->action_ticks>60 || g->swing_ticks>10 ||
-       g->hunger_ticks>=3600 || g->exertion>=20 || g->regen_ticks>=240 ||
-       g->regen_cost>=400 || g->starve_ticks>=240 || g->spawn_ticks>300 ||
+       g->hunger_ticks>=rules->hunger_ticks || g->exertion>=rules->exertion || g->regen_ticks>=240 ||
+       g->regen_cost>=400 || g->starve_ticks>=240 || g->spawn_ticks>rules->spawn_ticks ||
        g->place_cooldown>9 || !g->rng) return false;
     unsigned furnace_tiles=0,chest_tiles=0,torch_tiles=0,zombies=0,animals=0,bosses=0;
     for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x) {

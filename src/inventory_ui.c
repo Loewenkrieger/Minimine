@@ -6,8 +6,10 @@ unsigned ui_slots(const InventoryUI *ui,UISlot out[UI_MAX_SLOTS])
 {
     unsigned n=0;
     for(unsigned i=0;i<TOTAL_SLOTS;++i) {
-        int row=(int)i/3,col=(int)i%3;
-        out[n++]=(UISlot){i,{SLOT_INVENTORY,i,0},16+98*col,row?140+(row-1)*34:85,92,30,false};
+        unsigned bag=i>=HOTBAR_SLOTS?i-HOTBAR_SLOTS:0;
+        UIRect r=i<HOTBAR_SLOTS?ui_hotbar_rect(i,true):
+            (UIRect){16+98*(int)(bag%3),140+(int)(bag/3)*34,92,30};
+        out[n++]=(UISlot){i,{SLOT_INVENTORY,i,0},r.x,r.y,r.w,r.h,false};
     }
     if(ui->armor) {
         for(unsigned i=0;i<ARMOR_SLOTS+ACCESSORY_SLOTS;++i)
@@ -54,7 +56,7 @@ bool ui_inventory_key(Game *g,InventoryUI *ui,UICommand command)
     UISlot slots[UI_MAX_SLOTS];unsigned count=ui_slots(ui,slots);
     const UISlot *target=find(slots,count,ui->cursor);
     if(!target) {ui->cursor=0;target=&slots[0];}
-    if(command>=UI_HOTBAR_X && command<=UI_HOTBAR_Z) {
+    if(command>=UI_HOTBAR_X && command<=UI_HOTBAR_POWER) {
         clear_source(ui);
         if(!target->result)
             game_transfer(g,(SlotRef){SLOT_INVENTORY,(unsigned)(command-UI_HOTBAR_X),0},target->ref,false);

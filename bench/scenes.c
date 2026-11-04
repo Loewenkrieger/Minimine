@@ -23,6 +23,9 @@ void scene_reset(Game *g,unsigned scene)
 {
     if(scene<3) {game_init_benchmark(g,WORLD_SEED);return;}
     game_init(g,WORLD_SEED);
+    /* These historical comparisons only use tiles known by the 0.5 renderer. */
+    for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
+        if(g->tiles[y][x]==TILE_DIAMOND_ORE) g->tiles[y][x]=TILE_BASALT;
     for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
         if(g->tiles[y][x]==TILE_CHEST || g->tiles[y][x]==TILE_TORCH || g->tiles[y][x]==TILE_FURNACE)
             game_set_tile(g,x,y,TILE_AIR);

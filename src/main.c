@@ -17,12 +17,12 @@ _Static_assert((int)BENCH_SAMPLES<=(int)PERF_CAPACITY,"Benchmark history too sma
 
 typedef enum {
     MODE_START,MODE_PLAY,MODE_PAUSE,MODE_HELP,MODE_INVENTORY,
-    MODE_SAVE,MODE_LOAD,MODE_CONFIRM,MODE_MESSAGE,MODE_BENCH,MODE_RESULTS
+    MODE_SAVE,MODE_LOAD,MODE_CONFIRM,MODE_MESSAGE,MODE_BENCH,MODE_RESULTS,MODE_DIFFICULTY
 } Mode;
 typedef enum { CONFIRM_SAVE,CONFIRM_LOAD } Confirmation;
 typedef struct {
     Mode mode,message_return,confirm_return;
-    bool has_game,baseline,resume,page_dirty,running,yes;
+    bool has_game,baseline,resume,page_dirty,running,yes,difficulty_new;
     uint32_t saved_revision;
     unsigned cursor,phase,phase_frame;
     Confirmation confirm;
@@ -49,7 +49,7 @@ static bool dirty(void)
 {return app.has_game && (!app.baseline || play_game.revision!=app.saved_revision);}
 static void new_game(void)
 {
-    game_init(&play_game,WORLD_SEED);app.has_game=true;app.baseline=false;enter_play();
+    app.difficulty_new=true;page(MODE_DIFFICULTY);app.cursor=DIFFICULTY_MEDIUM;
 }
 static void start_benchmark(void)
 {
@@ -79,7 +79,7 @@ static void load_current(void)
     render_message("Laedt ...");dupdate();
     SaveInfo info;SaveResult r=save_slot_load(&store,app.cursor+1,&bench_game,&info);
     if(r!=SAVE_OK) {show_message(save_result_text(r),MODE_LOAD);return;}
-    play_game=bench_game;app.has_game=true;app.baseline=true;
+    play_game=bench_game;app.has_game=true;app.baseline=!info.upgraded;
     app.saved_revision=play_game.revision;
     if(info.recovered) show_message("Sicherungsstand geladen",MODE_PLAY);
     else enter_play();
@@ -93,6 +93,7 @@ static UICommand menu_command(int key)
     case KEY_CLEAR:case KEY_KBD:return UI_CLOSE;
     case KEY_SHIFT:return UI_TOGGLE_ARMOR;
     case KEY_X:return UI_HOTBAR_X;case KEY_Y:return UI_HOTBAR_Y;case KEY_Z:return UI_HOTBAR_Z;
+    case KEY_POWER:return UI_HOTBAR_POWER;
     default:return UI_NONE;
     }
 }
@@ -100,6 +101,18 @@ static bool inventory_key(Game *g,InventoryUI *ui,int key)
 {return ui_inventory_key(g,ui,menu_command(key));}
 static void handle_page(int key)
 {
+    if(app.mode==MODE_DIFFICULTY) {
+        if(key==KEY_UP && app.cursor) {--app.cursor;app.page_dirty=true;}
+        if(key==KEY_DOWN && app.cursor+1<DIFFICULTY_COUNT) {++app.cursor;app.page_dirty=true;}
+        if(key==KEY_CLEAR) {page(app.difficulty_new?MODE_START:MODE_PAUSE);return;}
+        if(key==KEY_EXE) {
+            if(app.difficulty_new) {
+                game_init(&play_game,WORLD_SEED);app.has_game=true;app.baseline=false;
+            }
+            game_set_difficulty(&play_game,(Difficulty)app.cursor);enter_play();
+        }
+        return;
+    }
     if(app.mode==MODE_INVENTORY) {
         if(inventory_key(&play_game,&app.inventory,key)) enter_play();else app.page_dirty=true;
         return;
@@ -153,7 +166,7 @@ static void handle_page(int key)
     }
     if(key==KEY_0) {start_benchmark();return;}
     if(key==KEY_UP && app.cursor) {--app.cursor;app.page_dirty=true;}
-    if(key==KEY_DOWN && app.cursor<4) {++app.cursor;app.page_dirty=true;}
+    if(key==KEY_DOWN && app.cursor<(app.mode==MODE_PAUSE?5u:4u)) {++app.cursor;app.page_dirty=true;}
     if(key==KEY_CLEAR) {if(app.mode==MODE_PAUSE) enter_play();return;}
     if(key!=KEY_EXE) return;
     if(app.mode==MODE_START) {
@@ -167,14 +180,18 @@ static void handle_page(int key)
         else if(app.cursor==1) slots_page(true);
         else if(app.cursor==2) slots_page(false);
         else if(app.cursor==3) page(MODE_HELP);
+        else if(app.cursor==4) {
+            app.difficulty_new=false;page(MODE_DIFFICULTY);app.cursor=(unsigned)play_game.difficulty;
+        }
         else app.running=false;
     }
 }
 static int page_hit(int x,int y)
 {
     switch(app.mode) {
-    case MODE_START:case MODE_PAUSE:
-        for(unsigned i=0;i<5;++i) if(ui_contains(ui_menu_rect(i),x,y)) return (int)i;
+    case MODE_START:case MODE_PAUSE:case MODE_DIFFICULTY:
+        for(unsigned i=0;i<(app.mode==MODE_DIFFICULTY?3u:app.mode==MODE_PAUSE?6u:5u);++i)
+            if(ui_contains(ui_menu_rect(i),x,y)) return (int)i;
         break;
     case MODE_SAVE:case MODE_LOAD:
         for(unsigned i=0;i<4;++i) if(ui_contains(ui_save_rect(i),x,y)) return (int)i;
@@ -221,7 +238,7 @@ static void handle_menu_event(key_event_t e)
     if(e.type!=KEYEV_TOUCH_UP) return;
     bool activate=app.touching && app.touch_mode==app.mode && app.touch_target==page_hit(e.x,e.y);
     app.touching=false;if(!activate) return;
-    if(app.mode==MODE_START || app.mode==MODE_PAUSE || app.mode==MODE_SAVE || app.mode==MODE_LOAD) {
+    if(app.mode==MODE_START || app.mode==MODE_PAUSE || app.mode==MODE_SAVE || app.mode==MODE_LOAD || app.mode==MODE_DIFFICULTY) {
         app.cursor=(unsigned)app.touch_target;handle_page(KEY_EXE);
     } else if(app.mode==MODE_CONFIRM) {app.yes=app.touch_target==1;handle_page(KEY_EXE);}
     else if(app.mode==MODE_HELP || app.mode==MODE_RESULTS)
@@ -233,6 +250,7 @@ static void draw_page(void)
     switch(app.mode) {
     case MODE_START:render_menu(false,app.cursor);break;
     case MODE_PAUSE:render_menu(true,app.cursor);render_progress(&play_game);break;
+    case MODE_DIFFICULTY:render_difficulty((Difficulty)app.cursor,app.difficulty_new);break;
     case MODE_HELP:render_help();break;
     case MODE_INVENTORY:render_inventory(&play_game,&app.inventory);break;
     case MODE_SAVE:case MODE_LOAD:render_slots(app.mode==MODE_SAVE,app.saves,app.cursor);break;
@@ -248,6 +266,19 @@ static Presses read_input(void)
 {
     Presses p={.hotbar=-1};key_event_t e;
     while((e=pollevent()).type!=KEYEV_NONE) {
+        if(e.type==KEYEV_TOUCH_DOWN) {
+            app.touch_target=app.mode==MODE_PLAY?ui_hotbar_hit(e.x,e.y):-1;
+            app.touching=app.touch_target>=0;app.touch_mode=app.mode;continue;
+        }
+        if(e.type==KEYEV_TOUCH_DRAG) {
+            if(app.touch_target!=ui_hotbar_hit(e.x,e.y)) app.touching=false;
+            continue;
+        }
+        if(e.type==KEYEV_TOUCH_UP) {
+            if(app.touching && app.mode==MODE_PLAY && app.touch_mode==MODE_PLAY &&
+               app.touch_target==ui_hotbar_hit(e.x,e.y)) p.hotbar=app.touch_target;
+            app.touching=false;continue;
+        }
         if(e.type==KEYEV_UP && e.key==KEY_DEL) p.mine_released=true;
         if(e.type!=KEYEV_DOWN) continue;
         switch(e.key) {
@@ -258,6 +289,7 @@ static Presses read_input(void)
         case KEY_CLEAR:p.clear=true;break;
         case KEY_0:p.zero=true;break;
         case KEY_X:p.hotbar=0;break;case KEY_Y:p.hotbar=1;break;case KEY_Z:p.hotbar=2;break;
+        case KEY_POWER:p.hotbar=3;break;
         }
     }
     return p;

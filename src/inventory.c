@@ -222,24 +222,29 @@ ItemStack game_craft_preview(const Game *g,unsigned width)
     if(w==1 && h==3 && count==3 && g->crafting[first+width].item==material &&
        g->crafting[first+2*width].item==ITEM_STICK) {
         Item sword=material==ITEM_PLANKS?ITEM_WOOD_SWORD:
-            material==ITEM_STONE?ITEM_STONE_SWORD:material==ITEM_IRON_INGOT?ITEM_IRON_SWORD:ITEM_NONE;
+            material==ITEM_STONE?ITEM_STONE_SWORD:material==ITEM_IRON_INGOT?ITEM_IRON_SWORD:
+            material==ITEM_DIAMOND?ITEM_DIAMOND_SWORD:ITEM_NONE;
         if(sword) return result(sword,1);
     }
     if(w==3 && h==3 && count==5 &&
-       (material==ITEM_PLANKS || material==ITEM_STONE || material==ITEM_IRON_INGOT) &&
+       (material==ITEM_PLANKS || material==ITEM_STONE || material==ITEM_IRON_INGOT || material==ITEM_DIAMOND) &&
        g->crafting[1].item==material && g->crafting[2].item==material &&
        g->crafting[4].item==ITEM_STICK && g->crafting[7].item==ITEM_STICK)
-        return result(material==ITEM_PLANKS?ITEM_WOOD_PICKAXE:material==ITEM_STONE?ITEM_STONE_PICKAXE:ITEM_IRON_PICKAXE,1);
+        return result(material==ITEM_PLANKS?ITEM_WOOD_PICKAXE:material==ITEM_STONE?ITEM_STONE_PICKAXE:
+            material==ITEM_DIAMOND?ITEM_DIAMOND_PICKAXE:ITEM_IRON_PICKAXE,1);
     if(w==3 && h==3 && count==8 && pattern(g,width,first,3,3,"XXXX XXXX",ITEM_STONE))
         return result(ITEM_FURNACE,1);
-    if(w==3 && h==2 && count==5 && pattern(g,width,first,3,2,"XXXX X",ITEM_IRON_INGOT))
-        return result(ITEM_IRON_HELMET,1);
-    if(w==3 && h==3 && count==8 && pattern(g,width,first,3,3,"X XXXXXXX",ITEM_IRON_INGOT))
-        return result(ITEM_IRON_CHEST,1);
-    if(w==3 && h==3 && count==7 && pattern(g,width,first,3,3,"XXXX XX X",ITEM_IRON_INGOT))
-        return result(ITEM_IRON_LEGS,1);
-    if(w==3 && h==2 && count==4 && pattern(g,width,first,3,2,"X XX X",ITEM_IRON_INGOT))
-        return result(ITEM_IRON_BOOTS,1);
+    if(material==ITEM_IRON_INGOT || material==ITEM_DIAMOND) {
+        Item base=material==ITEM_DIAMOND?ITEM_DIAMOND_HELMET:ITEM_IRON_HELMET;
+        if(w==3 && h==2 && count==5 && pattern(g,width,first,3,2,"XXXX X",material))
+            return result(base,1);
+        if(w==3 && h==3 && count==8 && pattern(g,width,first,3,3,"X XXXXXXX",material))
+            return result((Item)(base+1),1);
+        if(w==3 && h==3 && count==7 && pattern(g,width,first,3,3,"XXXX XX X",material))
+            return result((Item)(base+2),1);
+        if(w==3 && h==2 && count==4 && pattern(g,width,first,3,2,"X XX X",material))
+            return result((Item)(base+3),1);
+    }
     return none;
 }
 bool game_craft(Game *g,unsigned width)

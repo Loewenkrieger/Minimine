@@ -24,7 +24,7 @@ target_compile_options(bench_azur PRIVATE -Os -g -ffunction-sections -fdata-sect
 target_link_libraries(bench_azur PUBLIC Gint::Gint)
 add_executable(minimine_bench main.c scenes.c graphics.c log.c
   ../src/game.c ../src/items.c ../src/inventory.c ../src/inventory_ui.c
-  ../src/adventure.c ../src/boss.c ../src/survival.c ../src/validate.c
+  ../src/adventure.c ../src/boss.c ../src/survival.c ../src/collision.c ../src/progression.c ../src/validate.c
   ../src/storage.c ../src/perf.c ../src/render.c)
 target_include_directories(minimine_bench PRIVATE ../src "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_compile_definitions(minimine_bench PRIVATE MINIMINE_BENCH_LIGHT)

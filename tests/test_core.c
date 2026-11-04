@@ -152,7 +152,7 @@ static void test_inventory(void)
     }
     memset(a.slots,0,sizeof(a.slots));
     assert(game_add_item(&a,ITEM_PLANKS));
-    assert(a.slots[3].item==ITEM_PLANKS && !a.slots[0].count);
+    assert(a.slots[HOTBAR_SLOTS].item==ITEM_PLANKS && !a.slots[0].count);
     for(int i=3;i<TOTAL_SLOTS;++i) a.slots[i]=(ItemStack){.item=ITEM_STONE,.count=64};
     assert(game_add_item(&a,ITEM_DIRT) && a.slots[0].count==1);
     for(int i=0;i<3;++i) a.slots[i]=(ItemStack){.item=ITEM_PLANKS,.count=64};

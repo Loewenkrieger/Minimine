@@ -78,6 +78,8 @@ static void complex_state(void)
     g.slots[0]=stack(ITEM_IRON_SWORD,1);g.slots[0].durability=97;
     g.slots[1]=stack(ITEM_STONE_PICKAXE,1);g.slots[1].durability=31;
     g.slots[2]=stack(ITEM_COOKED_BEEF,32);g.slots[4]=stack(ITEM_IRON_INGOT,64);
+    g.slots[3]=stack(ITEM_DIAMOND_PICKAXE,1);g.slots[3].durability=511;
+    g.slots[15]=stack(ITEM_DIAMOND,50);g.selected=3;game_set_difficulty(&g,DIFFICULTY_HARD);
     g.crafting[8]=stack(ITEM_LOG,3);
     for(unsigned i=0;i<ARMOR_SLOTS;++i) {g.armor[i]=stack((Item)(ITEM_IRON_HELMET+i),1);g.armor[i].durability=(uint16_t)(7+i);}
     for(unsigned i=0;i<MOB_LIMIT;++i) {
@@ -107,6 +109,8 @@ static void roundtrips(void)
         assert(info.generation==1 && !info.recovered && info.copy==0);
         assert(loaded.ticks==98765 && loaded.player.vx==-240 && loaded.player.sneaking);
         assert(loaded.armor[1].durability==8 && loaded.health==1234 && loaded.rng==UINT32_C(0xf1234567));
+        assert(loaded.selected==3 && loaded.slots[3].durability==511 && loaded.slots[15].count==50 &&
+            loaded.difficulty==DIFFICULTY_HARD && loaded.diamonds_generated && !info.upgraded);
         assert(loaded.furnaces[31].progress==599 && loaded.drops[63].ttl==16937 && loaded.mobs[15].attack_ticks==51);
         assert(game_validate(&loaded));
         /* Canonical re-encoding proves every serialized field survives, including unused pool indices. */
@@ -177,6 +181,10 @@ static void corruption(void)
     assert(save_slot_load(&store,1,&scratch,&info)==SAVE_INVALID); /* Invalid item enum. */
     mem.files[0]=valid;mem.files[0].data[24887]=65;checksum(&mem.files[0]);
     assert(save_slot_load(&store,1,&scratch,&info)==SAVE_INVALID); /* Oversized stack. */
+    mem.files[0]=valid;mem.files[0].data[valid.size-2]=DIFFICULTY_COUNT;checksum(&mem.files[0]);
+    assert(save_slot_load(&store,1,&scratch,&info)==SAVE_INVALID);
+    mem.files[0]=valid;mem.files[0].data[valid.size-1]=2;checksum(&mem.files[0]);
+    assert(save_slot_load(&store,1,&scratch,&info)==SAVE_INVALID);
     uint32_t random=123;
     for(unsigned i=0;i<300;++i) {
         mem.files[0]=valid;random=random*1664525u+1013904223u;
@@ -227,11 +235,35 @@ static void legacy(void)
     assert(!loaded.ruins && loaded.player.sneaking && loaded.health==1234 && loaded.hunger==13);
     assert(loaded.ticks==98765 && loaded.slots[0].durability==7 && loaded.armor[0].durability==9);
     assert(game_validate(&loaded));g=loaded;
-    assert(save_slot_write(&store,1,&g,&scratch)==SAVE_OK && mem.files[1].data[9]==2);
+    assert(save_slot_write(&store,1,&g,&scratch)==SAVE_OK && mem.files[1].data[9]==3);
     assert(!memcmp(f,&original_file,sizeof(*f)));
     assert(save_slot_load(&store,1,&loaded,&info)==SAVE_OK && info.generation==2);
     assert(!loaded.ruins && loaded.slots[0].durability==7 && loaded.armor[0].durability==9 && loaded.ticks==98765);
-    balanced();puts("PASS: real 0.4.2 format-1 fixture loads and migrates to format 2 without changing its backup");
+    assert(loaded.difficulty==DIFFICULTY_MEDIUM && loaded.diamonds_generated && !loaded.slots[3].count);
+    balanced();puts("PASS: real 0.4.2 format-1 fixture migrates to format 3 without changing its backup");
+}
+static void legacy_v2(void)
+{
+    reset();File *f=&mem.files[0];FILE *fixture=fopen("tests/fixtures/save-v2.bin","rb");assert(fixture);
+    f->size=(unsigned)fread(f->data,1,CAPACITY,fixture);assert(fclose(fixture)==0);
+    f->exists=true;assert(f->data[9]==2);File backup=*f;SaveInfo info;
+    assert(save_slot_load(&store,1,&loaded,&info)==SAVE_OK && info.upgraded);
+    assert(loaded.ticks==987654 && loaded.health==1234 && loaded.hunger==13 && loaded.selected==2);
+    assert(loaded.slots[0].durability==7 && loaded.slots[1].durability==11 && loaded.slots[2].count==27 &&
+        !loaded.slots[3].count && loaded.armor[0].durability==9 && loaded.difficulty==DIFFICULTY_MEDIUM);
+    for(unsigned i=3;i<15;++i) assert(loaded.slots[i+1].item==(i%2?ITEM_DIRT:ITEM_PLANKS) && loaded.slots[i+1].count==20+i);
+    unsigned ores=0;
+    for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x) if(loaded.tiles[y][x]==TILE_DIAMOND_ORE) ++ores;
+    assert(ores==96 && loaded.diamonds_generated && !memcmp(f,&backup,sizeof(backup)));
+    bool removed=false;
+    for(int y=72;y<94 && !removed;++y) for(int x=0;x<WORLD_W && !removed;++x)
+        if(loaded.tiles[y][x]==TILE_DIAMOND_ORE) {loaded.tiles[y][x]=TILE_AIR;removed=true;}
+    g=loaded;assert(save_slot_write(&store,1,&g,&scratch)==SAVE_OK && mem.files[1].data[9]==3);
+    assert(!memcmp(f,&backup,sizeof(backup)));
+    assert(save_slot_load(&store,1,&loaded,&info)==SAVE_OK && !info.upgraded);
+    ores=0;for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x) ores+=loaded.tiles[y][x]==TILE_DIAMOND_ORE;
+    assert(ores==95 && game_validate(&loaded));
+    balanced();puts("PASS: genuine 0.5.3 format-2 fixture preserves all 15 stacks/durability, gains slot 4 and diamonds once, re-saves format 3 with the old backup intact");
 }
 int main(void)
-{roundtrips();backups();corruption();failures();posix_files();legacy();puts("All save checks passed.");return 0;}
+{roundtrips();backups();corruption();failures();posix_files();legacy();legacy_v2();puts("All save checks passed.");return 0;}

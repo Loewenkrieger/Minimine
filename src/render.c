@@ -51,7 +51,7 @@ static unsigned graphic(Tile tile,int variant)
     if(tile==TILE_CHEST) return BASE_TILES+4;
     if(tile>=TILE_DOOR_BOTTOM && tile<=TILE_OPEN_TOP) return BASE_TILES+5;
     if(tile==TILE_BED_LEFT || tile==TILE_BED_RIGHT) return BASE_TILES+6;
-    if(tile==TILE_BASALT || tile==TILE_SEAL) return BASE_TILES+7;
+    if(tile==TILE_BASALT || tile==TILE_SEAL || tile==TILE_DIAMOND_ORE) return BASE_TILES+7;
     if(tile==TILE_CRYSTAL) return BASE_TILES+8;
     return (unsigned)tile;
 }
@@ -224,6 +224,11 @@ static void world_tile(const Game *game,Tile tile,int x,int y,int variant)
                 *dest++=mask&(1u<<(px-x))?src[px-x]:background_pixel(game,px,py);
         }
     }
+    if(tile==TILE_DIAMOND_ORE) {
+        drect(x+3,y+3,x+5,y+5,C_RGB(9,28,30));
+        drect(x+10,y+5,x+12,y+7,C_RGB(14,31,31));
+        drect(x+6,y+10,x+8,y+12,C_RGB(9,28,30));
+    }
     if(tile==TILE_SEAL) {
         outline(x+3,y+2,10,12,C_RGB(25,16,29));
         drect(x+6,y+5,x+9,y+10,C_RGB(30,26,13));
@@ -240,6 +245,12 @@ static void item_icon(Item item,int x,int y)
     Tile tile=game_item_tile(item);
     if(tile!=TILE_AIR) {icon(tile,x,y);return;}
     ItemKind kind=game_item_kind(item);
+    if(item==ITEM_DIAMOND) {
+        drect(x+5,y+2,x+10,y+3,C_RGB(21,31,31));
+        drect(x+3,y+4,x+12,y+8,C_RGB(9,28,30));
+        drect(x+5,y+9,x+10,y+11,C_RGB(9,28,30));
+        drect(x+7,y+12,x+8,y+13,C_RGB(9,28,30));return;
+    }
     if(kind==KIND_RELIC || kind==KIND_ACCESSORY || item==ITEM_CRYSTAL) {
         int c=kind==KIND_RELIC?C_RGB(29,21,5):item==ITEM_CRYSTAL?C_RGB(12,29,30):C_RGB(22,15,29);
         outline(x+3,y+2,10,11,c);drect(x+6,y+5,x+9,y+10,c);return;
@@ -250,7 +261,8 @@ static void item_icon(Item item,int x,int y)
         drect(x+3,y+3,x+12,y+11,c);drect(x+1,y+10,x+5,y+13,C_RGB(28,27,21));return;
     }
     if(kind==KIND_ARMOR) {
-        int c=C_RGB(23,25,27);unsigned slot=game_armor_slot(item);
+        int c=item>=ITEM_DIAMOND_HELMET && item<=ITEM_DIAMOND_BOOTS?C_RGB(9,28,30):C_RGB(23,25,27);
+        unsigned slot=game_armor_slot(item);
         if(slot==0) {drect(x+2,y+3,x+13,y+8,c);drect(x+2,y+8,x+4,y+12,c);drect(x+11,y+8,x+13,y+12,c);}
         else if(slot==1) {drect(x+2,y+2,x+13,y+6,c);drect(x+4,y+6,x+11,y+14,c);}
         else {drect(x+3,y+3,x+12,y+5,c);drect(x+3,y+5,x+6,y+14,c);drect(x+9,y+5,x+12,y+14,c);}
@@ -262,11 +274,12 @@ static void item_icon(Item item,int x,int y)
     }
     if(item!=ITEM_STICK && kind!=KIND_PICKAXE && kind!=KIND_SWORD) return;
     for(int i=0;i<11;++i) {
-        int c=kind==KIND_SWORD?(item==ITEM_WOOD_SWORD?C_RGB(23,16,8):C_RGB(24,25,27)):C_RGB(22,15,8);
+        int c=kind==KIND_SWORD?(item==ITEM_DIAMOND_SWORD?C_RGB(9,28,30):
+            item==ITEM_WOOD_SWORD?C_RGB(23,16,8):C_RGB(24,25,27)):C_RGB(22,15,8);
         dpixel(x+2+i,y+13-i,c);dpixel(x+3+i,y+13-i,c);
     }
     if(kind==KIND_PICKAXE) {
-        int c=item==ITEM_WOOD_PICKAXE?C_RGB(23,16,8):C_RGB(21,23,25);
+        int c=item==ITEM_DIAMOND_PICKAXE?C_RGB(9,28,30):item==ITEM_WOOD_PICKAXE?C_RGB(23,16,8):C_RGB(21,23,25);
         drect(x+3,y+2,x+12,y+4,c);drect(x+2,y+3,x+4,y+7,c);drect(x+11,y+3,x+13,y+6,c);
     } else if(kind==KIND_SWORD) drect(x+1,y+9,x+7,y+11,C_RGB(17,12,6));
 }
@@ -345,17 +358,17 @@ static void footer(const Game *game, const RenderInfo *info)
         return;
     }
     for(unsigned i=0;i<HOTBAR_SLOTS;++i) {
-        int x=7+(int)i*104;
+        UIRect r=ui_hotbar_rect(i,false);int x=r.x;
         const ItemStack *stack=&game->slots[i];
-        outline(x,top+3,100,47,game->selected==i?ACCENT:MUTED);
+        outline(r.x,r.y,r.w,r.h,game->selected==i?ACCENT:MUTED);
         bool tool=game_tool_durability(stack->item)!=0;
         dtext(x+4,top+6,C_WHITE,game_item_label(stack->item,0));
         dtext(x+4,top+18,C_WHITE,game_item_label(stack->item,1));
         item_icon(stack->item,x+4,top+29);
         dprint(x+25,top+32,C_WHITE,"%u",(unsigned)stack->count);
         if(tool) {
-            unsigned width=90u*stack->durability/game_tool_durability(stack->item);
-            drect(x+4,top+46,x+93,top+47,INK);
+            unsigned width=65u*stack->durability/game_tool_durability(stack->item);
+            drect(x+4,top+46,x+68,top+47,INK);
             if(width) drect(x+4,top+46,x+3+(int)width,top+47,ACCENT);
         }
     }
@@ -463,11 +476,15 @@ static void player_equipment(const Game *g)
 {
     int x=g->player.x/FIXED_ONE-g->camera_x;
     int y=g->player.y/FIXED_ONE-g->camera_y+VIEW_TOP,h=game_player_height(&g->player);
-    int waist=g->player.sneaking?6:9,gray=C_RGB(24,26,28);
-    if(g->armor[0].count) drect(x+1,y,x+8,y+2,gray);
-    if(g->armor[1].count) drect(x+1,y+waist,x+8,y+h-7,gray);
-    if(g->armor[2].count) {drect(x+1,y+h-6,x+4,y+h-3,gray);drect(x+6,y+h-6,x+8,y+h-3,gray);}
-    if(g->armor[3].count) {drect(x+1,y+h-2,x+4,y+h-1,gray);drect(x+6,y+h-2,x+8,y+h-1,gray);}
+    int waist=g->player.sneaking?6:9;
+    for(unsigned i=0;i<ARMOR_SLOTS;++i) if(g->armor[i].count) {
+        Item item=g->armor[i].item;
+        int c=item>=ITEM_DIAMOND_HELMET && item<=ITEM_DIAMOND_BOOTS?C_RGB(9,28,30):C_RGB(24,26,28);
+        if(i==0) drect(x+1,y,x+8,y+2,c);
+        else if(i==1) drect(x+1,y+waist,x+8,y+h-7,c);
+        else if(i==2) {drect(x+1,y+h-6,x+4,y+h-3,c);drect(x+6,y+h-6,x+8,y+h-3,c);}
+        else {drect(x+1,y+h-2,x+4,y+h-1,c);drect(x+6,y+h-2,x+8,y+h-1,c);}
+    }
     if(g->swing_ticks) {
         int sx=g->player.facing>0?x+PLAYER_W+2:x-13;
         drect(sx,y+4,sx+8,y+5,C_WHITE);
@@ -736,7 +753,7 @@ void render_help(void)
         "Hoch / SHIFT     Springen",
         "Runter           Sneak umschalten",
         "1-9 ohne 5       Zielrichtung",
-        "X / Y / Z        Hotbar 1 / 2 / 3",
+        "X/Y/Z/^ / Touch  Hotbar 1 bis 4",
         "Keyboard         Inventar / Pause",
         "DEL halten       Block abbauen",
         "EXE halten       Kampf/Essen/Bauen",
@@ -745,7 +762,7 @@ void render_help(void)
     };
     for(unsigned i=0;i<sizeof(lines)/sizeof(lines[0]);++i)
         dtext(16,80+(int)i*24,MUTED,lines[i]);
-    dtext(16,335,C_WHITE,"Inventar: X/Y/Z holen den Hotbarstapel");
+    dtext(16,335,C_WHITE,"Inventar: X/Y/Z/^ holen Hotbarstapel");
     dtext(16,359,MUTED,"Touch: Ziehen / Quelle, dann Ziel");
     dtext(16,383,MUTED,"DIV + Touch: halben Stapel bewegen");
     dtext(16,407,MUTED,"SHIFT im Inventar: Ruestung");
@@ -786,13 +803,13 @@ void render_menu(bool pause,unsigned cursor)
 {
     page_title("MINIMINE " SANDBOX_VERSION,pause?"PAUSE / SPIELZEIT ANGEHALTEN":"ClassPad II / Hollyhock 3");
     static const char *const start[]={"Neues Spiel","Spielstand laden","Hilfe","Benchmark","Beenden"};
-    static const char *const paused[]={"Fortsetzen","Spielstand speichern","Spielstand laden","Hilfe","Beenden (ohne Speichern)"};
+    static const char *const paused[]={"Fortsetzen","Spielstand speichern","Spielstand laden","Hilfe","Schwierigkeit","Beenden (ohne Speichern)"};
     const char *const *labels=pause?paused:start;
-    for(unsigned i=0;i<5;++i) {
+    for(unsigned i=0;i<(pause?6u:5u);++i) {
         UIRect r=ui_menu_rect(i);
         button(r,labels[i],cursor==i?ACCENT:MUTED);
     }
-    dtext(16,435,MUTED,"Antippen oder Pfeile / EXE");
+    dtext(16,445,MUTED,"Antippen oder Pfeile / EXE");
     dtext(16,464,MUTED,pause?"CLEAR: Fortsetzen":"3 manuelle Spielstaende");
     dtext(16,493,MUTED,"0: Benchmark");
 }
@@ -832,6 +849,19 @@ void render_message(const char *message)
 
 void render_progress(const Game *g)
 {
-    dprint(16,377,ACCENT,"Relikte: %u/3",game_relic_count(g));
-    dtext(16,397,MUTED,game_progress_text(g));
+    dprint(16,397,ACCENT,"Relikte: %u/3   %s",game_relic_count(g),game_difficulty_name(g->difficulty));
+    dtext(16,417,MUTED,game_progress_text(g));
+}
+void render_difficulty(Difficulty selected,bool new_game)
+{
+    page_title(new_game?"NEUES SPIEL":"SCHWIERIGKEIT / PAUSE","Antippen oder Pfeile / EXE");
+    for(unsigned i=0;i<DIFFICULTY_COUNT;++i)
+        button(ui_menu_rect(i),game_difficulty_name((Difficulty)i),i==(unsigned)selected?ACCENT:MUTED);
+    const DifficultyRules *r=game_difficulty_rules(selected);
+    dprint(16,277,C_WHITE,"Gegnerschaden: %u%%",r->damage_percent);
+    dprint(16,301,MUTED,"Hunger: %u s / %u Aktionen",r->hunger_ticks/SIM_HZ,r->exertion);
+    dprint(16,325,MUTED,"Spawnversuch: alle %u s",r->spawn_ticks/SIM_HZ);
+    dprint(16,349,MUTED,"Neue Feinde: maximal %u",r->hostile_limit);
+    dtext(16,421,MUTED,new_game?"EXE: Welt mit dieser Stufe starten":"EXE: Uebernehmen und fortsetzen");
+    dtext(16,457,MUTED,"CLEAR: Zurueck");
 }

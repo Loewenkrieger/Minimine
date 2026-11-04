@@ -8,8 +8,8 @@ enum {
     WORLD_W=256, WORLD_H=96, TILE_SIZE=16, SCREEN_W=320, SCREEN_H=528,
     VIEW_TOP=56, VIEW_H=400, PLAYER_W=10, PLAYER_H=22, PLAYER_CROUCH_H=14,
     FIXED_ONE=256, SIM_HZ=60, INVENTORY_LIMIT=64,
-    HOTBAR_SLOTS=3, BAG_SLOTS=12, TOTAL_SLOTS=15,
-    CRAFT_SLOTS=9, CRAFT_FIRST=15, CRAFT_RESULT=24, ARMOR_SLOTS=4,
+    HOTBAR_SLOTS=4, BAG_SLOTS=12, TOTAL_SLOTS=HOTBAR_SLOTS+BAG_SLOTS,
+    CRAFT_SLOTS=9, CRAFT_FIRST=TOTAL_SLOTS, CRAFT_RESULT=CRAFT_FIRST+CRAFT_SLOTS, ARMOR_SLOTS=4,
     MOB_LIMIT=16, DROP_LIMIT=64, FURNACE_LIMIT=32,
     CHEST_LIMIT=16, CHEST_SLOTS=12, TORCH_LIMIT=64, ACCESSORY_SLOTS=2,
     ARENA_LEFT=228,ARENA_RIGHT=250,ARENA_TOP=74,ARENA_FLOOR=86,GATE_TOP=82,
@@ -18,14 +18,14 @@ enum {
     BENCH_PHASE_FRAMES=BENCH_WARMUP+BENCH_SAMPLES
 };
 #define WORLD_SEED UINT32_C(0x43503430)
-#define SANDBOX_VERSION "0.5.3"
+#define SANDBOX_VERSION "0.6.0"
 
 typedef enum {
     TILE_AIR, TILE_GRASS, TILE_DIRT, TILE_STONE, TILE_WOOD,
     TILE_TRUNK, TILE_LEAVES, TILE_ORE, TILE_BEDROCK, TILE_LOG, TILE_WORKBENCH,
     TILE_COAL, TILE_FURNACE, TILE_TORCH,TILE_CHEST,TILE_DOOR_BOTTOM,TILE_DOOR_TOP,
     TILE_OPEN_BOTTOM,TILE_OPEN_TOP,TILE_BED_LEFT,TILE_BED_RIGHT,
-    TILE_BASALT,TILE_CRYSTAL,TILE_SEAL,TILE_COUNT
+    TILE_BASALT,TILE_CRYSTAL,TILE_SEAL,TILE_DIAMOND_ORE,TILE_COUNT
 } Tile;
 #define TILE_IRON_ORE TILE_ORE
 
@@ -38,8 +38,13 @@ typedef enum {
     ITEM_RAW_PORK, ITEM_COOKED_PORK, ITEM_RAW_BEEF, ITEM_COOKED_BEEF,
     ITEM_RAW_CHICKEN, ITEM_COOKED_CHICKEN, ITEM_TORCH,ITEM_CHEST,ITEM_DOOR,ITEM_BED,
     ITEM_IRON_PICKAXE,ITEM_BASALT,ITEM_CRYSTAL,ITEM_MINER_CHARM,ITEM_SPEED_BOOTS,
-    ITEM_JUMP_AMULET,ITEM_RELIC_A,ITEM_RELIC_B,ITEM_RELIC_C,ITEM_COUNT
+    ITEM_JUMP_AMULET,ITEM_RELIC_A,ITEM_RELIC_B,ITEM_RELIC_C,
+    ITEM_DIAMOND,ITEM_DIAMOND_HELMET,ITEM_DIAMOND_CHEST,ITEM_DIAMOND_LEGS,
+    ITEM_DIAMOND_BOOTS,ITEM_DIAMOND_PICKAXE,ITEM_DIAMOND_SWORD,ITEM_COUNT
 } Item;
+
+typedef enum { DIFFICULTY_EASY,DIFFICULTY_MEDIUM,DIFFICULTY_HARD,DIFFICULTY_COUNT } Difficulty;
+typedef struct { unsigned damage_percent,hunger_ticks,exertion,spawn_ticks,hostile_limit; } DifficultyRules;
 typedef enum { KIND_MATERIAL, KIND_BLOCK, KIND_PICKAXE, KIND_SWORD, KIND_ARMOR, KIND_FOOD,
     KIND_ACCESSORY,KIND_RELIC } ItemKind;
 typedef struct { Item item; uint16_t count, durability; } ItemStack;
@@ -102,6 +107,7 @@ typedef struct {
     Chest chests[CHEST_LIMIT];Torch torches[TORCH_LIMIT];ItemStack accessories[ACCESSORY_SLOTS];
     bool ruins,bed_spawn,double_jump_used;int bed_x,bed_y;
     unsigned relics_found;uint32_t mined_blocks;Boss boss;
+    Difficulty difficulty;bool diamonds_generated;
 } Game;
 
 void game_init(Game *game,uint32_t seed);
@@ -123,6 +129,15 @@ void game_benchmark_step(Game *game,unsigned phase,unsigned frame);
 const char *game_phase_name(unsigned phase);
 bool game_rect_clear(const Game *game,int32_t x,int32_t y,int width,int height);
 void game_move_actor(const Game *game,Player *p,int width,int height);
+void game_move_player(Game *game);
+void game_move_mob(Game *game,Mob *mob);
+bool game_repair_overlaps(Game *game);
+bool game_mob_touches_player(const Game *game,const Mob *mob,int margin);
+bool game_player_space_clear(const Game *game,int32_t x,int32_t y,int height);
+unsigned game_populate_diamonds(Game *game);
+const DifficultyRules *game_difficulty_rules(Difficulty difficulty);
+const char *game_difficulty_name(Difficulty difficulty);
+void game_set_difficulty(Game *game,Difficulty difficulty);
 const char *game_notice_text(Notice notice);
 
 const char *game_item_name(Item item);
@@ -132,7 +147,7 @@ ItemKind game_item_kind(Item item);
 unsigned game_tool_durability(Item item);
 unsigned game_stack_limit(Item item);
 unsigned game_armor_slot(Item item);
-unsigned game_armor_points(Item item);
+unsigned game_armor_reduction(Item item);
 unsigned game_food_points(Item item);
 unsigned game_sword_damage(Item item);
 unsigned game_fuel_ticks(Item item);

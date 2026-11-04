@@ -194,8 +194,8 @@ static void test_full_and_return(void)
     assert(!memcmp(g.crafting,saved.crafting,sizeof(g.crafting)));
     g.slots[4]=g.slots[5]=(ItemStack){0};
     assert(game_close_crafting(&g));
-    assert(g.slots[3].item==ITEM_LOG && g.slots[4].item==ITEM_PLANKS);
-    assert(g.slots[5].item==ITEM_WOOD_PICKAXE && g.slots[5].durability==9);
+    assert(g.slots[4].item==ITEM_LOG && g.slots[5].item==ITEM_PLANKS);
+    assert(g.slots[3].item==ITEM_WOOD_PICKAXE && g.slots[3].durability==9);
     for(unsigned i=0;i<CRAFT_SLOTS;++i) assert(!g.crafting[i].count);
     assert_limits();
     puts("PASS: atomic result insertion and atomic ingredient return with full inventories");

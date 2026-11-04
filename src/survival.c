@@ -29,7 +29,8 @@ static bool visible_line(const Game *g,int x,int y,int bx,int by)
 void game_exert(Game *g)
 {
     if(!g->survival) return;
-    if(++g->exertion>=20) {g->exertion-=20;if(g->hunger) --g->hunger;}
+    unsigned limit=game_difficulty_rules(g->difficulty)->exertion;
+    if(++g->exertion>=limit) {g->exertion-=limit;if(g->hunger) --g->hunger;}
 }
 static void respawn(Game *g)
 {
@@ -64,10 +65,11 @@ void game_damage_player(Game *g,unsigned damage,bool mob)
 {
     if(!g->survival || !damage || (mob && g->hurt_ticks)) return;
     if(mob) {
-        unsigned points=0;
-        for(unsigned i=0;i<ARMOR_SLOTS;++i) points+=game_armor_points(g->armor[i].item);
-        if(points>15) points=15;
-        damage=damage*(100-points*4)/100;if(!damage) damage=1;
+        unsigned reduction=0;
+        for(unsigned i=0;i<ARMOR_SLOTS;++i) reduction+=game_armor_reduction(g->armor[i].item);
+        if(reduction>70) reduction=70;
+        damage=damage*game_difficulty_rules(g->difficulty)->damage_percent*(100-reduction)/10000;
+        if(!damage) damage=1;
         for(unsigned i=0;i<ARMOR_SLOTS;++i) if(g->armor[i].count) {
             if(!--g->armor[i].durability) {
                 g->armor[i]=(ItemStack){0};g->notice=NOTICE_TOOL_BROKEN;g->notice_ticks=60;
@@ -183,7 +185,7 @@ bool game_spawn_mob(Game *g,MobKind kind,int32_t x,int32_t y)
         if(overlaps(x,y,(int)w,(int)h,m->body.x,m->body.y,
             (int)game_mob_width(m->kind),(int)game_mob_height(m->kind))) return false;
     }
-    if(count>=8) return false;
+    if(count>=(game_hostile(kind)?game_difficulty_rules(g->difficulty)->hostile_limit:8u)) return false;
     for(unsigned i=0;i<MOB_LIMIT;++i) if(!g->mobs[i].active) {
         g->mobs[i]=(Mob){.active=true,.kind=kind,.health=(uint16_t)game_mob_health(kind),
             .body={.x=x,.y=y,.facing=random_next(g)&1?1:-1,.grounded=true},.ai_ticks=120};
@@ -231,9 +233,10 @@ static void bat_step(Game *g,Mob *m)
         if(!m->state_ticks) m->state=0;
     }
     if(p->vx) p->facing=p->vx>0?1:-1;
-    game_move_actor(g,p,10,8);
-    if(!m->attack_ticks && !g->hurt_ticks && overlaps(p->x,p->y,10,8,
-       g->player.x,g->player.y,PLAYER_W,game_player_height(&g->player))) {
+    game_move_mob(g,m);
+    if(!m->attack_ticks && !g->hurt_ticks && game_mob_touches_player(g,m,1) &&
+       visible_line(g,p->x/FIXED_ONE+5,p->y/FIXED_ONE+4,
+            g->player.x/FIXED_ONE+5,g->player.y/FIXED_ONE+game_player_height(&g->player)/2)) {
         game_damage_player(g,100,true);m->attack_ticks=60;
     }
 }
@@ -253,7 +256,7 @@ static void mobs_step(Game *g)
             p->vx=p->vx*3/4;
             if(m->kind==MOB_BAT) p->vy=p->vy*3/4;else p->vy+=64;
             if(p->vy>2048) p->vy=2048;
-            game_move_actor(g,p,(int)game_mob_width(m->kind),(int)game_mob_height(m->kind));continue;
+            game_move_mob(g,m);continue;
         }
         if(m->kind==MOB_BAT) {bat_step(g,m);continue;}
         int direction=p->facing;
@@ -280,10 +283,9 @@ static void mobs_step(Game *g)
             }
         }
         p->vy+=64;if(p->vy>2048) p->vy=2048;
-        game_move_actor(g,p,w,h);
+        game_move_mob(g,m);
         if(m->kind==MOB_ZOMBIE) {
-            bool near=overlaps(p->x-3*FIXED_ONE,p->y,w+6,h,g->player.x,g->player.y,
-                PLAYER_W,game_player_height(&g->player));
+            bool near=game_mob_touches_player(g,m,3);
             if(m->state==1) {
                 if(m->state_ticks) --m->state_ticks;
                 if(!m->state_ticks) {
@@ -317,8 +319,9 @@ void game_survival_step(Game *g)
     if(!g->survival) return;
     mobs_step(g);drops_step(g);game_boss_step(g);
     if(g->spawn_ticks) --g->spawn_ticks;
-    if(!g->spawn_ticks) {g->spawn_ticks=300;if(!g->boss.active) try_spawn(g);}
-    if(++g->hunger_ticks>=3600) {g->hunger_ticks=0;if(g->hunger) --g->hunger;}
+    const DifficultyRules *rules=game_difficulty_rules(g->difficulty);
+    if(!g->spawn_ticks) {g->spawn_ticks=rules->spawn_ticks;if(!g->boss.active) try_spawn(g);}
+    if(++g->hunger_ticks>=rules->hunger_ticks) {g->hunger_ticks=0;if(g->hunger) --g->hunger;}
     if(g->hunger>=18 && g->health<HEALTH_MAX) {
         if(++g->regen_ticks>=240) {
             unsigned gain=HEALTH_MAX-g->health;if(gain>100) gain=100;
@@ -330,4 +333,5 @@ void game_survival_step(Game *g)
         if(++g->starve_ticks>=240) {g->starve_ticks=0;game_damage_player(g,100,false);}
     } else g->starve_ticks=0;
     if(!g->health) respawn(g);
+    game_repair_overlaps(g);
 }

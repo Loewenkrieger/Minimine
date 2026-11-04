@@ -1,19 +1,17 @@
-# Minimine 0.5.3 - Anleitung
+# Minimine 0.6.0 - Anleitung
 
 ## Start und Spielstaende
 
-Nur [CasioSandbox.hh3](../releases/0.5.3/CasioSandbox.hh3) auf den ClassPad II
+Nur [CasioSandbox.hh3](../releases/0.6.0/CasioSandbox.hh3) auf den ClassPad II
 fx-CP400 kopieren und mit Hollyhock 3 starten. Das Startmenue bietet neues Spiel,
 Laden, Hilfe, Benchmark und Beenden. Aeltere Versionen bleiben unter releases.
 
-0.5.3 verwendet die schnellere zeilenweise Beleuchtung aus Minimine Bench 1.2.0.
-Die Darstellung bleibt gleich; Spielstaende von 0.5.0 bis 0.5.2 sind direkt
-weiter verwendbar. Im Vergleich waren beleuchtete Szenen rund 18 Prozent
-schneller als mit dem Lichtpfad von 0.5.2. Die FPS im eigenen Spielstand
-haengen von der jeweiligen Szene ab.
+0.6.0 ergaenzt vier Hotbarplaetze mit Touch, Spieler-/Mobkollisionen,
+Diamantausruestung und drei Schwierigkeitsgrade. Die zeilenweise Beleuchtung
+bleibt erhalten. Die FPS der neuen Version muessen am CP400 gemessen werden.
 
-CLEAR pausiert das Spiel. Dort gibt es Fortsetzen, Speichern, Laden, Hilfe und
-Beenden. Alle Eintraege und Schaltflaechen koennen direkt angetippt werden.
+CLEAR pausiert das Spiel. Dort gibt es Fortsetzen, Speichern, Laden, Hilfe,
+Schwierigkeit und Beenden. Alle Eintraege und Schaltflaechen sind antippbar.
 Alternativ waehlen Pfeile, EXE bestaetigt und CLEAR kehrt zurueck.
 
 Beenden schliesst sofort, auch bei ungespeicherten Aenderungen. Es gibt keine
@@ -23,14 +21,19 @@ und Beenden antippen.
 Speichern und Laden bieten jeweils drei Slots. Vor Ueberschreiben eines Slots
 oder Verwerfen des laufenden Spiels beim Laden erscheint weiterhin eine
 Bestaetigung. Nein ist vorausgewaehlt; Ja/Nein koennen angetippt werden.
-Spielstaende von 0.4.0 bis 0.4.2 bleiben ladbar. Ihre Welt wird nicht umgebaut:
-Neue Ruinen, Basaltschicht und Bosskammer erfordern ein neues Spiel.
+Spielstaende von 0.4.0 bis 0.5.3 bleiben ladbar. Die neue Hotbar bekommt einen
+leeren vierten Platz; die bisherigen drei und alle zwoelf Rucksackstapel bleiben
+erhalten. In vorhandenem Basalt werden einmalig bis zu 96 Diamanterze ergaenzt,
+auch in gesetztem Basalt. Luft, andere Materialien und geschuetzte Strukturen
+bleiben erhalten. Welten ohne Basalt bekommen keine Diamanten.
+Neue Ruinen, Basaltschicht und Bosskammer erfordern weiterhin ein neues Spiel.
 In alten Welten bleiben die bisherigen Lichtverhaeltnisse erhalten; neue
 herstellbare Bauteile und Ausruestung sind dort ebenfalls benutzbar.
 
-0.5.0 schreibt Speicherformat 2. Nach erneutem Speichern kann eine alte
-Spielversion die neue Datei nicht lesen; vorhandene Format-1-Dateien werden
-zunaechst als die bisherige A/B-Kopie erhalten.
+0.6.0 schreibt Speicherformat 3. Versionen bis 0.5.3 koennen neue Dateien nicht
+lesen. Die bisher gueltige Format-1-/2-Datei bleibt beim ersten Speichern als
+andere A/B-Kopie erhalten. Die Welt-Ergaenzung beim Laden ist ungespeichert,
+bis man manuell speichert; sie fuellt spaeter abgebaute Diamanten nicht nach.
 
 **Manuell speichern, bevor das Spiel beendet oder der Rechner ausgeschaltet wird.**
 Beim ersten Speichern entsteht `/Minimine`. Je Slot werden zwei wechselnde
@@ -41,10 +44,72 @@ einen Fehler, bleibt das laufende Spiel erhalten. Unbekannte Dateiversionen
 werden abgewiesen.
 
 Gespeichert werden Welt, Bewegung, Inventar, Verschleiss, Ruestung, Leben,
-Hunger, Mobs, liegende Beute, Ofeninhalte und -fortschritt sowie Spielzeit und
+Hunger, Schwierigkeit, Diamant-Ergaenzungsstand, Mobs, liegende Beute, Ofeninhalte und -fortschritt sowie Spielzeit und
 Zufallszustand. Abbaufortschritt und Menueauswahl starten nach Laden neu.
 Inventar, Ofenansicht und alle Menues pausieren die gesamte Spielzeit; auch
 waehrend das Spiel ausgeschaltet ist, arbeiten Oefen nicht weiter.
+
+## Neu in 0.6.0
+
+### Mobs und Hotbar
+
+Spieler und Mobs koennen nicht mehr ineinander stehen. Normale Mobs lassen
+sich seitlich schieben, solange Platz ist; vor Waenden stoppen beide. Mobs
+duerfen untereinander weiterhin ueberlappen. Der Steinwaechter bleibt standfest.
+Schlaege und gegnerische Kontaktangriffe funktionieren an den Koerperkanten.
+Auf Mobs zu landen verursacht keinen zusaetzlichen Schaden.
+
+Die vier Hotbarfelder lassen sich waehrend des Laufens antippen. Erst beim
+Loslassen im selben Feld wird ausgewaehlt. Herausziehen bricht ab; Antippen
+allein schlaegt und platziert nichts. X/Y/Z/^ bleiben parallel verfuegbar.
+
+### Diamanten
+
+Zwischen Blockreihe 72 und 93 entstehen bis zu 96 Diamanterze in kleinen Adern,
+ausschliesslich in Basalt. Abgebautes Erz liefert einen Diamanten. Eine
+Eisenspitzhacke braucht 1,5 Sekunden, eine Diamantspitzhacke eine Sekunde.
+Schwaechere Werkzeuge lassen den Block bestehen. Bei vollem Inventar bleibt
+er ebenfalls erhalten. Bestehende Welten ohne Basalt erhalten keine Diamanten.
+
+An der Werkbank verwenden Diamantwerkzeuge und -ruestung dieselben Muster wie
+ihre Eisenvarianten. Ein Ruestungssatz kostet 24 Diamanten, Hacke und Schwert
+weitere fuenf. Diamant ist tuerkis erkennbar.
+
+| Diamantteil | Schutz | Haltbarkeit |
+| --- | ---: | ---: |
+| Helm | 10 Prozent | 256 Treffer |
+| Brustpanzer | 28 Prozent | 512 Treffer |
+| Hose | 22 Prozent | 384 Treffer |
+| Stiefel | 10 Prozent | 256 Treffer |
+
+Der volle Satz schuetzt zu 70 Prozent, Eisen weiterhin zu 60 Prozent.
+Gemischte Teile addieren ihren jeweiligen Prozentschutz. Die letzte Nutzung
+schuetzt noch; Hunger-Schaden wird nicht reduziert.
+
+Das Diamantschwert verursacht sieben Schaden mit 0,4 Sekunden Abstand und
+haelt 512 erfolgreiche Treffer. Die Diamantspitzhacke haelt 512 Abbaue:
+Stein/Kohle 10 Physikschritte, Eisenerz 20, Basalt 45, Leuchtkristall 30,
+Diamanterz 60. Ein Schritt entspricht 1/60 Spielsekunde.
+
+### Schwierigkeit
+
+Beim neuen Spiel und unter CLEAR -> Schwierigkeit kann die Stufe mit Tasten
+oder Touch gewaehlt werden. Mittel ist voreingestellt, auch bei alten Welten.
+Die Stufe wird pro Spielstand gespeichert. Menuezeit bleibt angehalten.
+
+| Einstellung | Leicht | Mittel | Schwer |
+| --- | ---: | ---: | ---: |
+| Mob-/Bossschaden vor Ruestung | 75 Prozent | 100 Prozent | 125 Prozent |
+| Zeit je Hungerpunkt | 90 s | 60 s | 45 s |
+| Aktionen je zusaetzlichem Hungerpunkt | 30 | 20 | 15 |
+| Abstand zwischen Spawnversuchen | 8 s | 5 s | 3 s |
+| Natuerliches Feindlimit | 4 | 8 | 8 |
+
+Vorhandene Gegner werden beim Wechsel nicht geloescht; das Limit gilt fuer
+neue Spawns. Maximal 16 Mobs und acht Tiere bleiben erlaubt. Leben, Beute,
+Erzmenge, Regeneration und Hungerschaden bleiben gleich. Ein Wechsel fuellt
+keine Herzen auf und setzt Zeitfortschritt oder Abklingzeiten nicht zurueck.
+Die folgenden Basiswerte gelten fuer Mittel, sofern keine Stufe genannt wird.
 
 ## Steuerung
 
@@ -53,7 +118,8 @@ waehrend das Spiel ausgeschaltet ist, arbeiten Oefen nicht weiter.
 | Links / rechts | Laufen; Ziel auf die entsprechende Seite setzen |
 | Hoch / SHIFT | Ein Sprung pro Tastendruck |
 | Runter | Sneak einmal ein- oder ausschalten |
-| X / Y / Z | Hotbarplatz 1 / 2 / 3 aktivieren |
+| X / Y / Z / ^ | Hotbarplatz 1 / 2 / 3 / 4 aktivieren |
+| Hotbar antippen | Beim Loslassen denselben Slot aktivieren |
 | Keyboard | Inventar mit 2x2-Craftingfeld oeffnen / schliessen |
 | DEL halten | Anvisierten Block abbauen |
 | EXE druecken / halten | Schlagen, essen oder bauen |
@@ -106,7 +172,7 @@ loslassen; erst danach werden diese Aktionen wieder freigegeben.
 
 ### Tasten und Stapel
 
-Drei Hotbarplaetze und zwoelf Inventarplaetze stehen zur Verfuegung. Die Hotbar
+Vier Hotbarplaetze und zwoelf Inventarplaetze stehen zur Verfuegung. Die Hotbar
 zeigt Namen und Anzahl. Start: je 32 Erde, Stein und Holzbretter. Materialien
 passen bis 64 in einen Slot; Spitzhacken, Schwerter und Ruestung einzeln.
 
@@ -116,7 +182,7 @@ passen bis 64 in einen Slot; Spitzhacken, Schwerter und Ruestung einzeln.
 - 5 verteilt ein Item aus der markierten Quelle; die Quelle bleibt markiert.
 - Leere Ziele uebernehmen, gleiche Materialien werden bis 64 zusammengefuehrt,
   andere Stapel getauscht. Rest bleibt in der Quelle. 5 tauscht nicht.
-- X/Y/Z holen den ganzen Stapel des jeweiligen Hotbarplatzes **zum Cursor**.
+- X/Y/Z/^ holen den ganzen Stapel des jeweiligen Hotbarplatzes **zum Cursor**.
   Cursor und aktiver Hotbarplatz bleiben unveraendert; die Quellmarkierung wird
   aufgehoben. Das funktioniert auch fuer passende Crafting-, Ofen- und
   Ruestungsplaetze. Ergebnisplaetze erlauben keine eingehenden Transfers.

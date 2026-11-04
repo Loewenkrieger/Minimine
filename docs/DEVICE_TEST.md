@@ -1,4 +1,4 @@
-# Geraetetest fuer Minimine 0.5.3
+# Geraetetest fuer Minimine 0.6.0
 
 Die PC-Tests und der Geraetebau stehen in [VERIFICATION.md](VERIFICATION.md).
 Diese Liste ist fuer den echten ClassPad II fx-CP400 mit Hollyhock 3 vorgesehen.
@@ -7,18 +7,47 @@ Noch keine Pruefung dieser Version am echten Geraet wurde durchgefuehrt.
 | Angabe | Wert |
 | --- | --- |
 | Hollyhock-/OS-Version | |
-| Spielversion | 0.5.3; SHA-256 siehe releases/0.5.3/build-info.json |
+| Spielversion | 0.6.0; SHA-256 siehe releases/0.6.0/build-info.json |
 | Datum, Takt, Einstellungen | |
 | Werkzeugkette | SuperH GCC 14.1.0, fxSDK 2.11.0, gint 2.11.0-91 |
 
-## Schwerpunkt 0.5.3
+## Schwerpunkt 0.6.0
 
-- [ ] Bestehenden 0.5.0-/0.5.1-/0.5.2-Spielstand laden; Welt und Mengen unveraendert.
+- [ ] Neues Spiel: Auswahl Leicht/Mittel/Schwer erscheint; CLEAR bricht ab.
+- [ ] Vier Hotbarfelder mit lesbaren Namen, Mengen und Haltbarkeit. X/Y/Z/^
+      und Antippen waehlen den richtigen Platz, auch beim Laufen.
+- [ ] Aus der Hotbar herausziehen bricht ab; Menuerueckkehr verursacht keine
+      veraltete Auswahl. Touch allein baut, schlaegt und platziert nichts.
+- [ ] Inventar: vier Hotbar- und zwoelf Rucksackplaetze. ^ uebertraegt Stapel
+      zum Cursor; Tausch, Zusammenfuehren, ganze/halbe Touchstapel pruefen.
+- [ ] Spieler schiebt Tiere, Zombies und Fledermaeuse; vor Waenden stoppen beide.
+      Mobs laufen nicht in den Spieler. Boss bleibt standfest und treffbar.
+- [ ] Spruenge, niedrige Decke, Sneak, Rueckstoss, mehrere Mobs und Kontakt von
+      oben/unten pruefen. Boss-/Fledermausangriffe treffen am Rand korrekt.
+- [ ] Bestehenden 0.5.3-Spielstand laden: neuer Slot leer, alle bisherigen
+      Gegenstaende und Haltbarkeiten erhalten. Ueberlappende Mobs getrennt.
+- [ ] Alte Basaltwelt erhaelt einmalig Diamanten. Abbau, Speichern, Neustart:
+      Erz wird nicht nachgefuellt. Alte Welt ohne Basalt bleibt ohne Diamanterz.
+- [ ] Diamantadern in tiefem Basalt, geschuetzte Arena unveraendert.
+      Stein-/Holzhacke entfernen kein Erz, Eisen/Diamant brauchen 1,5/1 Sekunde.
+- [ ] Alle sechs Diamantrezepte und tuerkise Symbole/Ruestung pruefen. Voller
+      Satz: 70 Prozent Schutz; gemischtes Eisen/Diamant und letzten Treffer pruefen.
+- [ ] CLEAR -> Schwierigkeit: Wechsel ist pausiert, heilt nicht und bleibt nach
+      Speichern/Laden erhalten. Weniger Spawns auf Leicht; alte Mobs bleiben da.
+- [ ] Alle drei Slots als Format 3 speichern und laden. Alte A/B-Kopie bleibt
+      beim ersten Upgrade erhalten; 0.5.3 kann Format 3 nicht laden.
+- [ ] FPS und Simulationsverlust an denselben Positionen unter 0.5.3 und 0.6.0
+      vergleichen: Oberflaeche, Diamantkammer, 16 Mobs und mehrere Oefen.
+
+## Darstellung und Beleuchtung
+
+- [ ] Bestehenden 0.5.0-/0.5.1-/0.5.2-Spielstand laden; Mengen unveraendert,
+      ausschliesslich die vorgesehene Diamant-Ergaenzung im Basalt.
 - [ ] Mobs nach links/rechts, beide Laufbilder und Trefferblinken vergleichen.
 - [ ] Teilweise sichtbare Mobs an allen vier Bildschirmraendern pruefen.
 - [ ] Helle, halbdunkle und dunkle Bereiche bei Kamerabewegung vergleichen.
 - [ ] Zeilenlicht zeigt dieselben Lichtstufen ohne Streifen oder Randfehler.
-- [ ] Bekannten Spielstand an derselben Position pruefen, FPS mit 0.5.2 vergleichen.
+- [ ] Bekannten Spielstand an derselben Position pruefen, FPS mit 0.5.3 vergleichen.
 - [ ] Oberflaeche, Hoehle mit Fackeln und Szene mit mehreren Mobs vergleichen.
 - [ ] Inventar/Pause oeffnen und schliessen; Licht und Anzeigen werden korrekt erneuert.
 
@@ -29,7 +58,7 @@ der Benutzer im normalen Spiel rund 9 FPS gemeldet; ein direkter Vergleich des
 gleichen Spielstands mit 0.5.3 steht aus. Der Kurzbenchmark muss dafuer nicht
 erneut ausgefuehrt werden.
 
-| Position im selben Spielstand | FPS 0.5.2 | FPS 0.5.3 |
+| Position im selben Spielstand | FPS 0.5.3 | FPS 0.6.0 |
 | --- | ---: | ---: |
 | Oberflaeche | | |
 | Hoehle mit Fackeln | | |
@@ -206,6 +235,6 @@ Beobachtungen:
       Volle/entfernte Truhe: Belohnung bleibt vorgemerkt.
 - [ ] Alle neuen Zustaende speichern/laden: Lichtquellen, Kisten, Tuerhaelften,
       Bett, Zubehoer, Relikte, laufender Bosskampf, Sieg und ausstehende Belohnung.
-- [ ] Vorhandene 0.4.2-Spielstaende laden und anschliessend als Format 2 speichern.
+- [ ] Vorhandene 0.4.2-Spielstaende laden und anschliessend als Format 3 speichern.
 - [ ] Unter vielen Lichtquellen, Mobs und Oefen FPS und Simulationsverlust notieren.
       Alten Vergleichsbenchmark separat ausfuehren; er verwendet keine neuen Systeme.

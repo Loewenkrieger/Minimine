@@ -115,6 +115,7 @@ static void init(Game *game, uint32_t seed, bool survival,bool ruins)
 {
     memset(game, 0, sizeof(*game));
     game->seed = seed;
+    game->difficulty=DIFFICULTY_MEDIUM;
     game->survival=survival;game->health=HEALTH_MAX;game->hunger=HUNGER_MAX;
     game->rng=seed^UINT32_C(0x951e248a);
     if(!game->rng) game->rng=1;
@@ -129,9 +130,10 @@ static void init(Game *game, uint32_t seed, bool survival,bool ruins)
     game->player.facing = 1;
     game->player.grounded = true;
     game->aim_x = 1;
-    for(unsigned i = 0; i < HOTBAR_SLOTS; ++i)
+    for(unsigned i = 0; i < 3; ++i)
         game->slots[i] = (ItemStack){ .item = (Item)(i + 1), .count = 32 };
     if(ruins) game_adventure_init(game);
+    if(survival) game_populate_diamonds(game);
     game_follow_camera(game);
 }
 
@@ -154,7 +156,7 @@ bool game_toggle_sneak(Game *game)
     Player *p=&game->player;
     int difference=(PLAYER_H-PLAYER_CROUCH_H)*FIXED_ONE;
     if(p->sneaking) {
-        if(!game_rect_clear(game,p->x,p->y-difference,PLAYER_W,PLAYER_H)) {
+        if(!game_player_space_clear(game,p->x,p->y-difference,PLAYER_H)) {
             game->notice=NOTICE_NO_SPACE;game->notice_ticks=SIM_HZ;return false;
         }
         p->y-=difference;
@@ -234,6 +236,7 @@ static Item dropped_item(Tile tile, Item pickaxe)
     case TILE_COAL: return pickaxe?ITEM_COAL:ITEM_NONE;
     case TILE_ORE: return game_pick_tier(pickaxe)>=2?ITEM_RAW_IRON:ITEM_NONE;
     case TILE_BASALT:return ITEM_BASALT;case TILE_CRYSTAL:return ITEM_CRYSTAL;
+    case TILE_DIAMOND_ORE:return ITEM_DIAMOND;
     case TILE_FURNACE: return ITEM_FURNACE;
     case TILE_WOOD: return ITEM_PLANKS;
     case TILE_TRUNK: case TILE_LOG: return ITEM_LOG;
@@ -254,6 +257,7 @@ unsigned game_mining_ticks(Tile tile)
     case TILE_CHEST:case TILE_DOOR_BOTTOM:case TILE_DOOR_TOP:case TILE_OPEN_BOTTOM:case TILE_OPEN_TOP:
     case TILE_BED_LEFT:case TILE_BED_RIGHT:return 36;
     case TILE_BASALT:return 75;case TILE_CRYSTAL:return 60;
+    case TILE_DIAMOND_ORE:return 90;
     default: return 0;
     }
 }
@@ -280,12 +284,19 @@ static void mining_step(Game *game)
     unsigned required = game_mining_ticks(tile);
     unsigned tier=pickaxe?game_pick_tier(pickaxe->item):0;
     if(game_protected_tile(game,x,y) || tile==TILE_SEAL) {game_cancel_mining(game);return;}
-    if((tile==TILE_BASALT || tile==TILE_CRYSTAL) && tier<3) {
+    if((tile==TILE_BASALT || tile==TILE_CRYSTAL || tile==TILE_DIAMOND_ORE) && tier<3) {
         game_cancel_mining(game);game->notice=NOTICE_IRON_PICKAXE;game->notice_ticks=60;return;
     }
     if(tier>=2 &&
-       (tile==TILE_STONE || tile==TILE_COAL || tile==TILE_ORE || tile==TILE_FURNACE)) required /= tier==3?4u:2u;
+       (tile==TILE_STONE || tile==TILE_COAL || tile==TILE_ORE || tile==TILE_FURNACE)) required /= tier>=3?4u:2u;
     if(tier==3 && tile==TILE_ORE) required=30;
+    if(tier==4) {
+        if(tile==TILE_STONE || tile==TILE_COAL) required=10;
+        else if(tile==TILE_ORE) required=20;
+        else if(tile==TILE_BASALT) required=45;
+        else if(tile==TILE_CRYSTAL) required=30;
+        else if(tile==TILE_DIAMOND_ORE) required=60;
+    }
     Item drop=dropped_item(tile,pickaxe?pickaxe->item:ITEM_NONE);
     int furnace=tile==TILE_FURNACE?game_furnace_at(game,x,y):-1;
     if(tile==TILE_FURNACE && (!pickaxe || furnace<0)) {
@@ -382,6 +393,7 @@ static bool special_interaction(Game *g)
 
 GameInteraction game_step(Game *game, GameInput input)
 {
+    if(game->survival) game_repair_overlaps(game);
     Player *p = &game->player;
     GameInteraction interaction = INTERACT_NONE;
     if(game->notice_ticks && !--game->notice_ticks) game->notice = NOTICE_NONE;
@@ -415,7 +427,8 @@ GameInteraction game_step(Game *game, GameInput input)
         game_exert(game);
     }
     p->vy = clamp(p->vy + 64, -1536, 2048);
-    game_move_actor(game,p,PLAYER_W,game_player_height(p));
+    if(game->survival) game_move_player(game);
+    else game_move_actor(game,p,PLAYER_W,game_player_height(p));
     if(p->grounded) game->double_jump_used=false;
     if(game->place_cooldown) --game->place_cooldown;
     if(input.mine) mining_step(game);

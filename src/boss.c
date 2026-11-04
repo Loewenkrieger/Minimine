@@ -72,10 +72,8 @@ void game_boss_step(Game *g)
     if(p->grounded && p->vx && !game_rect_clear(g,p->x+p->vx,p->y,16,24) &&
        game_rect_clear(g,p->x+p->vx,p->y-16*FIXED_ONE,16,24)) {p->vy=-1536;p->grounded=false;}
     p->vy+=64;if(p->vy>2048) p->vy=2048;
-    game_move_actor(g,p,16,24);
-    if(!m->attack_ticks && g->player.x<p->x+16*FIXED_ONE &&
-       g->player.x+PLAYER_W*FIXED_ONE>p->x && g->player.y<p->y+24*FIXED_ONE &&
-       g->player.y+game_player_height(&g->player)*FIXED_ONE>p->y && !g->hurt_ticks) {
+    game_move_mob(g,m);
+    if(!m->attack_ticks && game_mob_touches_player(g,m,1) && !g->hurt_ticks) {
         game_damage_player(g,b->phase==1?300u:200u,true);m->attack_ticks=60;
         if(!b->active) return;
     }

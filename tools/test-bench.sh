@@ -16,7 +16,7 @@ flags=(-std=c11 -Wall -Wextra -Wshadow -g -O1 -fsanitize=address,undefined -fno-
     -ffunction-sections -fdata-sections -DBENCH_HOST -DBENCH_IO_TEST -DGINT_HW_CP=1 -DMINIMINE_BENCH_LIGHT
     '-DBENCH_LOG_ROOT="build/native/bench-logs"'
     -Ibench/host -Itests/host -Isrc -Ibench -Ibuild/native -Ibuild/native/azur/azur/include)
-core=(src/game.c src/items.c src/inventory.c src/inventory_ui.c src/adventure.c src/boss.c src/survival.c src/validate.c src/storage.c src/perf.c src/render.c)
+core=(src/game.c src/items.c src/inventory.c src/inventory_ui.c src/adventure.c src/boss.c src/survival.c src/collision.c src/progression.c src/validate.c src/storage.c src/perf.c src/render.c)
 cc "${flags[@]}" "${core[@]}" bench/scenes.c bench/graphics.c bench/log.c tests/host/display.c \
     build/native/azur/azur/src/gint/render.c bench/test_bench.c -Wl,--gc-sections -o build/native/test_bench
 ASAN_OPTIONS=detect_leaks=1 ./build/native/test_bench

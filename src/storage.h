@@ -14,7 +14,7 @@ typedef struct { const char *root; const SaveIO *io; } SaveStore;
 typedef enum { SAVE_OK,SAVE_EMPTY,SAVE_INVALID,SAVE_INCOMPATIBLE,SAVE_IO_ERROR } SaveResult;
 typedef struct {
     SaveResult status; uint64_t generation; uint32_t ticks;
-    uint16_t health; uint8_t hunger; unsigned copy; bool recovered;
+    uint16_t health; uint8_t hunger; unsigned copy; bool recovered,upgraded;
 } SaveInfo;
 SaveResult save_slot_info(const SaveStore *,unsigned,SaveInfo *,Game *scratch);
 SaveResult save_slot_write(const SaveStore *,unsigned,const Game *,Game *scratch);

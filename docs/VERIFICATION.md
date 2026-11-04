@@ -1,4 +1,55 @@
-# Pruefstand - Minimine 0.5.3
+# Pruefstand - Minimine 0.6.0
+
+## 0.6.0: Diamanten, Kollision, Hotbar und Schwierigkeit
+
+- Spieler und Mobs bleiben getrennt: seitliches Schieben normaler Mobs,
+  Begrenzung an Waenden, standfester Boss, vertikaler Kontakt, Sneak und
+  Reparatur alter Ueberlappungen. Kontaktangriffe bleiben erreichbar.
+- Zusaetzliche 6.000 dichte Kampfschritte mit anfangs 16 Mobs, wechselnder
+  Schwierigkeit, Spruengen und Sneak. Nach jedem Schritt: keine Spieler-/Mob-
+  Ueberlappung, keine Wandpenetration, vollstaendig gueltiger Spielzustand.
+- Zwolf Weltseeds erzeugen je genau 96 deterministische Diamanterze im
+  ungeschuetzten Basalt. Einmalige Ergaenzung, begrenzte Restvorkommen und
+  Welten ohne Basalt getestet. Der Simulations-Zufallsstrom bleibt getrennt.
+- Alle sechs Diamantrezepte, vierte Hotbar als Werkzeugplatz, korrekte
+  Erz-Abbaustufen/-zeiten sowie voller letzter Werkzeug-/Schwerttreffer getestet.
+  Diamantruestung: 70 Prozent Schutz und doppelte Eisenhaltbarkeit.
+- Alle Schadensstufen vor Ruestung, letzte Ruestungsnutzung, unskalierter
+  Hungerschaden, genaue Hunger-/Aktionsintervalle, proportionale Wechsel und
+  Spawnobergrenzen geprueft. Vorhandene Mobs bleiben bei Stufenwechsel erhalten.
+- Vier Hotbarfelder, eindeutige Inventar-IDs, ^-Schnelltransfer mit Mengen- und
+  Haltbarkeitserhalt. Echter Programmeinstieg: Touch beim Laufen, alle vier
+  Tasten, abgebrochene/veraltete Beruehrungen und Schwierigkeitsmenues.
+- Speicherformat 3 mit 16 Plaetzen und Schwierigkeits-/Generierungszustand;
+  echte Format-1-/2-Fixtures werden geladen. Alle alten 15 Stapel inklusive
+  Verschleiss bleiben erhalten, neuer Platz ist leer. Diamanten ergaenzen sich
+  einmalig und fuellen nach Speichern/Laden nicht nach. Alte A/B-Kopie erhalten.
+- Alle drei Speicherplaetze mit maximalen Pools und verschlissener Ausruestung
+  rundgetestet. Kurze Zugriffe, Speichermangel, CRC, unbekannte Versionen,
+  ungueltige Typen, Schwierigkeits-/Boolwerte und Datei-I/O-Fehler geprueft.
+- Alle neun Testsuiten mit strengen Compilerwarnungen, AddressSanitizer und
+  UndefinedBehaviorSanitizer bestanden. Bestehende Langzeittests,
+  Inventar-/Touchtransaktionen, Bossablauf und 540 historische Benchmarkschritte
+  bleiben erfolgreich. Separate Benchmarktests mit 16 Renderpfaden bestanden.
+- 2.056 pixelidentische Vergleiche der bisherigen Weltgrafik gegen 0.5.0.
+  Diamanterz nutzt den Basaltcache mit Overlay; eigener Pixel-/Randtest ohne
+  Aenderung der Basaltgrafik. Alle Itemkurztexte passen in vier Hotbarspalten.
+  Spiel, Inventar, Diamantruestung, Schwierigkeit und Pause visuell kontrolliert.
+- Grafikpuffer **20.370 Bytes**, Spielzustand **32.212 Bytes**, zwei Zustaende
+  **64.424 Bytes**. Groessen auch aus dem fertigen ELF gelesen. Keine laufenden
+  Speicheranforderungen und kein weiterer Vollbildpuffer.
+- SuperH-Geraetebuild mit GCC 14.1.0, fxSDK 2.11.0 und gint 2.11.0-91 bestanden.
+  ELF32 Big Endian EXEC, Name Minimine, Version 0.6.0. Datei **180.884 Bytes**,
+  RAM-Ladebereich **180.128 / 337.920 Bytes**, **157.792 Bytes** verbleiben.
+  SHA-256 `58d5d3be96a09e7810c5ad0678ba63db774e98d8d0ac52c8d75c99683bca8188`.
+
+[HH3 und Buildberichte](../releases/0.6.0). Die neue Version ist noch nicht auf
+dem CP400 getestet. Die Wirkung auf Bedienung, Datei-I/O und FPS muss dort
+geprueft werden; PC-Testzeiten sind keine Geraete-FPS. Speicherformat 3 kann
+von Versionen bis 0.5.3 nicht gelesen werden. Vorherige Auslieferungen und
+archivierte Benchmarkmessungen bleiben unveraendert.
+
+Die folgenden Abschnitte dokumentieren die vorherigen Versionen.
 
 ## Zeilenlicht nach CP400-Messung aktiviert
 

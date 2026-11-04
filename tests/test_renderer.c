@@ -30,6 +30,8 @@ static void compare(void)
 static void actors_and_edges(void)
 {
     game_init(&g,WORLD_SEED);memset(g.mobs,0,sizeof(g.mobs));
+    for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
+        if(g.tiles[y][x]==TILE_DIAMOND_ORE) g.tiles[y][x]=TILE_BASALT;
     for(unsigned kind=0;kind<MOB_COUNT;++kind) for(unsigned facing=0;facing<2;++facing)
         for(unsigned xi=0;xi<8;++xi) for(unsigned yi=0;yi<8;++yi) {
             int w=(int)game_mob_width((MobKind)kind),h=(int)game_mob_height((MobKind)kind);
@@ -53,7 +55,7 @@ static void lights_and_tiles(void)
     memset(g.chests,0,sizeof(g.chests));memset(g.furnaces,0,sizeof(g.furnaces));
     memset(g.torches,0,sizeof(g.torches));
     for(int y=0;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x)
-        g.tiles[y][x]=(uint8_t)((x+3*y)%TILE_COUNT);
+        g.tiles[y][x]=(uint8_t)((x+3*y)%TILE_DIAMOND_ORE);
     for(int x=0;x<WORLD_W;++x) g.surface[x]=(uint8_t)(x%40+20);
     for(unsigned i=0;i<TORCH_LIMIT;++i) g.torches[i]=(Torch){i%2==0,25+(int)i%30,38+(int)i%11};
     g.slots[0]=(ItemStack){ITEM_TORCH,32,0};g.selected=0;
@@ -68,9 +70,28 @@ static void lights_and_tiles(void)
     int cx[]={0,WORLD_W*16-SCREEN_W},cy[]={0,WORLD_H*16-VIEW_H};
     for(unsigned x=0;x<2;++x) for(unsigned y=0;y<2;++y) {g.camera_x=cx[x];g.camera_y=cy[y];compare();}
 }
+static void diamond_graphics(void)
+{
+    game_init(&g,WORLD_SEED);g.survival=false;g.ruins=false;
+    for(int y=72;y<WORLD_H;++y) for(int x=0;x<WORLD_W;++x) g.tiles[y][x]=TILE_BASALT;
+    g.camera_x=12*16;g.camera_y=72*16;g.tiles[73][13]=TILE_DIAMOND_ORE;
+    RenderInfo info={0};before=g;dclear(0x1357);render_world(&g,&info);
+    assert(gint_vram[(VIEW_TOP+16+4)*SCREEN_W+16+4]==C_RGB(9,28,30));
+    assert(gint_vram[(VIEW_TOP+16+4)*SCREEN_W+4]!=C_RGB(9,28,30));
+    assert(!memcmp(&before,&g,sizeof(g)));host_check_guards();
+    for(int offset=0;offset<16;++offset) {
+        g.camera_x=12*16+offset;g.camera_y=72*16+offset;
+        for(int y=72;y<94;++y) for(int x=12;x<33;++x) g.tiles[y][x]=TILE_DIAMOND_ORE;
+        before=g;render_world(&g,&info);assert(!memcmp(&before,&g,sizeof(g)));host_check_guards();
+    }
+    for(unsigned item=0;item<ITEM_COUNT;++item) {
+        assert(strlen(game_item_label((Item)item,0))<=8 && strlen(game_item_label((Item)item,1))<=8);
+    }
+    puts("PASS: diamond ore overlay does not change cached basalt, all clipping offsets guarded, hotbar labels fit four columns");
+}
 int main(void)
 {
-    actors_and_edges();lights_and_tiles();
+    actors_and_edges();lights_and_tiles();diamond_graphics();
     assert(render_graphics_bytes()==20370 && render_graphics_bytes()<=20*1024);
     printf("PASS: %u pixel-identical old/new-light frames, all mob types/facings/animation/hurt states, clipping, lighting offsets, tile types, graphics budget and state preservation\n",comparisons);
     return 0;

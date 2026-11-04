@@ -16,12 +16,12 @@ static const ItemDef defs[ITEM_COUNT]={
     [ITEM_STONE]=BLOCK("Stein","Stein","",TILE_STONE),
     [ITEM_PLANKS]={.name="Holzbretter",.first="Holz-",.second="bretter",
         .tile=TILE_WOOD,.kind=KIND_BLOCK,.fuel=900},
-    [ITEM_LOG]={.name="Baumstamm",.first="Baumstamm",.second="",
+    [ITEM_LOG]={.name="Baumstamm",.first="Baum-",.second="stamm",
         .tile=TILE_LOG,.kind=KIND_BLOCK,.fuel=900},
     [ITEM_STICK]={.name="Stock",.first="Stock",.second="",.fuel=300},
     [ITEM_WORKBENCH]=BLOCK("Werkbank","Werkbank","",TILE_WORKBENCH),
-    [ITEM_WOOD_PICKAXE]=TOOL("Holzspitzhacke","Holz-","spitzhacke",KIND_PICKAXE,64,0),
-    [ITEM_STONE_PICKAXE]=TOOL("Steinspitzhacke","Stein-","spitzhacke",KIND_PICKAXE,128,0),
+    [ITEM_WOOD_PICKAXE]=TOOL("Holzspitzhacke","Holz-","hacke",KIND_PICKAXE,64,0),
+    [ITEM_STONE_PICKAXE]=TOOL("Steinspitzhacke","Stein-","hacke",KIND_PICKAXE,128,0),
     [ITEM_COAL]={.name="Kohle",.first="Kohle",.second="",.fuel=4800},
     [ITEM_RAW_IRON]={.name="Rohes Eisen",.first="Rohes",.second="Eisen",.smelt=ITEM_IRON_INGOT},
     [ITEM_IRON_INGOT]={.name="Eisenbarren",.first="Eisen-",.second="barren"},
@@ -29,10 +29,10 @@ static const ItemDef defs[ITEM_COUNT]={
     [ITEM_WOOD_SWORD]=TOOL("Holzschwert","Holz-","schwert",KIND_SWORD,64,4),
     [ITEM_STONE_SWORD]=TOOL("Steinschwert","Stein-","schwert",KIND_SWORD,128,5),
     [ITEM_IRON_SWORD]=TOOL("Eisenschwert","Eisen-","schwert",KIND_SWORD,256,6),
-    [ITEM_IRON_HELMET]=ARMOR("Eisenhelm","Eisenhelm","",0,2,128),
-    [ITEM_IRON_CHEST]=ARMOR("Eisenbrustpanzer","Eisen-","panzer",1,6,256),
-    [ITEM_IRON_LEGS]=ARMOR("Eisenhose","Eisenhose","",2,5,192),
-    [ITEM_IRON_BOOTS]=ARMOR("Eisenstiefel","Eisen-","stiefel",3,2,128),
+    [ITEM_IRON_HELMET]=ARMOR("Eisenhelm","Eisen-","helm",0,8,128),
+    [ITEM_IRON_CHEST]=ARMOR("Eisenbrustpanzer","Eisen-","panzer",1,24,256),
+    [ITEM_IRON_LEGS]=ARMOR("Eisenhose","Eisen-","hose",2,20,192),
+    [ITEM_IRON_BOOTS]=ARMOR("Eisenstiefel","Eisen-","stiefel",3,8,128),
     [ITEM_RAW_PORK]=FOOD("Rohes Schweinefleisch","Schwein","roh",3,ITEM_COOKED_PORK),
     [ITEM_COOKED_PORK]=FOOD("Gebratenes Schweinefleisch","Schwein","gebraten",8,ITEM_NONE),
     [ITEM_RAW_BEEF]=FOOD("Rohes Rindfleisch","Rind","roh",3,ITEM_COOKED_BEEF),
@@ -43,15 +43,22 @@ static const ItemDef defs[ITEM_COUNT]={
     [ITEM_CHEST]=BLOCK("Kiste","Kiste","",TILE_CHEST),
     [ITEM_DOOR]=BLOCK("Tuer","Tuer","",TILE_DOOR_BOTTOM),
     [ITEM_BED]=BLOCK("Bett","Bett","",TILE_BED_LEFT),
-    [ITEM_IRON_PICKAXE]=TOOL("Eisenspitzhacke","Eisen-","spitzhacke",KIND_PICKAXE,256,0),
+    [ITEM_IRON_PICKAXE]=TOOL("Eisenspitzhacke","Eisen-","hacke",KIND_PICKAXE,256,0),
     [ITEM_BASALT]=BLOCK("Basalt","Basalt","",TILE_BASALT),
     [ITEM_CRYSTAL]={.name="Leuchtkristall",.first="Leucht-",.second="kristall"},
-    [ITEM_MINER_CHARM]={.name="Bergmannsanhaenger",.first="Bergmanns-",.second="anhaenger",.kind=KIND_ACCESSORY},
+    [ITEM_MINER_CHARM]={.name="Bergmannsanhaenger",.first="Bergbau-",.second="schmuck",.kind=KIND_ACCESSORY},
     [ITEM_SPEED_BOOTS]={.name="Stiefel der Eile",.first="Stiefel",.second="der Eile",.kind=KIND_ACCESSORY},
     [ITEM_JUMP_AMULET]={.name="Sprungamulett",.first="Sprung-",.second="amulett",.kind=KIND_ACCESSORY},
     [ITEM_RELIC_A]={.name="Relikt der Mine",.first="Relikt",.second="Mine",.kind=KIND_RELIC},
     [ITEM_RELIC_B]={.name="Relikt der Tiefe",.first="Relikt",.second="Tiefe",.kind=KIND_RELIC},
-    [ITEM_RELIC_C]={.name="Relikt des Basalts",.first="Relikt",.second="Basalt",.kind=KIND_RELIC}
+    [ITEM_RELIC_C]={.name="Relikt des Basalts",.first="Relikt",.second="Basalt",.kind=KIND_RELIC},
+    [ITEM_DIAMOND]={.name="Diamant",.first="Diamant",.second=""},
+    [ITEM_DIAMOND_HELMET]=ARMOR("Diamanthelm","Diamant-","helm",0,10,256),
+    [ITEM_DIAMOND_CHEST]=ARMOR("Diamantbrustpanzer","Diamant-","panzer",1,28,512),
+    [ITEM_DIAMOND_LEGS]=ARMOR("Diamanthose","Diamant-","hose",2,22,384),
+    [ITEM_DIAMOND_BOOTS]=ARMOR("Diamantstiefel","Diamant-","stiefel",3,10,256),
+    [ITEM_DIAMOND_PICKAXE]=TOOL("Diamantspitzhacke","Diamant-","hacke",KIND_PICKAXE,512,0),
+    [ITEM_DIAMOND_SWORD]=TOOL("Diamantschwert","Diamant-","schwert",KIND_SWORD,512,7)
 };
 static const ItemDef *def(Item item)
 { return &defs[(unsigned)item<ITEM_COUNT?item:ITEM_NONE]; }
@@ -66,7 +73,7 @@ unsigned game_stack_limit(Item item)
     def(item)->durability || def(item)->kind==KIND_ACCESSORY || def(item)->kind==KIND_RELIC?1:64;}
 unsigned game_armor_slot(Item item)
 {return def(item)->kind==KIND_ARMOR?def(item)->armor_slot:ARMOR_SLOTS;}
-unsigned game_armor_points(Item item) {return def(item)->armor;}
+unsigned game_armor_reduction(Item item) {return def(item)->armor;}
 unsigned game_food_points(Item item) {return def(item)->food;}
 unsigned game_sword_damage(Item item) {return def(item)->damage;}
 unsigned game_fuel_ticks(Item item) {return def(item)->fuel;}
@@ -89,7 +96,7 @@ const char *game_notice_text(Notice n)
     return (unsigned)n<sizeof(text)/sizeof(text[0])?text[n]:"";
 }
 unsigned game_pick_tier(Item item)
-{return item==ITEM_WOOD_PICKAXE?1:item==ITEM_STONE_PICKAXE?2:item==ITEM_IRON_PICKAXE?3:0;}
+{return item==ITEM_WOOD_PICKAXE?1:item==ITEM_STONE_PICKAXE?2:item==ITEM_IRON_PICKAXE?3:item==ITEM_DIAMOND_PICKAXE?4:0;}
 bool game_has_accessory(const Game *g,Item item)
 {
     for(unsigned i=0;i<ACCESSORY_SLOTS;++i) if(g->accessories[i].count && g->accessories[i].item==item) return true;

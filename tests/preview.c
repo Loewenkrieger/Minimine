@@ -134,6 +134,24 @@ int main(void)
     PerfSummary results[BENCH_PHASES] = {{0}};
     render_results(results);
     host_write_ppm("build/native/results.ppm");
+    game_init(&game,WORLD_SEED);
+    for(int y=74;y<=83;++y) for(int x=80;x<=108;++x)
+        game.tiles[y][x]=(uint8_t)(y>=82?TILE_BASALT:TILE_AIR);
+    game.player=(Player){.x=90*16*FIXED_ONE,.y=(82*16-PLAYER_H)*FIXED_ONE,.facing=1,.grounded=true};
+    game.slots[0]=(ItemStack){ITEM_DIAMOND_SWORD,1,410};
+    game.slots[1]=(ItemStack){ITEM_DIAMOND_PICKAXE,1,430};
+    game.slots[2]=(ItemStack){ITEM_TORCH,32,0};game.slots[3]=(ItemStack){ITEM_DIAMOND,47,0};
+    game.selected=2;game.tiles[80][94]=TILE_DIAMOND_ORE;game.tiles[81][95]=TILE_DIAMOND_ORE;
+    game.tiles[82][92]=TILE_DIAMOND_ORE;game_adventure_place(&game,TILE_TORCH,87,81);
+    for(unsigned i=0;i<ARMOR_SLOTS;++i)
+        game.armor[i]=(ItemStack){(Item)(ITEM_DIAMOND_HELMET+i),1,(uint16_t)game_tool_durability((Item)(ITEM_DIAMOND_HELMET+i))};
+    game_follow_camera(&game);info=(RenderInfo){0};render_invalidate();render_game(&game,&info);
+    host_write_ppm("build/native/diamond-play.ppm");
+    ui=(InventoryUI){.cursor=3,.source=-1,.craft_width=2};render_inventory(&game,&ui);
+    host_write_ppm("build/native/diamond-inventory.ppm");
+    ui.armor=true;ui.cursor=UI_ARMOR;render_inventory(&game,&ui);host_write_ppm("build/native/diamond-armor.ppm");
+    render_difficulty(DIFFICULTY_HARD,false);host_write_ppm("build/native/difficulty.ppm");
+    render_menu(true,4);render_progress(&game);host_write_ppm("build/native/pause-060.ppm");
     puts("Host previews rendered (no device performance measurement).");
     return 0;
 }

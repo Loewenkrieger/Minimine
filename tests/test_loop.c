@@ -32,7 +32,7 @@ key_event_t waitevent(volatile int *timeout)
     static bool pending;static key_event_t release;
     if(pending) {pending=false;return release;}
     key_event_t e=getkey_opt(GETKEY_NONE,timeout);UIRect r={0};bool touch=false;
-    if((app.mode==MODE_START || app.mode==MODE_PAUSE) && e.key==KEY_EXE)
+    if((app.mode==MODE_START || app.mode==MODE_PAUSE || app.mode==MODE_DIFFICULTY) && e.key==KEY_EXE)
         {r=ui_menu_rect(app.cursor);touch=true;}
     else if((app.mode==MODE_HELP || app.mode==MODE_RESULTS) && e.key==KEY_EXE)
         {r=ui_play_rect();touch=true;}
@@ -78,7 +78,8 @@ static void presented(void)
 key_event_t getkey_opt(int options,volatile int *timeout)
 {
     (void)options;(void)timeout;counter-=30000000;memset(held,0,sizeof(held));int code=KEY_EXE;
-    if(stage==0) {assert(app.mode==MODE_START);stage=1;frames=0;}
+    if(app.mode==MODE_DIFFICULTY) {assert(app.cursor==DIFFICULTY_MEDIUM);}
+    else if(stage==0) {assert(app.mode==MODE_START);stage=1;frames=0;}
     else if(stage==2) {
         assert(app.mode==MODE_INVENTORY && play_game.ticks==paused.ticks && !play_game.mining.active);
         assert(!memcmp(&play_game.player,&paused.player,sizeof(Player)));
@@ -98,7 +99,7 @@ key_event_t getkey_opt(int options,volatile int *timeout)
         assert(!memcmp(&saved_play,&play_game,sizeof(play_game)));stage=10;frames=0;
     } else {
         assert(stage==11);
-        if(app.mode==MODE_PAUSE) code=page_keys++<4?KEY_DOWN:KEY_EXE;
+        if(app.mode==MODE_PAUSE) code=page_keys++<5?KEY_DOWN:KEY_EXE;
         else assert(!"exit must not require confirmation");
     }
     held[code]=true;
@@ -137,7 +138,8 @@ static void menus_and_saves(void)
     for(unsigned s=1;s<=3;++s) for(unsigned c=0;c<2;++c) {
         char path[80];snprintf(path,sizeof(path),"%s/slot%u%c.sav",store.root,s,c?'b':'a');unlink(path);
     }
-    app=(App){.mode=MODE_START,.running=true};handle_page(KEY_EXE);assert(app.mode==MODE_PLAY && dirty());
+    app=(App){.mode=MODE_START,.running=true};handle_page(KEY_EXE);assert(app.mode==MODE_DIFFICULTY);
+    handle_page(KEY_EXE);assert(app.mode==MODE_PLAY && dirty());
     page(MODE_PAUSE);handle_page(KEY_DOWN);handle_page(KEY_EXE);assert(app.mode==MODE_SAVE);
     handle_page(KEY_EXE);assert(app.mode==MODE_MESSAGE && !dirty());handle_page(KEY_EXE);
     assert(app.mode==MODE_PAUSE);
@@ -166,12 +168,13 @@ static void touch_menus(void)
 {
     app=(App){.mode=MODE_START,.running=true};
     touch_event(KEYEV_TOUCH_DOWN,ui_menu_rect(0));assert(!app.has_game);
-    touch_event(KEYEV_TOUCH_UP,ui_menu_rect(0));assert(app.mode==MODE_PLAY && app.has_game);
+    touch_event(KEYEV_TOUCH_UP,ui_menu_rect(0));assert(app.mode==MODE_DIFFICULTY && !app.has_game);
+    tap_menu(ui_menu_rect(DIFFICULTY_MEDIUM));assert(app.mode==MODE_PLAY && app.has_game);
     page(MODE_INVENTORY);app.inventory=(InventoryUI){.source=-1,.craft_width=2};
     held[KEY_DIV]=true;handle_menu_event((key_event_t){.type=KEYEV_DOWN,.key=KEY_DIV});
     tap_menu((UIRect){16,85,92,30});assert(app.inventory.source_half);
     held[KEY_DIV]=false;tap_menu((UIRect){16,140,92,30});
-    assert(play_game.slots[0].count==16 && play_game.slots[3].count==16);
+    assert(play_game.slots[0].count==16 && play_game.slots[4].count==16);
     assert(!play_game.player.sneaking && !play_game.ticks);
     tap_menu(ui_armor_rect());assert(app.inventory.armor);
     tap_menu(ui_close_rect());assert(app.mode==MODE_PLAY);
@@ -194,16 +197,51 @@ static void touch_menus(void)
     tap_menu(ui_menu_rect(3));tap_menu(ui_benchmark_rect());assert(app.mode==MODE_BENCH);
     page(MODE_RESULTS);tap_menu(ui_back_rect());assert(app.mode==MODE_PAUSE);
     play_game.revision++;assert(dirty());
-    touch_event(KEYEV_TOUCH_DOWN,ui_menu_rect(4));assert(app.running && app.mode==MODE_PAUSE);
-    touch_event(KEYEV_TOUCH_UP,ui_menu_rect(4));assert(!app.running && app.mode==MODE_PAUSE);
+    touch_event(KEYEV_TOUCH_DOWN,ui_menu_rect(5));assert(app.running && app.mode==MODE_PAUSE);
+    touch_event(KEYEV_TOUCH_UP,ui_menu_rect(5));assert(!app.running && app.mode==MODE_PAUSE);
     /* Keyboard quitting is equally direct. */
-    app.running=true;app.cursor=4;handle_page(KEY_EXE);assert(!app.running && app.mode==MODE_PAUSE);
+    app.running=true;app.cursor=5;handle_page(KEY_EXE);assert(!app.running && app.mode==MODE_PAUSE);
     memset(held,0,sizeof(held));
     puts("PASS: touch menus, real divide modifier, save/load yes/no, release guards and immediate dirty-game exit");
 }
+static void queue_touch(unsigned type,UIRect r)
+{
+    assert(event_count<32);queue[event_count++]=(key_event_t){.type=type,
+        .x=(unsigned short)(r.x+r.w/2),.y=(unsigned short)(r.y+r.h/2)};
+}
+static void new_controls(void)
+{
+    game_init(&play_game,WORLD_SEED);app=(App){.mode=MODE_PLAY,.has_game=true,.running=true};
+    next_event=event_count=0;memset(held,0,sizeof(held));held[KEY_RIGHT]=true;
+    for(unsigned i=0;i<HOTBAR_SLOTS;++i) {
+        queue_touch(KEYEV_TOUCH_DOWN,ui_hotbar_rect(i,false));
+        queue_touch(KEYEV_TOUCH_UP,ui_hotbar_rect(i,false));Presses p=read_input();
+        assert(p.hotbar==(int)i && !p.use && !p.jump && !p.sneak && held_input().move==1);
+        game_select_hotbar(&play_game,(unsigned)p.hotbar);assert(play_game.selected==i);
+    }
+    key(KEYEV_DOWN,KEY_POWER);Presses p=read_input();assert(p.hotbar==3);
+    queue_touch(KEYEV_TOUCH_DOWN,ui_hotbar_rect(0,false));queue_touch(KEYEV_TOUCH_DRAG,ui_hotbar_rect(1,false));
+    queue_touch(KEYEV_TOUCH_UP,ui_hotbar_rect(0,false));p=read_input();assert(p.hotbar==-1);
+    queue_touch(KEYEV_TOUCH_UP,ui_hotbar_rect(2,false));p=read_input();assert(p.hotbar==-1);
+    queue_touch(KEYEV_TOUCH_DOWN,ui_hotbar_rect(1,false));read_input();enter_play();
+    queue_touch(KEYEV_TOUCH_UP,ui_hotbar_rect(1,false));p=read_input();assert(p.hotbar==-1);
+    uint32_t ticks=play_game.ticks;Player player=play_game.player;
+    page(MODE_PAUSE);tap_menu(ui_menu_rect(4));assert(app.mode==MODE_DIFFICULTY && app.cursor==DIFFICULTY_MEDIUM);
+    handle_page(KEY_UP);assert(play_game.difficulty==DIFFICULTY_MEDIUM && app.cursor==DIFFICULTY_EASY);
+    handle_page(KEY_CLEAR);assert(app.mode==MODE_PAUSE && play_game.difficulty==DIFFICULTY_MEDIUM);
+    tap_menu(ui_menu_rect(4));tap_menu(ui_menu_rect(DIFFICULTY_HARD));
+    assert(app.mode==MODE_PLAY && play_game.difficulty==DIFFICULTY_HARD && play_game.ticks==ticks);
+    assert(!memcmp(&player,&play_game.player,sizeof(player)));
+    app=(App){.mode=MODE_START,.running=true};Game previous=play_game;
+    handle_page(KEY_EXE);assert(app.mode==MODE_DIFFICULTY && app.cursor==DIFFICULTY_MEDIUM);
+    handle_page(KEY_DOWN);assert(!memcmp(&previous,&play_game,sizeof(previous)));
+    handle_page(KEY_EXE);assert(app.mode==MODE_PLAY && play_game.difficulty==DIFFICULTY_HARD && !play_game.ticks);
+    memset(held,0,sizeof(held));next_event=event_count=0;
+    puts("PASS: touch hotbar while walking, fourth hardware key, cancelled/stale touches, difficulty preview/cancel/commit and deferred new-world creation");
+}
 int main(void)
 {
-    controller();menus_and_saves();touch_menus();host_present_hook=presented;
+    controller();menus_and_saves();touch_menus();new_controls();host_present_hook=presented;
     assert(minimine_main()==0 && quit && stage==11 && bench_frames==540);
     puts("PASS: real loop, catch-up edges, paused time, held-action suppression, workbench, 540-frame benchmark and exit");return 0;
 }

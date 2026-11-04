@@ -93,8 +93,8 @@ static void crafting_equipment_furnace(void)
     g.slots[1]=stack(ITEM_IRON_HELMET,1);g.slots[1].durability=7;
     tap(UI_ARMOR_BUTTON,false);drag(1,UI_ARMOR,true);
     assert(g.armor[0].durability==7 && !g.slots[1].count);
-    drag(UI_ARMOR,4,false);assert(g.slots[4].durability==7 && !g.armor[0].count);
-    drag(4,UI_ARMOR+1,false);assert(g.slots[4].durability==7 && !g.armor[1].count);
+    drag(UI_ARMOR,5,false);assert(g.slots[5].durability==7 && !g.armor[0].count);
+    drag(5,UI_ARMOR+1,false);assert(g.slots[5].durability==7 && !g.armor[1].count);
     tap(UI_ARMOR_BUTTON,false);g.crafting[0]=stack(ITEM_LOG,1);
     assert(tap(UI_CLOSE_BUTTON,false) && !g.crafting[0].count);
     reset();g.furnaces[0]=(Furnace){.active=true};ui.furnace=1;
